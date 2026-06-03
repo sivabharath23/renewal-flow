@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   getRevenueReport,
   getClientReport,
@@ -41,7 +41,7 @@ export default function ReportsPage() {
   const [loading, setLoading] = useState(false);
   const [reportData, setReportData] = useState<any[]>([]);
 
-  const handleGenerateReport = async () => {
+  const handleGenerateReport = useCallback(async () => {
     setLoading(true);
     let data: any[] = [];
     switch (reportType) {
@@ -66,11 +66,11 @@ export default function ReportsPage() {
     }
     setReportData(data);
     setLoading(false);
-  };
+  }, [reportType, startDate, endDate]);
 
   useEffect(() => {
     handleGenerateReport();
-  }, [reportType]);
+  }, [handleGenerateReport]);
 
   const handleExportCSV = () => {
     if (reportData.length === 0) return;

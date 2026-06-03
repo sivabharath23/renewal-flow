@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getPayments, submitPaymentProofAction, approvePaymentAction, rejectPaymentAction } from './actions';
 import { getInvoices } from '@/app/invoices/actions';
 import {
@@ -73,7 +73,7 @@ export default function PaymentsPage() {
   const [formSuccess, setFormSuccess] = useState(false);
   const [actionPending, setActionPending] = useState(false);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
     const payData = await getPayments(statusFilter);
     const invData = await getInvoices();
@@ -86,11 +86,11 @@ export default function PaymentsPage() {
     );
     setPendingInvoices(filteredInvs);
     setLoading(false);
-  };
+  }, [statusFilter]);
 
   useEffect(() => {
     loadData();
-  }, [statusFilter, activeTab]);
+  }, [loadData, activeTab]);
 
   const handleProofSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
