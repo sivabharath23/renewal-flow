@@ -37,11 +37,19 @@ This project is fully optimized for **Next.js 15**, **Tailwind CSS v4**, and clo
 
 ---
 
-## ☁️ Deployment Stack
+## ☁️ Deployment Stack & Infrastructure
 
-*   **Frontend / Hosting**: **Vercel** (with continuous deployment directly from your GitHub repository).
-*   **Database Cloud Host**: **Neon Serverless Postgres** (scales automatically to 0 when inactive to maintain the free tier, with support for connection pooling).
-*   **CI/CD Pipeline**: Integrated GitHub actions and Vercel build triggers running Prisma schema synchronizations.
+The application's deployment architecture is fully serverless and cloud-native, prioritizing high availability, automatic scaling, and frictionless developer operations (DevOps).
+
+*   **Frontend & API Hosting (Vercel)**:
+    *   The entire Next.js application is deployed to **Vercel**, which natively supports Next.js 15 features including dynamic Server Components, optimized asset loading, and global edge routing.
+    *   Leverages Git-integrated CI/CD. Every push to the `main` branch triggers an automated build and zero-downtime deployment.
+*   **Database Cloud Host (Neon PostgreSQL)**:
+    *   Utilizes **Neon**, a serverless, cloud-native PostgreSQL database engine.
+    *   Features dynamic compute scaling, automatically scaling resources up during traffic peaks and down to zero when idle to conserve compute resources.
+    *   Uses pgBouncer-powered connection pooling, allowing thousands of simultaneous database queries from edge servers without exhausting database connection limits.
+*   **DevOps & Build Pipelines**:
+    *   Vercel build tasks run schema synchronizations dynamically via Prisma CLI, ensuring the database state always aligns with the repository models.
 
 ---
 
@@ -144,36 +152,3 @@ erDiagram
     Project ||--o{ Invoice : bills
     Invoice ||--o{ Payment : clears
 ```
-
----
-
-## ⚙️ Cloud Deployment Steps
-
-### 1. Database Provisioning (Neon)
-1. Go to [Neon.tech](https://neon.tech/) and create a free PostgreSQL database.
-2. Under your dashboard, copy the connection strings:
-   * **Pooled Connection string** (typically includes `-pooler` in the host).
-   * **Direct Connection string** (unpooled).
-
-### 2. Vercel Project Setup
-1. Log in to [Vercel](https://vercel.com/) with GitHub.
-2. Select **Add New** > **Project** and import your repository.
-3. Under **Settings** > **Environment Variables**, add the database connection variables:
-   * **`POSTGRES_PRISMA_URL`**: `postgresql://neondb_owner:...-pooler...`
-   * **`POSTGRES_URL_NON_POOLING`**: `postgresql://neondb_owner:...`
-4. Set the **Build Command** under *Build & Development Settings* to:
-   ```bash
-   npx prisma db push && next build
-   ```
-5. Click **Deploy**. Vercel will build the frontend and automatically sync the Prisma schemas to your database.
-
-### 3. Seed Initial Database (Local Terminal)
-Since you need the initial administrator account (`admin@renewalflow.com`) created, run the seeder script from your local machine targeting the Neon database:
-1. Make sure your local `.env` contains the same `POSTGRES_PRISMA_URL` and `POSTGRES_URL_NON_POOLING` values.
-2. Run:
-   ```bash
-   npx prisma db push
-   npx tsx prisma/seed.ts
-   ```
-
-You are now ready to log in on Vercel with your credentials!
