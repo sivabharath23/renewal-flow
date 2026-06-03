@@ -136,3 +136,10 @@ body {
 .animate-slide-in {
   animation: slideIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* Prevent iOS browser auto-zoom when focusing form inputs on mobile viewports */
+@media (max-width: 767px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}

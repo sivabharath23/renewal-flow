@@ -1,5 +1,11 @@
 import db from '@/lib/db';
 import Link from 'next/link';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Dashboard',
+  description: 'Overview of renewal operations, monthly revenue, pending invoices, and expiring assets.',
+};
 import {
   Users,
   Briefcase,
