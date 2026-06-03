@@ -2,6 +2,7 @@
 
 import { useState, useEffect, startTransition } from 'react';
 import { getClients, createClientAction, updateClientAction, deleteClientAction } from './actions';
+import { useToast } from '@/context/ToastContext';
 import {
   Users,
   Search,
@@ -33,6 +34,7 @@ interface ClientType {
 }
 
 export default function ClientsPage() {
+  const { showToast } = useToast();
   const [clients, setClients] = useState<ClientType[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
@@ -74,8 +76,10 @@ export default function ClientsPage() {
     setActionPending(false);
     if (result.error) {
       setFormError(result.error);
+      showToast(result.error, 'error');
     } else {
       setIsAddOpen(false);
+      showToast('Client added successfully!', 'success');
       loadClients(searchQuery);
     }
   };
@@ -93,9 +97,11 @@ export default function ClientsPage() {
     setActionPending(false);
     if (result.error) {
       setFormError(result.error);
+      showToast(result.error, 'error');
     } else {
       setIsEditOpen(false);
       setSelectedClient(null);
+      showToast('Client details updated!', 'success');
       loadClients(searchQuery);
     }
   };
@@ -105,8 +111,9 @@ export default function ClientsPage() {
     if (!confirm('Are you sure you want to delete this client? All associated projects and invoices will be deleted.')) return;
     const result = await deleteClientAction(id);
     if (result.error) {
-      alert(result.error);
+      showToast(result.error, 'error');
     } else {
+      showToast('Client deleted successfully!', 'success');
       loadClients(searchQuery);
     }
   };

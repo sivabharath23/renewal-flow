@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { getProjects, createProjectAction, updateProjectAction, deleteProjectAction } from './actions';
 import { getClients } from '@/app/clients/actions';
+import { useToast } from '@/context/ToastContext';
 import {
   Briefcase,
   Search,
@@ -46,6 +47,7 @@ interface ClientOptionType {
 }
 
 export default function ProjectsPage() {
+  const { showToast } = useToast();
   const [projects, setProjects] = useState<ProjectType[]>([]);
   const [clients, setClients] = useState<ClientOptionType[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -88,8 +90,10 @@ export default function ProjectsPage() {
     setActionPending(false);
     if (result.error) {
       setFormError(result.error);
+      showToast(result.error, 'error');
     } else {
       setIsAddOpen(false);
+      showToast('Project created successfully!', 'success');
       loadData(searchQuery);
     }
   };
@@ -106,9 +110,11 @@ export default function ProjectsPage() {
     setActionPending(false);
     if (result.error) {
       setFormError(result.error);
+      showToast(result.error, 'error');
     } else {
       setIsEditOpen(false);
       setSelectedProject(null);
+      showToast('Project updated successfully!', 'success');
       loadData(searchQuery);
     }
   };
@@ -117,8 +123,9 @@ export default function ProjectsPage() {
     if (!confirm('Are you sure you want to delete this project? All associated domains, servers, and invoices will be deleted.')) return;
     const result = await deleteProjectAction(id);
     if (result.error) {
-      alert(result.error);
+      showToast(result.error, 'error');
     } else {
+      showToast('Project deleted successfully!', 'success');
       loadData(searchQuery);
     }
   };

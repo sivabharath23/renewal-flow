@@ -45,3 +45,11 @@ next-env.d.ts
 # SQLite database files
 *.db
 *.db-journal
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
