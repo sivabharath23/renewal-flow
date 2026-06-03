@@ -5,6 +5,8 @@ export function middleware(request: NextRequest) {
   const session = request.cookies.get('auth_session')?.value;
   const { pathname } = request.nextUrl;
 
+  const isServerAction = request.headers.has('next-action') || request.headers.get('accept') === 'text/x-component';
+
   // Allow login, public auth api, static assets, favicon, etc.
   if (
     pathname === '/login' ||
@@ -12,7 +14,7 @@ export function middleware(request: NextRequest) {
     pathname.startsWith('/_next') ||
     pathname.includes('favicon.ico')
   ) {
-    if (session && pathname === '/login') {
+    if (session && pathname === '/login' && !isServerAction) {
       return NextResponse.redirect(new URL('/dashboard', request.url));
     }
     return NextResponse.next();

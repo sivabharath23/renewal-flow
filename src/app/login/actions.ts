@@ -3,6 +3,7 @@
 import { cookies } from 'next/headers';
 import db from '@/lib/db';
 import { hashPassword } from '@/lib/auth-helpers';
+import { redirect } from 'next/navigation';
 
 export async function loginAction(prevState: any, formData: FormData) {
   const email = formData.get('email') as string;
@@ -11,6 +12,8 @@ export async function loginAction(prevState: any, formData: FormData) {
   if (!email || !password) {
     return { error: 'Please enter both email and password.' };
   }
+
+  let redirectToDashboard = false;
 
   try {
     const user = await db.user.findUnique({
@@ -36,10 +39,14 @@ export async function loginAction(prevState: any, formData: FormData) {
       path: '/',
     });
 
-    return { success: true };
+    redirectToDashboard = true;
   } catch (error) {
     console.error('Login error:', error);
     return { error: 'An unexpected error occurred. Please try again.' };
+  }
+
+  if (redirectToDashboard) {
+    redirect('/dashboard');
   }
 }
 
