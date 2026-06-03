@@ -44,7 +44,7 @@ export default function LoginForm() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} noValidate className="space-y-5">
             {state?.error && (
               <div className="p-3.5 rounded-xl bg-red-50 border border-red-100 text-xs font-semibold text-red-600">
                 {state.error}
@@ -65,7 +65,6 @@ export default function LoginForm() {
                   name="email"
                   required
                   placeholder="admin@renewalflow.com"
-                  defaultValue="admin@renewalflow.com"
                   className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
                 />
               </div>
@@ -85,7 +84,6 @@ export default function LoginForm() {
                   name="password"
                   required
                   placeholder="••••••••"
-                  defaultValue="admin123"
                   className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
                 />
               </div>
