@@ -1,0 +1,149 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Client {
+  id          String    @id @default(cuid())
+  name        String
+  companyName String
+  email       String
+  phone       String
+  address     String
+  gstNo       String?
+  notes       String?
+  projects    Project[]
+  invoices    Invoice[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Project {
+  id           String        @id @default(cuid())
+  clientId     String
+  client       Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  projectName  String
+  description  String?
+  status       String        // ACTIVE, INACTIVE, COMPLETED
+  domains      Domain[]
+  servers      Server[]
+  amcContracts AMCContract[]
+  invoices     Invoice[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Domain {
+  id            String   @id @default(cuid())
+  projectId     String
+  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  domainName    String
+  registrar     String
+  purchaseDate  DateTime
+  expiryDate    DateTime
+  renewalAmount Float
+  autoRenew     Boolean  @default(false)
+  status        String   // ACTIVE, EXPIRED, RENEWED
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Server {
+  id           String   @id @default(cuid())
+  projectId    String
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  provider     String
+  planName     String
+  ipAddress    String
+  purchaseDate DateTime
+  expiryDate   DateTime
+  amount       Float
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model AMCContract {
+  id           String   @id @default(cuid())
+  projectId    String
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  startDate    DateTime
+  endDate      DateTime
+  amount       Float
+  renewalCycle String   // MONTHLY, QUARTERLY, YEARLY
+  status       String   // ACTIVE, INACTIVE
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Invoice {
+  id            String    @id @default(cuid())
+  invoiceNumber String    @unique
+  clientId      String
+  client        Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  projectId     String
+  project       Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  invoiceDate   DateTime
+  dueDate       DateTime
+  amount        Float
+  description   String?
+  status        String    // DRAFT, PENDING, PAID, CANCELLED
+  pdfUrl        String?
+  payments      Payment[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Payment {
+  id             String   @id @default(cuid())
+  invoiceId      String
+  invoice        Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  amount         Float
+  paidDate       DateTime @default(now())
+  transactionRef String
+  proofImage     String?
+  status         String   // PENDING, VERIFIED, REJECTED
+  remarks        String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Reminder {
+  id               String   @id @default(cuid())
+  referenceType    String   // DOMAIN, SERVER, AMC, INVOICE
+  referenceId      String
+  reminderDate     DateTime
+  notificationType String   // EMAIL
+  status           String   // PENDING, SENT, FAILED
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Setting {
+  id                String   @id @default(cuid())
+  companyName       String   @default("RenewalFlow")
+  companyLogo       String?
+  companyEmail      String   @default("hello@renewalflow.com")
+  companyPhone      String   @default("+1234567890")
+  upiId             String   @default("sivabharath@upi")
+  upiName           String   @default("Sivabharath")
+  reminderDays      String   @default("30,15,7,3,1")
+  notificationEmail String   @default("alerts@renewalflow.com")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
