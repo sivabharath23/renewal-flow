@@ -243,98 +243,179 @@ export default function AMCPage() {
             <span className="text-xs font-semibold text-slate-400">Loading AMC contracts...</span>
           </div>
         ) : amcs.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-50/75 border-b border-slate-100 text-xs font-bold text-slate-500 uppercase tracking-wider">
-                  <th className="px-6 py-4">Client / Company</th>
-                  <th className="px-6 py-4">Project</th>
-                  <th className="px-6 py-4">Start Date</th>
-                  <th className="px-6 py-4">End Date</th>
-                  <th className="px-6 py-4">Billing Cycle</th>
-                  <th className="px-6 py-4">Days Left</th>
-                  <th className="px-6 py-4">AMC Amount</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50 text-sm text-slate-700">
-                {amcs.map((amc) => {
-                  const expiry = getExpiryDetails(amc.endDate, amc.status);
-                  return (
-                    <tr key={amc.id} className={`hover:bg-slate-50/50 transition-colors group ${expiry.rowHighlight}`}>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-1.5 text-slate-600 font-medium">
-                          <Building className="w-3.5 h-3.5 text-slate-400" />
-                          <div>
-                            <span className="block font-bold text-slate-800 leading-tight">{amc.project.client.companyName}</span>
-                            <span className="text-[10px] text-slate-400 font-semibold">{amc.project.client.name}</span>
+          <>
+            {/* Mobile View Card List */}
+            <div className="block md:hidden divide-y divide-slate-100">
+              {amcs.map((amc) => {
+                const expiry = getExpiryDetails(amc.endDate, amc.status);
+                return (
+                  <div key={amc.id} className={`p-5 space-y-4 hover:bg-slate-50/50 transition-colors ${expiry.rowHighlight}`}>
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5 text-slate-600">
+                          <Building className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                          <div className="min-w-0">
+                            <span className="block font-bold text-slate-800 text-sm leading-tight truncate">{amc.project.client.companyName}</span>
+                            <span className="text-[10px] text-slate-400 font-semibold truncate">{amc.project.client.name}</span>
                           </div>
                         </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="font-semibold text-slate-700 flex items-center gap-1.5">
-                          <Briefcase className="w-3.5 h-3.5 text-slate-400" />
-                          {amc.project.projectName}
+                      </div>
+                      <span className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md border shrink-0 ${expiry.badgeClass}`}>
+                        {expiry.text}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col gap-2.5 text-xs text-slate-500 font-medium">
+                      <span className="font-semibold text-slate-700 flex items-center gap-1.5">
+                        <Briefcase className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                        <span className="truncate">{amc.project.projectName}</span>
+                      </span>
+
+                      <div className="flex items-center justify-between text-slate-500">
+                        <span className="flex items-center gap-1.5">
+                          <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                          <span>Cycle: <strong className="text-slate-700">{amc.renewalCycle}</strong></span>
                         </span>
-                      </td>
-                      <td className="px-6 py-4 text-xs font-semibold text-slate-500">
-                        {new Date(amc.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                      </td>
-                      <td className="px-6 py-4 text-xs font-semibold text-slate-500">
-                        {new Date(amc.endDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-lg border ${getCycleBadgeClass(amc.renewalCycle)}`}>
-                          <RefreshCw className="w-2.5 h-2.5" />
-                          <span>{amc.renewalCycle}</span>
+                        <span className="font-bold text-slate-800">
+                          ₹{amc.amount.toLocaleString('en-IN')}
                         </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md border ${expiry.badgeClass}`}>
-                          {expiry.text}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 font-bold text-slate-800">
-                        ₹{amc.amount.toLocaleString('en-IN')}
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            onClick={() => {
-                              setSelectedAMC(amc);
-                              setIsViewOpen(true);
-                            }}
-                            className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all cursor-pointer"
-                            title="View AMC Info"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => {
-                              setSelectedAMC(amc);
-                              setFormError(null);
-                              setIsEditOpen(true);
-                            }}
-                            className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-all cursor-pointer"
-                            title="Edit AMC"
-                          >
-                            <Edit2 className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(amc.id)}
-                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
-                            title="Delete AMC"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                      </div>
+
+                      <div className="text-[11px] text-slate-400 font-medium space-y-0.5 border-t border-slate-50/60 pt-2">
+                        <p>Start: {new Date(amc.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                        <p>End: {new Date(amc.endDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-50">
+                      <button
+                        onClick={() => {
+                          setSelectedAMC(amc);
+                          setIsViewOpen(true);
+                        }}
+                        className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-blue-600 hover:bg-blue-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                        <span>View</span>
+                      </button>
+                      <button
+                        onClick={() => {
+                          setSelectedAMC(amc);
+                          setFormError(null);
+                          setIsEditOpen(true);
+                        }}
+                        className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-amber-600 hover:bg-amber-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                        <span>Edit</span>
+                      </button>
+                      <button
+                        onClick={() => handleDelete(amc.id)}
+                        className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-red-600 hover:bg-red-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>Delete</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-50/75 border-b border-slate-100 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    <th className="px-6 py-4">Client / Company</th>
+                    <th className="px-6 py-4">Project</th>
+                    <th className="px-6 py-4">Start Date</th>
+                    <th className="px-6 py-4">End Date</th>
+                    <th className="px-6 py-4">Billing Cycle</th>
+                    <th className="px-6 py-4">Days Left</th>
+                    <th className="px-6 py-4">AMC Amount</th>
+                    <th className="px-6 py-4 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50 text-sm text-slate-700">
+                  {amcs.map((amc) => {
+                    const expiry = getExpiryDetails(amc.endDate, amc.status);
+                    return (
+                      <tr key={amc.id} className={`hover:bg-slate-50/50 transition-colors group ${expiry.rowHighlight}`}>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-1.5 text-slate-600 font-medium">
+                            <Building className="w-3.5 h-3.5 text-slate-400" />
+                            <div>
+                              <span className="block font-bold text-slate-800 leading-tight">{amc.project.client.companyName}</span>
+                              <span className="text-[10px] text-slate-400 font-semibold">{amc.project.client.name}</span>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="font-semibold text-slate-700 flex items-center gap-1.5">
+                            <Briefcase className="w-3.5 h-3.5 text-slate-400" />
+                            {amc.project.projectName}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-xs font-semibold text-slate-500">
+                          {new Date(amc.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </td>
+                        <td className="px-6 py-4 text-xs font-semibold text-slate-500">
+                          {new Date(amc.endDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-lg border ${getCycleBadgeClass(amc.renewalCycle)}`}>
+                            <RefreshCw className="w-2.5 h-2.5" />
+                            <span>{amc.renewalCycle}</span>
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md border ${expiry.badgeClass}`}>
+                            {expiry.text}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 font-bold text-slate-800">
+                          ₹{amc.amount.toLocaleString('en-IN')}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => {
+                                setSelectedAMC(amc);
+                                setIsViewOpen(true);
+                              }}
+                              className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all cursor-pointer"
+                              title="View AMC Info"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => {
+                                setSelectedAMC(amc);
+                                setFormError(null);
+                                setIsEditOpen(true);
+                              }}
+                              className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-all cursor-pointer"
+                              title="Edit AMC"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(amc.id)}
+                              className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
+                              title="Delete AMC"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         ) : (
           <div className="py-24 text-center max-w-sm mx-auto flex flex-col items-center justify-center">
             <div className="w-12 h-12 rounded-full bg-slate-50 text-slate-300 flex items-center justify-center mb-3">
@@ -389,7 +470,7 @@ export default function AMCPage() {
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Start Date</label>
                   <input
@@ -410,7 +491,7 @@ export default function AMCPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">AMC Amount (₹)</label>
                   <input
@@ -521,7 +602,7 @@ export default function AMCPage() {
                 </select>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Start Date</label>
                   <input
@@ -544,7 +625,7 @@ export default function AMCPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">AMC Amount (₹)</label>
                   <input

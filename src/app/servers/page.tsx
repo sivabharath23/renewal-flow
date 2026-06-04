@@ -239,100 +239,184 @@ export default function ServersPage() {
             <span className="text-xs font-semibold text-slate-400">Loading servers...</span>
           </div>
         ) : servers.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-50/75 border-b border-slate-100 text-xs font-bold text-slate-500 uppercase tracking-wider">
-                  <th className="px-6 py-4">Provider</th>
-                  <th className="px-6 py-4">Plan Details</th>
-                  <th className="px-6 py-4">Project / Client</th>
-                  <th className="px-6 py-4">IP Address</th>
-                  <th className="px-6 py-4">Expiry Date</th>
-                  <th className="px-6 py-4">Days Left</th>
-                  <th className="px-6 py-4">Price</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50 text-sm text-slate-700">
-                {servers.map((server) => {
-                  const expiry = getExpiryDetails(server.expiryDate);
-                  return (
-                    <tr key={server.id} className={`hover:bg-slate-50/50 transition-colors group ${expiry.rowHighlight}`}>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center text-xs font-bold px-2 py-0.5 rounded-lg border ${getProviderBadgeClass(server.provider)}`}>
+          <>
+            {/* Mobile View Card List */}
+            <div className="block md:hidden divide-y divide-slate-100">
+              {servers.map((server) => {
+                const expiry = getExpiryDetails(server.expiryDate);
+                return (
+                  <div key={server.id} className={`p-5 space-y-4 hover:bg-slate-50/50 transition-colors ${expiry.rowHighlight}`}>
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="min-w-0">
+                        <span className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-lg border mb-1.5 ${getProviderBadgeClass(server.provider)}`}>
                           {server.provider}
                         </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="font-bold text-slate-800 flex items-center gap-1.5">
-                          <Cpu className="w-3.5 h-3.5 text-slate-400" />
+                        <span className="font-bold text-slate-800 text-sm block truncate flex items-center gap-1.5">
+                          <Cpu className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                           {server.planName}
                         </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-1 text-slate-600 font-medium">
-                          <Briefcase className="w-3.5 h-3.5 text-slate-400" />
-                          <div>
-                            <span className="block font-semibold text-slate-700 leading-tight">{server.project.projectName}</span>
-                            <span className="text-[10px] text-slate-400 font-medium">{server.project.client.companyName}</span>
+                      </div>
+                      <span className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md border shrink-0 ${expiry.badgeClass}`}>
+                        {expiry.text}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col gap-2.5 text-xs text-slate-500 font-medium">
+                      <div className="flex items-center gap-1.5 text-slate-600">
+                        <Briefcase className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                        <div className="min-w-0">
+                          <span className="block font-semibold text-slate-700 leading-tight truncate">{server.project.projectName}</span>
+                          <span className="text-[10px] text-slate-400 font-medium truncate">{server.project.client.companyName}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 font-mono text-xs">
+                        <Network className="w-3.5 h-3.5 text-slate-300 shrink-0" />
+                        <span>IP: {server.ipAddress}</span>
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                          <span>Expiry: {new Date(server.expiryDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                        </div>
+                        <span className="font-bold text-slate-800">
+                          ₹{server.amount.toLocaleString('en-IN')}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-50">
+                      <button
+                        onClick={() => {
+                          setSelectedServer(server);
+                          setIsViewOpen(true);
+                        }}
+                        className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-blue-600 hover:bg-blue-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                        <span>View</span>
+                      </button>
+                      <button
+                        onClick={() => {
+                          setSelectedServer(server);
+                          setFormError(null);
+                          setIsEditOpen(true);
+                        }}
+                        className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-amber-600 hover:bg-amber-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                        <span>Edit</span>
+                      </button>
+                      <button
+                        onClick={() => handleDelete(server.id)}
+                        className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-red-600 hover:bg-red-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>Delete</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-50/75 border-b border-slate-100 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    <th className="px-6 py-4">Provider</th>
+                    <th className="px-6 py-4">Plan Details</th>
+                    <th className="px-6 py-4">Project / Client</th>
+                    <th className="px-6 py-4">IP Address</th>
+                    <th className="px-6 py-4">Expiry Date</th>
+                    <th className="px-6 py-4">Days Left</th>
+                    <th className="px-6 py-4">Price</th>
+                    <th className="px-6 py-4 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50 text-sm text-slate-700">
+                  {servers.map((server) => {
+                    const expiry = getExpiryDetails(server.expiryDate);
+                    return (
+                      <tr key={server.id} className={`hover:bg-slate-50/50 transition-colors group ${expiry.rowHighlight}`}>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center text-xs font-bold px-2 py-0.5 rounded-lg border ${getProviderBadgeClass(server.provider)}`}>
+                            {server.provider}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                            <Cpu className="w-3.5 h-3.5 text-slate-400" />
+                            {server.planName}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-1 text-slate-600 font-medium">
+                            <Briefcase className="w-3.5 h-3.5 text-slate-400" />
+                            <div>
+                              <span className="block font-semibold text-slate-700 leading-tight">{server.project.projectName}</span>
+                              <span className="text-[10px] text-slate-400 font-medium">{server.project.client.companyName}</span>
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 font-mono text-xs text-slate-500 font-semibold">
-                        <span className="flex items-center gap-1.5">
-                          <Network className="w-3.5 h-3.5 text-slate-300" />
-                          {server.ipAddress}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-xs font-semibold text-slate-500">
-                        {new Date(server.expiryDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md border ${expiry.badgeClass}`}>
-                          {expiry.text}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 font-bold text-slate-800">
-                        ₹{server.amount.toLocaleString('en-IN')}
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            onClick={() => {
-                              setSelectedServer(server);
-                              setIsViewOpen(true);
-                            }}
-                            className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all cursor-pointer"
-                            title="View Server Info"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => {
-                              setSelectedServer(server);
-                              setFormError(null);
-                              setIsEditOpen(true);
-                            }}
-                            className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-all cursor-pointer"
-                            title="Edit Server"
-                          >
-                            <Edit2 className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(server.id)}
-                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
-                            title="Delete Server"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                        </td>
+                        <td className="px-6 py-4 font-mono text-xs text-slate-500 font-semibold">
+                          <span className="flex items-center gap-1.5">
+                            <Network className="w-3.5 h-3.5 text-slate-300" />
+                            {server.ipAddress}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-xs font-semibold text-slate-500">
+                          {new Date(server.expiryDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md border ${expiry.badgeClass}`}>
+                            {expiry.text}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 font-bold text-slate-800">
+                          ₹{server.amount.toLocaleString('en-IN')}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => {
+                                setSelectedServer(server);
+                                setIsViewOpen(true);
+                              }}
+                              className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all cursor-pointer"
+                              title="View Server Info"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => {
+                                setSelectedServer(server);
+                                setFormError(null);
+                                setIsEditOpen(true);
+                              }}
+                              className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-all cursor-pointer"
+                              title="Edit Server"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(server.id)}
+                              className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
+                              title="Delete Server"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         ) : (
           <div className="py-24 text-center max-w-sm mx-auto flex flex-col items-center justify-center">
             <div className="w-12 h-12 rounded-full bg-slate-50 text-slate-300 flex items-center justify-center mb-3">
@@ -365,7 +449,7 @@ export default function ServersPage() {
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Hosting Provider</label>
                   <select
@@ -401,7 +485,7 @@ export default function ServersPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Plan Name</label>
                   <input
@@ -424,7 +508,7 @@ export default function ServersPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Purchase Date</label>
                   <input
@@ -512,7 +596,7 @@ export default function ServersPage() {
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Hosting Provider</label>
                   <select
@@ -543,7 +627,7 @@ export default function ServersPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Plan Name</label>
                   <input
@@ -566,7 +650,7 @@ export default function ServersPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Purchase Date</label>
                   <input

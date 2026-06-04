@@ -342,148 +342,248 @@ export default function ReportsPage() {
             <span className="text-xs font-semibold text-slate-400">Compiling dataset...</span>
           </div>
         ) : reportData.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-50 border-b border-slate-100 text-xs font-bold text-slate-500 uppercase tracking-wider">
+          <>
+            {/* Mobile View Card List */}
+            <div className="block md:hidden divide-y divide-slate-100">
+              {reportData.map((d, index) => (
+                <div key={index} className="p-5 space-y-3.5 hover:bg-slate-50/20 transition-colors text-xs font-semibold text-slate-700">
                   {reportType === 'REVENUE' && (
                     <>
-                      <th className="px-6 py-4">Invoice #</th>
-                      <th className="px-6 py-4">Company Name</th>
-                      <th className="px-6 py-4">Project Workspace</th>
-                      <th className="px-6 py-4">Settlement Date</th>
-                      <th className="px-6 py-4 text-right">Amount</th>
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <span className="font-bold text-slate-800 text-sm block">{d.invoiceNumber}</span>
+                          <span className="text-[10px] text-slate-400 font-bold block mt-0.5">{d.companyName}</span>
+                        </div>
+                        <span className="font-black text-slate-800 text-sm">₹{d.amount.toLocaleString('en-IN')}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-slate-500">
+                        <span>Project: {d.projectName}</span>
+                        <span className="text-[10px] font-medium text-slate-400">Paid: {new Date(d.paidDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                      </div>
                     </>
                   )}
                   {reportType === 'CLIENT' && (
                     <>
-                      <th className="px-6 py-4">Client Contact</th>
-                      <th className="px-6 py-4">Company</th>
-                      <th className="px-6 py-4">Email Address</th>
-                      <th className="px-6 py-4 text-center">Projects</th>
-                      <th className="px-6 py-4 text-right">Total Invoiced Paid</th>
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <span className="font-bold text-slate-800 text-sm block">{d.clientName}</span>
+                          <span className="text-[10px] text-slate-400 font-bold block mt-0.5">{d.companyName}</span>
+                        </div>
+                        <span className="font-black text-emerald-600 text-sm">₹{d.totalSpent.toLocaleString('en-IN')}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-slate-500">
+                        <span className="font-mono text-[10px] text-slate-400 truncate max-w-[180px]">{d.email}</span>
+                        <span className="px-2 py-0.5 rounded-lg bg-slate-50 border border-slate-150 text-[10px] font-bold text-slate-600 shrink-0">{d.totalProjects} Projects</span>
+                      </div>
                     </>
                   )}
                   {reportType === 'DOMAIN' && (
                     <>
-                      <th className="px-6 py-4">Domain Name</th>
-                      <th className="px-6 py-4">Company Name</th>
-                      <th className="px-6 py-4">Registrar</th>
-                      <th className="px-6 py-4">Expiry Date</th>
-                      <th className="px-6 py-4 text-right">Renewal Cost</th>
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <span className="font-bold text-slate-800 text-sm block">{d.domainName}</span>
+                          <span className="text-[10px] text-slate-400 font-bold block mt-0.5">{d.companyName}</span>
+                        </div>
+                        <span className="font-black text-slate-800 text-sm">₹{d.renewalAmount.toLocaleString('en-IN')}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-slate-500">
+                        <span>Registrar: {d.registrar}</span>
+                        <span className="text-[10px] font-medium text-slate-400">Expires: {new Date(d.expiryDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                      </div>
                     </>
                   )}
                   {reportType === 'SERVER' && (
                     <>
-                      <th className="px-6 py-4">Provider</th>
-                      <th className="px-6 py-4">Plan Name</th>
-                      <th className="px-6 py-4">IP Address</th>
-                      <th className="px-6 py-4">Project</th>
-                      <th className="px-6 py-4 text-right font-bold">Cost</th>
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <span className="font-bold text-slate-800 text-sm block">{d.provider} ({d.planName})</span>
+                          <span className="font-mono text-[10px] text-slate-400 block mt-0.5">{d.ipAddress}</span>
+                        </div>
+                        <span className="font-black text-slate-800 text-sm">₹{d.amount.toLocaleString('en-IN')}</span>
+                      </div>
+                      <div className="text-slate-500 truncate max-w-full">
+                        <span>Project: {d.projectName}</span>
+                      </div>
                     </>
                   )}
                   {reportType === 'AMC' && (
                     <>
-                      <th className="px-6 py-4">Project Name</th>
-                      <th className="px-6 py-4">Company Name</th>
-                      <th className="px-6 py-4">Start / End Dates</th>
-                      <th className="px-6 py-4">Billing Cycle</th>
-                      <th className="px-6 py-4 text-right">AMC Amount</th>
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <span className="font-bold text-slate-800 text-sm block">{d.projectName}</span>
+                          <span className="text-[10px] text-slate-400 font-bold block mt-0.5">{d.companyName}</span>
+                        </div>
+                        <span className="font-black text-slate-800 text-sm">₹{d.amount.toLocaleString('en-IN')}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-slate-500">
+                        <span className="px-2 py-0.5 rounded-lg bg-slate-50 border border-slate-150 text-[10px] font-bold text-slate-600">{d.renewalCycle}</span>
+                        <span className="text-[10px] font-medium text-slate-400">{new Date(d.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} - {new Date(d.endDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                      </div>
                     </>
                   )}
                   {reportType === 'PENDING' && (
                     <>
-                      <th className="px-6 py-4">Invoice Number</th>
-                      <th className="px-6 py-4">Company Name</th>
-                      <th className="px-6 py-4">Project Workspace</th>
-                      <th className="px-6 py-4">Due Date</th>
-                      <th className="px-6 py-4 text-right">Pending Amount</th>
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <span className="font-bold text-rose-600 text-sm block">{d.invoiceNumber}</span>
+                          <span className="text-[10px] text-slate-400 font-bold block mt-0.5">{d.companyName}</span>
+                        </div>
+                        <span className="font-black text-rose-600 text-sm">₹{d.amount.toLocaleString('en-IN')}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-slate-500">
+                        <span>Project: {d.projectName}</span>
+                        <span className="text-[10px] font-bold text-rose-500 flex items-center gap-1">Due {new Date(d.dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                      </div>
                     </>
                   )}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50 text-xs sm:text-sm text-slate-700 font-semibold">
-                {reportData.map((d, index) => (
-                  <tr key={index} className="hover:bg-slate-50/20 transition-colors">
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-50 border-b border-slate-100 text-xs font-bold text-slate-500 uppercase tracking-wider">
                     {reportType === 'REVENUE' && (
                       <>
-                        <td className="px-6 py-4 font-bold text-slate-800">{d.invoiceNumber}</td>
-                        <td className="px-6 py-4 text-slate-500">{d.companyName}</td>
-                        <td className="px-6 py-4 text-slate-500">{d.projectName}</td>
-                        <td className="px-6 py-4 text-slate-400">
-                          {new Date(d.paidDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                        </td>
-                        <td className="px-6 py-4 text-right font-bold text-slate-800">
-                          ₹{d.amount.toLocaleString('en-IN')}
-                        </td>
+                        <th className="px-6 py-4">Invoice #</th>
+                        <th className="px-6 py-4">Company Name</th>
+                        <th className="px-6 py-4">Project Workspace</th>
+                        <th className="px-6 py-4">Settlement Date</th>
+                        <th className="px-6 py-4 text-right">Amount</th>
                       </>
                     )}
                     {reportType === 'CLIENT' && (
                       <>
-                        <td className="px-6 py-4 font-bold text-slate-800">{d.clientName}</td>
-                        <td className="px-6 py-4 text-slate-500">{d.companyName}</td>
-                        <td className="px-6 py-4 text-slate-400 font-mono">{d.email}</td>
-                        <td className="px-6 py-4 text-center text-slate-600">{d.totalProjects}</td>
-                        <td className="px-6 py-4 text-right font-bold text-emerald-600">
-                          ₹{d.totalSpent.toLocaleString('en-IN')}
-                        </td>
+                        <th className="px-6 py-4">Client Contact</th>
+                        <th className="px-6 py-4">Company</th>
+                        <th className="px-6 py-4">Email Address</th>
+                        <th className="px-6 py-4 text-center">Projects</th>
+                        <th className="px-6 py-4 text-right">Total Invoiced Paid</th>
                       </>
                     )}
                     {reportType === 'DOMAIN' && (
                       <>
-                        <td className="px-6 py-4 font-bold text-slate-800">{d.domainName}</td>
-                        <td className="px-6 py-4 text-slate-500">{d.companyName}</td>
-                        <td className="px-6 py-4 text-slate-500">{d.registrar}</td>
-                        <td className="px-6 py-4 text-slate-400">
-                          {new Date(d.expiryDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                        </td>
-                        <td className="px-6 py-4 text-right font-bold text-slate-800">
-                          ₹{d.renewalAmount.toLocaleString('en-IN')}
-                        </td>
+                        <th className="px-6 py-4">Domain Name</th>
+                        <th className="px-6 py-4">Company Name</th>
+                        <th className="px-6 py-4">Registrar</th>
+                        <th className="px-6 py-4">Expiry Date</th>
+                        <th className="px-6 py-4 text-right">Renewal Cost</th>
                       </>
                     )}
                     {reportType === 'SERVER' && (
                       <>
-                        <td className="px-6 py-4 font-bold text-slate-800">{d.provider}</td>
-                        <td className="px-6 py-4 text-slate-600">{d.planName}</td>
-                        <td className="px-6 py-4 text-slate-500 font-mono">{d.ipAddress}</td>
-                        <td className="px-6 py-4 text-slate-500">{d.projectName}</td>
-                        <td className="px-6 py-4 text-right font-bold text-slate-800">
-                          ₹{d.amount.toLocaleString('en-IN')}
-                        </td>
+                        <th className="px-6 py-4">Provider</th>
+                        <th className="px-6 py-4">Plan Name</th>
+                        <th className="px-6 py-4">IP Address</th>
+                        <th className="px-6 py-4">Project</th>
+                        <th className="px-6 py-4 text-right font-bold">Cost</th>
                       </>
                     )}
                     {reportType === 'AMC' && (
                       <>
-                        <td className="px-6 py-4 font-bold text-slate-800">{d.projectName}</td>
-                        <td className="px-6 py-4 text-slate-500">{d.companyName}</td>
-                        <td className="px-6 py-4 text-slate-400">
-                          {new Date(d.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} - {new Date(d.endDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                        </td>
-                        <td className="px-6 py-4 text-slate-500">{d.renewalCycle}</td>
-                        <td className="px-6 py-4 text-right font-bold text-slate-800">
-                          ₹{d.amount.toLocaleString('en-IN')}
-                        </td>
+                        <th className="px-6 py-4">Project Name</th>
+                        <th className="px-6 py-4">Company Name</th>
+                        <th className="px-6 py-4">Start / End Dates</th>
+                        <th className="px-6 py-4">Billing Cycle</th>
+                        <th className="px-6 py-4 text-right">AMC Amount</th>
                       </>
                     )}
                     {reportType === 'PENDING' && (
                       <>
-                        <td className="px-6 py-4 font-bold text-rose-600">{d.invoiceNumber}</td>
-                        <td className="px-6 py-4 text-slate-500">{d.companyName}</td>
-                        <td className="px-6 py-4 text-slate-500">{d.projectName}</td>
-                        <td className="px-6 py-4 text-slate-400">
-                          {new Date(d.dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                        </td>
-                        <td className="px-6 py-4 text-right font-bold text-rose-600">
-                          ₹{d.amount.toLocaleString('en-IN')}
-                        </td>
+                        <th className="px-6 py-4">Invoice Number</th>
+                        <th className="px-6 py-4">Company Name</th>
+                        <th className="px-6 py-4">Project Workspace</th>
+                        <th className="px-6 py-4">Due Date</th>
+                        <th className="px-6 py-4 text-right">Pending Amount</th>
                       </>
                     )}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-slate-50 text-xs sm:text-sm text-slate-700 font-semibold">
+                  {reportData.map((d, index) => (
+                    <tr key={index} className="hover:bg-slate-50/20 transition-colors">
+                      {reportType === 'REVENUE' && (
+                        <>
+                          <td className="px-6 py-4 font-bold text-slate-800">{d.invoiceNumber}</td>
+                          <td className="px-6 py-4 text-slate-500">{d.companyName}</td>
+                          <td className="px-6 py-4 text-slate-500">{d.projectName}</td>
+                          <td className="px-6 py-4 text-slate-400">
+                            {new Date(d.paidDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                          </td>
+                          <td className="px-6 py-4 text-right font-bold text-slate-800">
+                            ₹{d.amount.toLocaleString('en-IN')}
+                          </td>
+                        </>
+                      )}
+                      {reportType === 'CLIENT' && (
+                        <>
+                          <td className="px-6 py-4 font-bold text-slate-800">{d.clientName}</td>
+                          <td className="px-6 py-4 text-slate-500">{d.companyName}</td>
+                          <td className="px-6 py-4 text-slate-400 font-mono">{d.email}</td>
+                          <td className="px-6 py-4 text-center text-slate-600">{d.totalProjects}</td>
+                          <td className="px-6 py-4 text-right font-bold text-emerald-600">
+                            ₹{d.totalSpent.toLocaleString('en-IN')}
+                          </td>
+                        </>
+                      )}
+                      {reportType === 'DOMAIN' && (
+                        <>
+                          <td className="px-6 py-4 font-bold text-slate-800">{d.domainName}</td>
+                          <td className="px-6 py-4 text-slate-500">{d.companyName}</td>
+                          <td className="px-6 py-4 text-slate-500">{d.registrar}</td>
+                          <td className="px-6 py-4 text-slate-400">
+                            {new Date(d.expiryDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                          </td>
+                          <td className="px-6 py-4 text-right font-bold text-slate-800">
+                            ₹{d.renewalAmount.toLocaleString('en-IN')}
+                          </td>
+                        </>
+                      )}
+                      {reportType === 'SERVER' && (
+                        <>
+                          <td className="px-6 py-4 font-bold text-slate-800">{d.provider}</td>
+                          <td className="px-6 py-4 text-slate-600">{d.planName}</td>
+                          <td className="px-6 py-4 text-slate-500 font-mono">{d.ipAddress}</td>
+                          <td className="px-6 py-4 text-slate-500">{d.projectName}</td>
+                          <td className="px-6 py-4 text-right font-bold text-slate-800">
+                            ₹{d.amount.toLocaleString('en-IN')}
+                          </td>
+                        </>
+                      )}
+                      {reportType === 'AMC' && (
+                        <>
+                          <td className="px-6 py-4 font-bold text-slate-800">{d.projectName}</td>
+                          <td className="px-6 py-4 text-slate-500">{d.companyName}</td>
+                          <td className="px-6 py-4 text-slate-400">
+                            {new Date(d.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} - {new Date(d.endDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                          </td>
+                          <td className="px-6 py-4 text-slate-500">{d.renewalCycle}</td>
+                          <td className="px-6 py-4 text-right font-bold text-slate-800">
+                            ₹{d.amount.toLocaleString('en-IN')}
+                          </td>
+                        </>
+                      )}
+                      {reportType === 'PENDING' && (
+                        <>
+                          <td className="px-6 py-4 font-bold text-rose-600">{d.invoiceNumber}</td>
+                          <td className="px-6 py-4 text-slate-500">{d.companyName}</td>
+                          <td className="px-6 py-4 text-slate-500">{d.projectName}</td>
+                          <td className="px-6 py-4 text-slate-400">
+                            {new Date(d.dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                          </td>
+                          <td className="px-6 py-4 text-right font-bold text-rose-600">
+                            ₹{d.amount.toLocaleString('en-IN')}
+                          </td>
+                        </>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         ) : (
           <div className="py-24 text-center max-w-sm mx-auto flex flex-col items-center justify-center">
             <div className="w-12 h-12 rounded-full bg-slate-50 text-slate-300 flex items-center justify-center mb-3">

@@ -242,107 +242,202 @@ export default function DomainsPage() {
             <span className="text-xs font-semibold text-slate-400">Loading domains...</span>
           </div>
         ) : domains.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-50/75 border-b border-slate-100 text-xs font-bold text-slate-500 uppercase tracking-wider">
-                  <th className="px-6 py-4">Domain Name</th>
-                  <th className="px-6 py-4">Project / Client</th>
-                  <th className="px-6 py-4">Registrar</th>
-                  <th className="px-6 py-4">Expiry Date</th>
-                  <th className="px-6 py-4">Days Left</th>
-                  <th className="px-6 py-4">Renewal Cost</th>
-                  <th className="px-6 py-4 text-center">Auto-Renew</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50 text-sm text-slate-700">
-                {domains.map((domain) => {
-                  const expiry = getExpiryDetails(domain.expiryDate);
-                  return (
-                    <tr key={domain.id} className={`hover:bg-slate-50/50 transition-colors group ${expiry.rowHighlight}`}>
-                      <td className="px-6 py-4">
-                        <span className="font-bold text-slate-800 flex items-center gap-1.5">
-                          <Globe className="w-3.5 h-3.5 text-slate-400" />
+          <>
+            {/* Mobile View Card List */}
+            <div className="block md:hidden divide-y divide-slate-100">
+              {domains.map((domain) => {
+                const expiry = getExpiryDetails(domain.expiryDate);
+                return (
+                  <div key={domain.id} className={`p-5 space-y-4 hover:bg-slate-50/50 transition-colors ${expiry.rowHighlight}`}>
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="min-w-0">
+                        <span className="font-bold text-slate-800 text-sm block truncate flex items-center gap-1.5">
+                          <Globe className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                           {domain.domainName}
                         </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-1 text-slate-600 font-medium">
-                          <Briefcase className="w-3.5 h-3.5 text-slate-400" />
-                          <div>
-                            <span className="block font-semibold text-slate-700 leading-tight">{domain.project.projectName}</span>
-                            <span className="text-[10px] text-slate-400 font-medium">{domain.project.client.companyName}</span>
-                          </div>
+                        <span className="text-xs text-slate-400 font-medium block truncate max-w-[200px] mt-0.5">
+                          Registrar: {domain.registrar}
+                        </span>
+                      </div>
+                      <span className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md border shrink-0 ${expiry.badgeClass}`}>
+                        {expiry.text}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col gap-2.5 text-xs text-slate-500 font-medium">
+                      <div className="flex items-center gap-1.5 text-slate-600">
+                        <Briefcase className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                        <div className="min-w-0">
+                          <span className="block font-semibold text-slate-700 leading-tight truncate">{domain.project.projectName}</span>
+                          <span className="text-[10px] text-slate-400 font-medium truncate">{domain.project.client.companyName}</span>
                         </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="text-slate-500 font-medium text-xs">{domain.registrar}</span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="text-slate-500 font-medium text-xs">
-                          {new Date(domain.expiryDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                          <span>Expiry: {new Date(domain.expiryDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                        </div>
+                        <span className="font-bold text-slate-800">
+                          ₹{domain.renewalAmount.toLocaleString('en-IN')}
                         </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md border ${expiry.badgeClass}`}>
-                          {expiry.text}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 font-bold text-slate-800">
-                        ₹{domain.renewalAmount.toLocaleString('en-IN')}
-                      </td>
-                      <td className="px-6 py-4 text-center">
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-4 pt-2 border-t border-slate-50">
+                      <div>
                         {domain.autoRenew ? (
-                          <span className="inline-flex items-center gap-1 text-xs text-emerald-600 font-bold bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-lg">
-                            <Zap className="w-3 h-3" />
-                            <span>ON</span>
+                          <span className="inline-flex items-center gap-1 text-[10px] text-emerald-600 font-bold bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-lg">
+                            <Zap className="w-2.5 h-2.5" />
+                            <span>AUTO ON</span>
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 text-xs text-slate-400 font-bold bg-slate-50 border border-slate-100 px-2 py-0.5 rounded-lg">
-                            <ZapOff className="w-3 h-3" />
-                            <span>OFF</span>
+                          <span className="inline-flex items-center gap-1 text-[10px] text-slate-400 font-bold bg-slate-50 border border-slate-100 px-2 py-0.5 rounded-lg">
+                            <ZapOff className="w-2.5 h-2.5" />
+                            <span>AUTO OFF</span>
                           </span>
                         )}
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            onClick={() => {
-                              setSelectedDomain(domain);
-                              setIsViewOpen(true);
-                            }}
-                            className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all cursor-pointer"
-                            title="View Domain Info"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => {
-                              setSelectedDomain(domain);
-                              setFormError(null);
-                              setIsEditOpen(true);
-                            }}
-                            className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-all cursor-pointer"
-                            title="Edit Domain"
-                          >
-                            <Edit2 className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(domain.id)}
-                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
-                            title="Delete Domain"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => {
+                            setSelectedDomain(domain);
+                            setIsViewOpen(true);
+                          }}
+                          className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-blue-600 hover:bg-blue-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>View</span>
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedDomain(domain);
+                            setFormError(null);
+                            setIsEditOpen(true);
+                          }}
+                          className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-amber-600 hover:bg-amber-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                          <span>Edit</span>
+                        </button>
+                        <button
+                          onClick={() => handleDelete(domain.id)}
+                          className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-red-600 hover:bg-red-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>Delete</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-50/75 border-b border-slate-100 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    <th className="px-6 py-4">Domain Name</th>
+                    <th className="px-6 py-4">Project / Client</th>
+                    <th className="px-6 py-4">Registrar</th>
+                    <th className="px-6 py-4">Expiry Date</th>
+                    <th className="px-6 py-4">Days Left</th>
+                    <th className="px-6 py-4">Renewal Cost</th>
+                    <th className="px-6 py-4 text-center">Auto-Renew</th>
+                    <th className="px-6 py-4 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50 text-sm text-slate-700">
+                  {domains.map((domain) => {
+                    const expiry = getExpiryDetails(domain.expiryDate);
+                    return (
+                      <tr key={domain.id} className={`hover:bg-slate-50/50 transition-colors group ${expiry.rowHighlight}`}>
+                        <td className="px-6 py-4">
+                          <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                            <Globe className="w-3.5 h-3.5 text-slate-400" />
+                            {domain.domainName}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-1 text-slate-600 font-medium">
+                            <Briefcase className="w-3.5 h-3.5 text-slate-400" />
+                            <div>
+                              <span className="block font-semibold text-slate-700 leading-tight">{domain.project.projectName}</span>
+                              <span className="text-[10px] text-slate-400 font-medium">{domain.project.client.companyName}</span>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="text-slate-500 font-medium text-xs">{domain.registrar}</span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="text-slate-500 font-medium text-xs">
+                            {new Date(domain.expiryDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md border ${expiry.badgeClass}`}>
+                            {expiry.text}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 font-bold text-slate-800">
+                          ₹{domain.renewalAmount.toLocaleString('en-IN')}
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          {domain.autoRenew ? (
+                            <span className="inline-flex items-center gap-1 text-xs text-emerald-600 font-bold bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-lg">
+                              <Zap className="w-3 h-3" />
+                              <span>ON</span>
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 text-xs text-slate-400 font-bold bg-slate-50 border border-slate-100 px-2 py-0.5 rounded-lg">
+                              <ZapOff className="w-3 h-3" />
+                              <span>OFF</span>
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => {
+                                setSelectedDomain(domain);
+                                setIsViewOpen(true);
+                              }}
+                              className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all cursor-pointer"
+                              title="View Domain Info"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => {
+                                setSelectedDomain(domain);
+                                setFormError(null);
+                                setIsEditOpen(true);
+                              }}
+                              className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-all cursor-pointer"
+                              title="Edit Domain"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(domain.id)}
+                              className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
+                              title="Delete Domain"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         ) : (
           <div className="py-24 text-center max-w-sm mx-auto flex flex-col items-center justify-center">
             <div className="w-12 h-12 rounded-full bg-slate-50 text-slate-300 flex items-center justify-center mb-3">
@@ -386,7 +481,7 @@ export default function DomainsPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Project Link</label>
                   {projects.length > 0 ? (
@@ -420,7 +515,7 @@ export default function DomainsPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Purchase Date</label>
                   <input
@@ -441,7 +536,7 @@ export default function DomainsPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Renewal Price (₹)</label>
                   <input
@@ -547,7 +642,7 @@ export default function DomainsPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Project Link</label>
                   <select
@@ -575,7 +670,7 @@ export default function DomainsPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Purchase Date</label>
                   <input
@@ -598,7 +693,7 @@ export default function DomainsPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Renewal Price (₹)</label>
                   <input

@@ -248,94 +248,170 @@ export default function InvoicesPage() {
             <span className="text-xs font-semibold text-slate-400">Loading invoices...</span>
           </div>
         ) : invoices.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-50/75 border-b border-slate-100 text-xs font-bold text-slate-500 uppercase tracking-wider">
-                  <th className="px-6 py-4">Invoice #</th>
-                  <th className="px-6 py-4">Client Company</th>
-                  <th className="px-6 py-4">Project</th>
-                  <th className="px-6 py-4">Due Date</th>
-                  <th className="px-6 py-4">Amount</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50 text-sm text-slate-700">
-                {invoices.map((invoice) => (
-                  <tr key={invoice.id} className="hover:bg-slate-50/50 transition-colors group">
-                    <td className="px-6 py-4">
-                      <span className="font-bold text-slate-800 block flex items-center gap-1">
-                        <Receipt className="w-3.5 h-3.5 text-slate-400" />
+          <>
+            {/* Mobile View Card List */}
+            <div className="block md:hidden divide-y divide-slate-100">
+              {invoices.map((invoice) => (
+                <div key={invoice.id} className="p-5 space-y-4 hover:bg-slate-50/50 transition-colors">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <span className="font-bold text-slate-800 text-sm block truncate flex items-center gap-1">
+                        <Receipt className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                         {invoice.invoiceNumber}
                       </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-1.5 text-slate-600 font-medium">
-                        <Building className="w-3.5 h-3.5 text-slate-400" />
-                        <div>
-                          <span className="block font-bold text-slate-800 leading-tight">{invoice.client.companyName}</span>
-                          <span className="text-[10px] text-slate-400 font-semibold">{invoice.client.name}</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 font-semibold text-slate-700">
-                      <span className="flex items-center gap-1">
-                        <Briefcase className="w-3.5 h-3.5 text-slate-400" />
-                        {invoice.project.projectName}
+                      <span className="text-[10px] text-slate-400 font-semibold block mt-0.5 truncate max-w-[200px]">
+                        Project: {invoice.project.projectName}
                       </span>
-                    </td>
-                    <td className="px-6 py-4 text-xs font-semibold text-slate-500">
-                      <div className="flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5 text-slate-400" />
-                        <span>{new Date(invoice.dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                    </div>
+                    <span className={`inline-flex items-center text-[10px] px-2 py-0.5 rounded-full border shrink-0 ${getStatusBadgeClass(invoice.status)}`}>
+                      {invoice.status}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col gap-2.5 text-xs text-slate-500 font-medium">
+                    <div className="flex items-center gap-1.5 text-slate-600">
+                      <Building className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <div className="min-w-0">
+                        <span className="block font-bold text-slate-800 leading-tight truncate">{invoice.client.companyName}</span>
+                        <span className="text-[10px] text-slate-400 font-semibold truncate">{invoice.client.name}</span>
                       </div>
-                    </td>
-                    <td className="px-6 py-4 font-bold text-slate-800">
-                      ₹{invoice.amount.toLocaleString('en-IN')}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center text-[10px] px-2 py-0.5 rounded-full border ${getStatusBadgeClass(invoice.status)}`}>
-                        {invoice.status}
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                        <span>Due: {new Date(invoice.dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                      </div>
+                      <span className="font-bold text-slate-800">
+                        ₹{invoice.amount.toLocaleString('en-IN')}
                       </span>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => {
-                            setSelectedInvoice(invoice);
-                            setIsViewOpen(true);
-                          }}
-                          className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all cursor-pointer"
-                          title="View Invoice Sheet"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => {
-                            setSelectedInvoice(invoice);
-                            setFormError(null);
-                            setIsEditOpen(true);
-                          }}
-                          className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-all cursor-pointer"
-                          title="Edit Invoice"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(invoice.id)}
-                          className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
-                          title="Delete Invoice"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-50">
+                    <button
+                      onClick={() => {
+                        setSelectedInvoice(invoice);
+                        setIsViewOpen(true);
+                      }}
+                      className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-blue-600 hover:bg-blue-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>View</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSelectedInvoice(invoice);
+                        setFormError(null);
+                        setIsEditOpen(true);
+                      }}
+                      className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-amber-600 hover:bg-amber-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                      <span>Edit</span>
+                    </button>
+                    <button
+                      onClick={() => handleDelete(invoice.id)}
+                      className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-red-600 hover:bg-red-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Delete</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-50/75 border-b border-slate-100 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    <th className="px-6 py-4">Invoice #</th>
+                    <th className="px-6 py-4">Client Company</th>
+                    <th className="px-6 py-4">Project</th>
+                    <th className="px-6 py-4">Due Date</th>
+                    <th className="px-6 py-4">Amount</th>
+                    <th className="px-6 py-4">Status</th>
+                    <th className="px-6 py-4 text-right">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-slate-50 text-sm text-slate-700">
+                  {invoices.map((invoice) => (
+                    <tr key={invoice.id} className="hover:bg-slate-50/50 transition-colors group">
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-slate-800 block flex items-center gap-1">
+                          <Receipt className="w-3.5 h-3.5 text-slate-400" />
+                          {invoice.invoiceNumber}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-1.5 text-slate-600 font-medium">
+                          <Building className="w-3.5 h-3.5 text-slate-400" />
+                          <div>
+                            <span className="block font-bold text-slate-800 leading-tight">{invoice.client.companyName}</span>
+                            <span className="text-[10px] text-slate-400 font-semibold">{invoice.client.name}</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 font-semibold text-slate-700">
+                        <span className="flex items-center gap-1">
+                          <Briefcase className="w-3.5 h-3.5 text-slate-400" />
+                          {invoice.project.projectName}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-xs font-semibold text-slate-500">
+                        <div className="flex items-center gap-1">
+                          <Clock className="w-3.5 h-3.5 text-slate-400" />
+                          <span>{new Date(invoice.dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 font-bold text-slate-800">
+                        ₹{invoice.amount.toLocaleString('en-IN')}
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center text-[10px] px-2 py-0.5 rounded-full border ${getStatusBadgeClass(invoice.status)}`}>
+                          {invoice.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => {
+                              setSelectedInvoice(invoice);
+                              setIsViewOpen(true);
+                            }}
+                            className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all cursor-pointer"
+                            title="View Invoice Sheet"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => {
+                              setSelectedInvoice(invoice);
+                              setFormError(null);
+                              setIsEditOpen(true);
+                            }}
+                            className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-all cursor-pointer"
+                            title="Edit Invoice"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(invoice.id)}
+                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
+                            title="Delete Invoice"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         ) : (
           <div className="py-24 text-center max-w-sm mx-auto flex flex-col items-center justify-center">
             <div className="w-12 h-12 rounded-full bg-slate-50 text-slate-300 flex items-center justify-center mb-3">
@@ -380,7 +456,7 @@ export default function InvoicesPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Select Client</label>
                   {clients.length > 0 ? (
@@ -425,7 +501,7 @@ export default function InvoicesPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Invoice Date</label>
                   <input
@@ -447,7 +523,7 @@ export default function InvoicesPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Amount (₹)</label>
                   <input
@@ -540,7 +616,7 @@ export default function InvoicesPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Select Client</label>
                   <select
@@ -573,7 +649,7 @@ export default function InvoicesPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Invoice Date</label>
                   <input
@@ -596,7 +672,7 @@ export default function InvoicesPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Amount (₹)</label>
                   <input
@@ -709,7 +785,7 @@ export default function InvoicesPage() {
               </div>
 
               {/* Client details / Project details info block */}
-              <div className="grid grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="p-4 bg-slate-50/70 border border-slate-100 rounded-xl">
                   <span className="text-[10px] text-slate-400 font-black uppercase tracking-wider block mb-2">
                     Billed To

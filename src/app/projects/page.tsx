@@ -190,83 +190,152 @@ export default function ProjectsPage() {
             <span className="text-xs font-semibold text-slate-400">Loading projects...</span>
           </div>
         ) : projects.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-50/75 border-b border-slate-100 text-xs font-bold text-slate-500 uppercase tracking-wider">
-                  <th className="px-6 py-4">Project Name</th>
-                  <th className="px-6 py-4">Client</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4">Created Date</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50 text-sm text-slate-700">
-                {projects.map((project) => (
-                  <tr key={project.id} className="hover:bg-slate-50/50 transition-colors group">
-                    <td className="px-6 py-4">
-                      <span className="font-bold text-slate-800 block">{project.projectName}</span>
+          <>
+            {/* Mobile View Card List */}
+            <div className="block md:hidden divide-y divide-slate-100">
+              {projects.map((project) => (
+                <div key={project.id} className="p-5 space-y-4 hover:bg-slate-50/50 transition-colors">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <span className="font-bold text-slate-800 text-sm block truncate">{project.projectName}</span>
                       {project.description && (
-                        <span className="text-xs text-slate-400 truncate max-w-[200px] block mt-0.5 font-medium">{project.description}</span>
+                        <span className="text-xs text-slate-400 block mt-0.5 truncate max-w-[220px]">
+                          {project.description}
+                        </span>
                       )}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-1.5 text-slate-600 font-medium">
-                        <Building className="w-3.5 h-3.5 text-slate-400" />
-                        <div>
-                          <span className="block font-semibold text-slate-700 leading-tight">{project.client.companyName}</span>
-                          <span className="text-[10px] text-slate-400 font-medium">{project.client.name}</span>
-                        </div>
+                    </div>
+                    <span className={`inline-flex items-center text-[10px] font-bold px-2.5 py-0.5 rounded-full border shrink-0 ${getStatusBadgeClass(project.status)}`}>
+                      {project.status}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col gap-2.5 text-xs text-slate-500 font-medium">
+                    <div className="flex items-center gap-1.5 text-slate-600">
+                      <Building className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <div className="min-w-0">
+                        <span className="block font-semibold text-slate-700 leading-tight truncate">{project.client.companyName}</span>
+                        <span className="text-[10px] text-slate-400 font-medium truncate">{project.client.name}</span>
                       </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center text-xs font-bold px-2.5 py-1 rounded-full border ${getStatusBadgeClass(project.status)}`}>
-                        {project.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-1.5 text-slate-500 text-xs font-medium">
-                        <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                        <span>{new Date(project.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => {
-                            setSelectedProject(project);
-                            setIsViewOpen(true);
-                          }}
-                          className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all cursor-pointer"
-                          title="View Details"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => {
-                            setSelectedProject(project);
-                            setFormError(null);
-                            setIsEditOpen(true);
-                          }}
-                          className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-all cursor-pointer"
-                          title="Edit Project"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(project.id)}
-                          className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
-                          title="Delete Project"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <span>{new Date(project.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-50">
+                    <button
+                      onClick={() => {
+                        setSelectedProject(project);
+                        setIsViewOpen(true);
+                      }}
+                      className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-blue-600 hover:bg-blue-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>View</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSelectedProject(project);
+                        setFormError(null);
+                        setIsEditOpen(true);
+                      }}
+                      className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-amber-600 hover:bg-amber-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                      <span>Edit</span>
+                    </button>
+                    <button
+                      onClick={() => handleDelete(project.id)}
+                      className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-red-600 hover:bg-red-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Delete</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-50/75 border-b border-slate-100 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    <th className="px-6 py-4">Project Name</th>
+                    <th className="px-6 py-4">Client</th>
+                    <th className="px-6 py-4">Status</th>
+                    <th className="px-6 py-4">Created Date</th>
+                    <th className="px-6 py-4 text-right">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-slate-50 text-sm text-slate-700">
+                  {projects.map((project) => (
+                    <tr key={project.id} className="hover:bg-slate-50/50 transition-colors group">
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-slate-800 block">{project.projectName}</span>
+                        {project.description && (
+                          <span className="text-xs text-slate-400 truncate max-w-[200px] block mt-0.5 font-medium">{project.description}</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-1.5 text-slate-600 font-medium">
+                          <Building className="w-3.5 h-3.5 text-slate-400" />
+                          <div>
+                            <span className="block font-semibold text-slate-700 leading-tight">{project.client.companyName}</span>
+                            <span className="text-[10px] text-slate-400 font-medium">{project.client.name}</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center text-xs font-bold px-2.5 py-1 rounded-full border ${getStatusBadgeClass(project.status)}`}>
+                          {project.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-1.5 text-slate-500 text-xs font-medium">
+                          <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                          <span>{new Date(project.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => {
+                              setSelectedProject(project);
+                              setIsViewOpen(true);
+                            }}
+                            className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all cursor-pointer"
+                            title="View Details"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => {
+                              setSelectedProject(project);
+                              setFormError(null);
+                              setIsEditOpen(true);
+                            }}
+                            className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-all cursor-pointer"
+                            title="Edit Project"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(project.id)}
+                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
+                            title="Delete Project"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         ) : (
           <div className="py-24 text-center max-w-sm mx-auto flex flex-col items-center justify-center">
             <div className="w-12 h-12 rounded-full bg-slate-50 text-slate-300 flex items-center justify-center mb-3">

@@ -166,86 +166,155 @@ export default function ClientsPage() {
             <span className="text-xs font-semibold text-slate-400">Loading clients...</span>
           </div>
         ) : clients.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-50/75 border-b border-slate-100 text-xs font-bold text-slate-500 uppercase tracking-wider">
-                  <th className="px-6 py-4">Client Name</th>
-                  <th className="px-6 py-4">Company</th>
-                  <th className="px-6 py-4">Contact Info</th>
-                  <th className="px-6 py-4 text-center">Total Projects</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50 text-sm text-slate-700">
-                {clients.map((client) => (
-                  <tr key={client.id} className="hover:bg-slate-50/50 transition-colors group">
-                    <td className="px-6 py-4">
-                      <span className="font-bold text-slate-800 block">{client.name}</span>
-                      {client.gstNo && (
-                        <span className="text-[10px] text-slate-400 font-semibold uppercase mt-0.5 block">GST: {client.gstNo}</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-1.5 text-slate-600 font-medium">
-                        <Building className="w-3.5 h-3.5 text-slate-400" />
-                        <span>{client.companyName}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex flex-col gap-0.5">
-                        <span className="flex items-center gap-1 text-slate-500 text-xs">
-                          <Mail className="w-3.5 h-3.5 text-slate-400" />
-                          {client.email}
-                        </span>
-                        <span className="flex items-center gap-1 text-slate-500 text-xs">
-                          <Phone className="w-3.5 h-3.5 text-slate-400" />
-                          {client.phone}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-slate-50 border border-slate-100 text-xs font-bold text-slate-600">
-                        {client._count?.projects || 0}
+          <>
+            {/* Mobile View Card List */}
+            <div className="block md:hidden divide-y divide-slate-100">
+              {clients.map((client) => (
+                <div key={client.id} className="p-5 space-y-4 hover:bg-slate-50/50 transition-colors">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <span className="font-bold text-slate-800 text-sm block truncate">{client.name}</span>
+                      <span className="text-[10px] text-slate-400 font-semibold block uppercase tracking-tight mt-0.5 truncate">
+                        {client.companyName}
                       </span>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => {
-                            setSelectedClient(client);
-                            setIsViewOpen(true);
-                          }}
-                          className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all cursor-pointer"
-                          title="View Client"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => {
-                            setSelectedClient(client);
-                            setFormError(null);
-                            setIsEditOpen(true);
-                          }}
-                          className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-all cursor-pointer"
-                          title="Edit Client"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(client.id)}
-                          className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
-                          title="Delete Client"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
+                      {client.gstNo && (
+                        <span className="text-[9px] text-slate-400 font-semibold uppercase mt-1 block">
+                          GST: {client.gstNo}
+                        </span>
+                      )}
+                    </div>
+                    <span className="inline-flex items-center justify-center px-2 py-1 rounded-lg bg-slate-50 border border-slate-150 text-[10px] font-bold text-slate-600 shrink-0">
+                      {client._count?.projects || 0} Projects
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col gap-1.5 text-xs text-slate-500 font-medium">
+                    <span className="flex items-center gap-2">
+                      <Mail className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <span className="truncate">{client.email}</span>
+                    </span>
+                    <span className="flex items-center gap-2">
+                      <Phone className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <span>{client.phone}</span>
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-50">
+                    <button
+                      onClick={() => {
+                        setSelectedClient(client);
+                        setIsViewOpen(true);
+                      }}
+                      className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-blue-600 hover:bg-blue-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>View</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSelectedClient(client);
+                        setFormError(null);
+                        setIsEditOpen(true);
+                      }}
+                      className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-amber-600 hover:bg-amber-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                      <span>Edit</span>
+                    </button>
+                    <button
+                      onClick={() => handleDelete(client.id)}
+                      className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-red-600 hover:bg-red-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Delete</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-50/75 border-b border-slate-100 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    <th className="px-6 py-4">Client Name</th>
+                    <th className="px-6 py-4">Company</th>
+                    <th className="px-6 py-4">Contact Info</th>
+                    <th className="px-6 py-4 text-center">Total Projects</th>
+                    <th className="px-6 py-4 text-right">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-slate-50 text-sm text-slate-700">
+                  {clients.map((client) => (
+                    <tr key={client.id} className="hover:bg-slate-50/50 transition-colors group">
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-slate-800 block">{client.name}</span>
+                        {client.gstNo && (
+                          <span className="text-[10px] text-slate-400 font-semibold uppercase mt-0.5 block">GST: {client.gstNo}</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-1.5 text-slate-600 font-medium">
+                          <Building className="w-3.5 h-3.5 text-slate-400" />
+                          <span>{client.companyName}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col gap-0.5">
+                          <span className="flex items-center gap-1 text-slate-500 text-xs">
+                            <Mail className="w-3.5 h-3.5 text-slate-400" />
+                            {client.email}
+                          </span>
+                          <span className="flex items-center gap-1 text-slate-500 text-xs">
+                            <Phone className="w-3.5 h-3.5 text-slate-400" />
+                            {client.phone}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-slate-50 border border-slate-100 text-xs font-bold text-slate-600">
+                          {client._count?.projects || 0}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => {
+                              setSelectedClient(client);
+                              setIsViewOpen(true);
+                            }}
+                            className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all cursor-pointer"
+                            title="View Client"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => {
+                              setSelectedClient(client);
+                              setFormError(null);
+                              setIsEditOpen(true);
+                            }}
+                            className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-all cursor-pointer"
+                            title="Edit Client"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(client.id)}
+                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
+                            title="Delete Client"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         ) : (
           <div className="py-24 text-center max-w-sm mx-auto flex flex-col items-center justify-center">
             <div className="w-12 h-12 rounded-full bg-slate-50 text-slate-300 flex items-center justify-center mb-3">
@@ -278,7 +347,7 @@ export default function ClientsPage() {
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Contact Name</label>
                   <input
@@ -301,7 +370,7 @@ export default function ClientsPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Email Address</label>
                   <input
@@ -335,7 +404,7 @@ export default function ClientsPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">GST Number (Optional)</label>
                   <input
@@ -401,7 +470,7 @@ export default function ClientsPage() {
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Contact Name</label>
                   <input
@@ -424,7 +493,7 @@ export default function ClientsPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Email Address</label>
                   <input
@@ -458,7 +527,7 @@ export default function ClientsPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">GST Number (Optional)</label>
                   <input
