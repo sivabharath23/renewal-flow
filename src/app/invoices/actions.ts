@@ -39,7 +39,7 @@ export async function getCompanySettings() {
           companyName: 'RenewalFlow Agency',
           companyEmail: 'hello@renewalflow.com',
           companyPhone: '+1 234 567 890',
-          upiId: 'sivabharath@upi',
+          upiId: '9003793639@ptsbi',
           upiName: 'Sivabharath',
         },
       });
@@ -54,7 +54,7 @@ export async function getCompanySettings() {
 export async function generateUPIQRCode(amount: number, invoiceNumber: string) {
   try {
     const settings = await getCompanySettings();
-    const upiId = settings?.upiId || 'sivabharath@upi';
+    const upiId = settings?.upiId || '9003793639@ptsbi';
     const upiName = settings?.upiName || 'Sivabharath';
 
     // Format upi payment link

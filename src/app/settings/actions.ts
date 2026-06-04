@@ -12,7 +12,7 @@ export async function getSettings() {
           companyName: 'RenewalFlow Agency',
           companyEmail: 'hello@renewalflow.com',
           companyPhone: '+1 234 567 890',
-          upiId: 'sivabharath@upi',
+          upiId: '9003793639@ptsbi',
           upiName: 'Sivabharath',
           reminderDays: '30,15,7,3,1',
           notificationEmail: 'alerts@renewalflow.com',

@@ -141,7 +141,7 @@ model Setting {
   companyLogo       String?
   companyEmail      String   @default("hello@renewalflow.com")
   companyPhone      String   @default("+1234567890")
-  upiId             String   @default("sivabharath@upi")
+  upiId             String   @default("9003793639@ptsbi")
   upiName           String   @default("Sivabharath")
   reminderDays      String   @default("30,15,7,3,1")
   notificationEmail String   @default("alerts@renewalflow.com")

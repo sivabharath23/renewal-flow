@@ -858,7 +858,7 @@ export default function InvoicesPage() {
                     </p>
                   </div>
                   <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 text-[10px] space-y-1 font-semibold">
-                    <p className="text-slate-500">UPI ID: <strong className="text-slate-800 font-bold">{settings?.upiId || 'sivabharath@upi'}</strong></p>
+                    <p className="text-slate-500">UPI ID: <strong className="text-slate-800 font-bold">{settings?.upiId || '9003793639@ptsbi'}</strong></p>
                     <p className="text-slate-500">Payee Name: <strong className="text-slate-800 font-bold">{settings?.upiName || 'Sivabharath'}</strong></p>
                     <p className="text-slate-500">Reference code: <strong className="text-slate-800 font-bold">{selectedInvoice.invoiceNumber}</strong></p>
                   </div>
