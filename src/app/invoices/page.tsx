@@ -735,8 +735,8 @@ export default function InvoicesPage() {
 
       {/* View Printable Invoice Modal (Full Sheet / UPI QR) */}
       {isViewOpen && selectedInvoice && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-0 sm:p-4 overflow-y-auto no-print">
-          <div className="bg-white max-w-3xl w-full shadow-2xl p-6 sm:p-10 relative min-h-screen sm:min-h-0 sm:rounded-2xl flex flex-col justify-between animate-in fade-in slide-in-from-bottom-8 duration-200">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex justify-center items-start z-50 p-0 sm:p-4 overflow-y-auto no-print">
+          <div className="bg-white max-w-3xl w-full shadow-2xl p-6 sm:p-10 relative min-h-screen sm:min-h-0 sm:my-8 sm:rounded-2xl flex flex-col justify-between animate-in fade-in slide-in-from-bottom-8 duration-200">
             {/* Top Close / Print bar (HIDDEN IN PRINT MODE) */}
             <div className="absolute top-4 right-4 flex items-center gap-2 no-print">
               <button
@@ -760,7 +760,7 @@ export default function InvoicesPage() {
             {/* Printable Area starts */}
             <div className="flex-1 flex flex-col gap-8 text-slate-800 text-xs font-medium">
               {/* Invoice Header */}
-              <div className="flex justify-between items-start border-b border-slate-100 pb-6 mt-6 sm:mt-0">
+              <div className="flex justify-between items-start border-b border-slate-100 pb-6 mt-12 sm:mt-6">
                 <div>
                   <h2 className="text-xl font-black text-blue-600 leading-tight">
                     {settings?.companyName || 'RenewalFlow Agency'}

@@ -32,6 +32,7 @@ export default function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
 
   const menuItems = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
@@ -48,6 +49,7 @@ export default function Sidebar({ user }: SidebarProps) {
 
   const handleLogout = async () => {
     setIsOpen(false);
+    setIsLogoutConfirmOpen(false);
     const res = await logoutAction();
     if (res.success) {
       router.push('/login');
@@ -154,7 +156,7 @@ export default function Sidebar({ user }: SidebarProps) {
             </div>
           )}
           <button
-            onClick={handleLogout}
+            onClick={() => setIsLogoutConfirmOpen(true)}
             className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-red-500 hover:bg-red-50 hover:text-red-600 transition-all cursor-pointer"
           >
             <LogOut className="w-4.5 h-4.5" />
@@ -162,6 +164,37 @@ export default function Sidebar({ user }: SidebarProps) {
           </button>
         </div>
       </aside>
+
+      {/* Logout Confirmation Modal */}
+      {isLogoutConfirmOpen && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl border border-slate-100 max-w-sm w-full shadow-2xl p-6 relative animate-in fade-in zoom-in-95 duration-150">
+            <div className="w-12 h-12 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center mx-auto mb-4 border border-rose-100">
+              <LogOut className="w-6 h-6 animate-pulse" />
+            </div>
+            <h3 className="text-lg font-bold text-slate-800 text-center mb-1.5">Sign Out</h3>
+            <p className="text-xs text-slate-500 text-center mb-6 leading-relaxed">
+              Are you sure you want to sign out of your account? You will need to log back in to access the portal.
+            </p>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setIsLogoutConfirmOpen(false)}
+                className="flex-1 py-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 cursor-pointer transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="flex-1 py-2.5 bg-rose-600 text-white rounded-xl text-xs font-bold shadow-md shadow-rose-200 hover:bg-rose-700 active:bg-rose-800 cursor-pointer transition-all"
+              >
+                Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
