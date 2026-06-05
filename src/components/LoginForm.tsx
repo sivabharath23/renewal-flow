@@ -54,8 +54,8 @@ function LoginFormContent() {
               id="email"
               name="email"
               required
-              placeholder="admin@renewalflow.com"
-              defaultValue="admin@renewalflow.com"
+              placeholder="test@renewalflow.com"
+              defaultValue="test@renewalflow.com"
               className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
             />
           </div>
@@ -83,7 +83,6 @@ function LoginFormContent() {
               name="password"
               required
               placeholder="••••••••"
-              defaultValue="admin123"
               className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
             />
           </div>
@@ -120,10 +119,10 @@ function LoginFormContent() {
         </span>
         <div className="inline-flex flex-col items-center gap-1 bg-slate-50 border border-slate-100 rounded-lg px-4 py-2.5">
           <span className="text-xs font-medium text-slate-500">
-            Email: <strong className="text-slate-800">admin@renewalflow.com</strong>
+            Email: <strong className="text-slate-800">test@renewalflow.com</strong>
           </span>
           <span className="text-xs font-medium text-slate-500">
-            Password: <strong className="text-slate-800">admin123</strong>
+            Password: <strong className="text-slate-800">123456</strong>
           </span>
         </div>
       </div>
