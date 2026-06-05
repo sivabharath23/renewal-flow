@@ -757,13 +757,16 @@ export default function InvoicesPage() {
       {isViewOpen && selectedInvoice && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex justify-center items-start z-50 p-0 sm:p-4 overflow-y-auto print:bg-transparent print:p-0 print:static print:h-auto print:overflow-visible">
           <div className="bg-white max-w-3xl w-full shadow-2xl p-6 sm:p-10 relative min-h-screen sm:min-h-0 sm:my-8 sm:rounded-2xl flex flex-col justify-between animate-in fade-in slide-in-from-bottom-8 duration-200 print:shadow-none print:border-none print:p-0 print:my-0 print:rounded-none">
+            {/* Top accent bar */}
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-t-2xl print:hidden" />
+
             {/* Top Close / Print bar (HIDDEN IN PRINT MODE) */}
-            <div className="absolute top-4 right-4 flex items-center gap-2 no-print">
+            <div className="absolute top-6 right-6 flex items-center gap-2 no-print">
               <button
                 onClick={triggerPrint}
                 className="p-2 text-slate-600 hover:text-blue-600 hover:bg-slate-100 rounded-xl transition-all flex items-center gap-1.5 font-bold text-xs cursor-pointer border border-slate-200 shadow-xs"
               >
-                <Printer className="w-4.5 h-4.5" />
+                <Printer className="w-4 h-4" />
                 <span>Print / Save PDF</span>
               </button>
               <button
@@ -778,96 +781,150 @@ export default function InvoicesPage() {
             </div>
 
             {/* Printable Area starts */}
-            <div className="flex-1 flex flex-col gap-8 text-slate-800 text-xs font-medium">
+            <div className="flex-1 flex flex-col gap-8 text-slate-800 text-xs font-medium mt-10 print:mt-0">
               {/* Invoice Header */}
-              <div className="flex justify-between items-start border-b border-slate-100 pb-6 mt-12 sm:mt-6">
-                <div>
-                  {settings?.showLogo && settings?.companyLogo && (
-                    <div className="mb-3 max-h-14 flex items-center">
+              <div className="flex justify-between items-start border-b border-slate-100 pb-8 mt-6">
+                {/* Left Column: Brand & Logo */}
+                <div className="flex flex-col gap-3">
+                  {settings?.showLogo && settings?.companyLogo ? (
+                    <div className="max-h-16 flex items-center mb-1">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={settings.companyLogo}
                         alt="Company Logo"
-                        className="max-h-14 max-w-[200px] object-contain"
+                        className="max-h-16 max-w-[220px] object-contain"
                       />
                     </div>
+                  ) : (
+                    <h2 className="text-2xl font-black tracking-tight text-blue-600">
+                      {settings?.companyName || 'RenewalFlow Agency'}
+                    </h2>
                   )}
-                  <h2 className="text-xl font-black text-blue-600 leading-tight">
-                    {settings?.companyName || 'RenewalFlow Agency'}
-                  </h2>
-                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mt-1">
-                    Tax Invoice / Bill
-                  </span>
-                  <div className="text-slate-500 font-semibold mt-2.5 space-y-0.5">
-                    <p className="flex items-center gap-1"><Mail className="w-3.5 h-3.5 text-slate-300" /> {settings?.companyEmail}</p>
-                    <p className="flex items-center gap-1"><Phone className="w-3.5 h-3.5 text-slate-300" /> {settings?.companyPhone}</p>
+                  <div className="text-slate-500 font-semibold space-y-1">
+                    <p className="font-bold text-slate-800 text-sm leading-none mb-1">
+                      {settings?.companyName || 'RenewalFlow Agency'}
+                    </p>
+                    <p className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5 text-slate-400 shrink-0" /> {settings?.companyEmail}</p>
+                    <p className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5 text-slate-400 shrink-0" /> {settings?.companyPhone}</p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className="inline-block px-3 py-1 bg-blue-50 text-blue-600 rounded-xl border border-blue-100 text-sm font-black mb-2">
-                    {selectedInvoice.invoiceNumber}
+
+                {/* Right Column: Invoice Details */}
+                <div className="text-right flex flex-col items-end gap-4">
+                  <div>
+                    <h1 className="text-3xl font-light tracking-widest text-slate-900 uppercase">INVOICE</h1>
+                    <div className="inline-block mt-2 px-3 py-1 bg-blue-50/50 text-blue-600 rounded-lg border border-blue-100/50 text-xs font-bold">
+                      Invoice No: {selectedInvoice.invoiceNumber}
+                    </div>
                   </div>
-                  <div className="text-slate-500 font-semibold space-y-0.5 mt-1">
-                    <p>Date: <strong className="text-slate-700">{new Date(selectedInvoice.invoiceDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</strong></p>
-                    <p>Due: <strong className="text-slate-700">{new Date(selectedInvoice.dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</strong></p>
+                  
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-right mt-1">
+                    <div>
+                      <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Date of Issue</p>
+                      <p className="text-slate-700 font-bold mt-0.5">
+                        {new Date(selectedInvoice.invoiceDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Due Date</p>
+                      <p className="text-slate-700 font-bold mt-0.5">
+                        {new Date(selectedInvoice.dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </p>
+                    </div>
+                    <div className="col-span-2 flex justify-end items-center gap-2 mt-1">
+                      <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Status:</span>
+                      <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider ${
+                        selectedInvoice.status === 'PAID' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' :
+                        selectedInvoice.status === 'PENDING' ? 'bg-amber-50 text-amber-700 border border-amber-100' :
+                        selectedInvoice.status === 'CANCELLED' ? 'bg-rose-50 text-rose-700 border border-rose-100' :
+                        'bg-slate-100 text-slate-700 border border-slate-200'
+                      }`}>
+                        {selectedInvoice.status}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Client details / Project details info block */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div className="p-4 bg-slate-50/70 border border-slate-100 rounded-xl">
-                  <span className="text-[10px] text-slate-400 font-black uppercase tracking-wider block mb-2">
-                    Billed To
-                  </span>
-                  <div className="space-y-1 text-slate-600 font-medium">
-                    <p className="text-sm font-bold text-slate-800 leading-tight">{selectedInvoice.client.companyName}</p>
+              {/* Client & Project grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 border-b border-slate-100 pb-8">
+                {/* Billed To client info */}
+                <div>
+                  <h3 className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-2.5">Billed To</h3>
+                  <div className="space-y-1">
+                    <p className="text-sm font-bold text-slate-900">{selectedInvoice.client.companyName}</p>
                     <p className="text-xs font-semibold text-slate-700">{selectedInvoice.client.name}</p>
-                    <p className="text-xs leading-relaxed max-w-[250px]">{selectedInvoice.client.address}</p>
-                    <p className="text-[10px] font-semibold text-slate-400">{selectedInvoice.client.email} | {selectedInvoice.client.phone}</p>
-                    {selectedInvoice.client.gstNo && (
-                      <p className="text-[10px] font-bold text-slate-700 uppercase pt-1">GST: {selectedInvoice.client.gstNo}</p>
-                    )}
+                    <p className="text-xs text-slate-500 leading-relaxed max-w-[280px] whitespace-pre-line">{selectedInvoice.client.address}</p>
+                    <div className="pt-2 text-[10px] text-slate-400 space-y-0.5">
+                      <p>Email: <span className="text-slate-600 font-medium">{selectedInvoice.client.email}</span></p>
+                      <p>Phone: <span className="text-slate-600 font-medium">{selectedInvoice.client.phone}</span></p>
+                      {selectedInvoice.client.gstNo && (
+                        <p className="font-bold text-slate-700 uppercase pt-1">GSTIN: {selectedInvoice.client.gstNo}</p>
+                      )}
+                    </div>
                   </div>
                 </div>
+
+                {/* Project details */}
                 <div>
-                  <span className="text-[10px] text-slate-400 font-black uppercase tracking-wider block mb-2">
-                    Project Work
-                  </span>
-                  <div className="space-y-1 font-semibold">
-                    <p className="text-sm font-bold text-slate-800">{selectedInvoice.project.projectName}</p>
-                    <p className="text-slate-500 font-medium mt-1 leading-relaxed">
-                      {selectedInvoice.description || 'Deliverables, development and maintenance services as per contract terms.'}
-                    </p>
+                  <h3 className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-2.5">Project Details</h3>
+                  <div className="space-y-1.5">
+                    <p className="text-sm font-bold text-slate-900">{selectedInvoice.project.projectName}</p>
+                    <div className="p-3 bg-slate-50/50 rounded-xl border border-slate-100/50 print:bg-transparent">
+                      <p className="text-xs text-slate-600 leading-relaxed">
+                        {selectedInvoice.description || 'Deliverables, development and maintenance services as per contract terms.'}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Table of charges */}
-              <div className="border border-slate-100 rounded-xl overflow-hidden mt-2">
+              <div className="mt-2">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-slate-50 text-slate-600 text-[10px] font-black uppercase tracking-wider">
-                      <th className="px-5 py-3">Description</th>
-                      <th className="px-5 py-3 text-right">Amount</th>
+                    <tr className="border-b border-slate-200 text-slate-500 text-[9px] font-bold uppercase tracking-wider">
+                      <th className="py-3 pr-4 w-12 text-center">#</th>
+                      <th className="py-3 px-4">Item & Description</th>
+                      <th className="py-3 px-4 text-center w-20">Qty</th>
+                      <th className="py-3 px-4 text-right w-32">Rate</th>
+                      <th className="py-3 pl-4 text-right w-36">Amount</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr className="border-b border-slate-100">
-                      <td className="px-5 py-4">
-                        <span className="font-bold text-slate-800 block">{selectedInvoice.project.projectName}</span>
-                        <span className="text-xs text-slate-500 block mt-0.5">{selectedInvoice.description || 'Assigned contract deliverables'}</span>
+                    <tr className="border-b border-slate-100 hover:bg-slate-50/30 transition-colors">
+                      <td className="py-4 pr-4 font-semibold text-slate-400 text-center">1</td>
+                      <td className="py-4 px-4">
+                        <span className="font-bold text-slate-900 text-sm block">{selectedInvoice.project.projectName}</span>
+                        <span className="text-xs text-slate-500 block mt-1 leading-relaxed">
+                          {selectedInvoice.description || 'Assigned contract deliverables'}
+                        </span>
                       </td>
-                      <td className="px-5 py-4 text-right font-bold text-slate-800 text-sm">
+                      <td className="py-4 px-4 text-center text-slate-600">1</td>
+                      <td className="py-4 px-4 text-right text-slate-600">
+                        ₹{selectedInvoice.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                      </td>
+                      <td className="py-4 pl-4 text-right font-bold text-slate-900 text-sm">
                         ₹{selectedInvoice.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                       </td>
                     </tr>
-                    {/* Totals row */}
-                    <tr className="bg-slate-50/50">
-                      <td className="px-5 py-3 text-right text-slate-500 font-bold uppercase text-[10px]">
-                        Total Amount Due
+                    
+                    {/* Summary rows */}
+                    <tr>
+                      <td colSpan={3} className="py-4"></td>
+                      <td className="py-4 px-4 text-right text-slate-500 font-medium uppercase text-[9px] border-b border-slate-100">
+                        Subtotal
                       </td>
-                      <td className="px-5 py-3 text-right text-blue-600 font-black text-base">
+                      <td className="py-4 pl-4 text-right text-slate-900 font-semibold text-sm border-b border-slate-100">
+                        ₹{selectedInvoice.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                      </td>
+                    </tr>
+                    <tr className="bg-slate-50/30 print:bg-transparent">
+                      <td colSpan={3} className="py-4"></td>
+                      <td className="py-4 px-4 text-right text-slate-900 font-bold uppercase text-[9px]">
+                        Total Due
+                      </td>
+                      <td className="py-4 pl-4 text-right text-blue-600 font-black text-lg">
                         ₹{selectedInvoice.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                       </td>
                     </tr>
@@ -875,42 +932,55 @@ export default function InvoicesPage() {
                 </table>
               </div>
 
-              {/* QR Code and Payment Details */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 border-t border-slate-100 pt-6 mt-2">
-                <div className="space-y-3">
+              {/* Payment Box & UPI QR */}
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-6 border border-slate-100 rounded-2xl p-5 bg-slate-50/30 mt-6 print:bg-transparent">
+                <div className="md:col-span-3 space-y-4">
                   <div>
-                    <h4 className="font-bold text-slate-800 text-xs flex items-center gap-1">
-                      <Coins className="w-4.5 h-4.5 text-blue-600" />
+                    <h4 className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
+                      <Coins className="w-4 h-4 text-blue-600" />
                       <span>Payment Instructions</span>
                     </h4>
-                    <p className="text-slate-400 text-[10px] font-medium leading-relaxed mt-1">
-                      Please scan the UPI QR code on the right with any UPI app (GPay, PhonePe, Paytm, BHIM) to pay instantly. Alternatively, pay using the details below.
+                    <p className="text-slate-500 text-[10px] leading-relaxed mt-1">
+                      Please scan the UPI QR code on the right with any UPI-enabled application (Google Pay, PhonePe, Paytm, BHIM) to make an instant, secure transfer. Alternatively, you can use the UPI handle details below.
                     </p>
                   </div>
-                  <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 text-[10px] space-y-1 font-semibold">
-                    <p className="text-slate-500">UPI ID: <strong className="text-slate-800 font-bold">{settings?.upiId || '9003793639@ptsbi'}</strong></p>
-                    <p className="text-slate-500">Payee Name: <strong className="text-slate-800 font-bold">{settings?.upiName || 'Sivabharath'}</strong></p>
-                    <p className="text-slate-500">Reference code: <strong className="text-slate-800 font-bold">{selectedInvoice.invoiceNumber}</strong></p>
+                  
+                  <div className="grid grid-cols-1 gap-2 text-[10px] text-slate-600">
+                    <div className="flex justify-between py-1.5 border-b border-slate-100">
+                      <span className="text-slate-400 font-semibold">UPI VPA ID</span>
+                      <strong className="text-slate-800 font-bold">{settings?.upiId || '9003793639@ptsbi'}</strong>
+                    </div>
+                    <div className="flex justify-between py-1.5 border-b border-slate-100">
+                      <span className="text-slate-400 font-semibold">Payee Name</span>
+                      <strong className="text-slate-800 font-bold">{settings?.upiName || 'Sivabharath'}</strong>
+                    </div>
+                    <div className="flex justify-between py-1.5 border-b border-slate-100">
+                      <span className="text-slate-400 font-semibold">Reference Code</span>
+                      <strong className="text-slate-800 font-bold">{selectedInvoice.invoiceNumber}</strong>
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex flex-col items-center justify-center border border-slate-100 rounded-xl p-4 bg-slate-50/30">
+                <div className="md:col-span-2 flex flex-col items-center justify-center border border-slate-150 rounded-xl p-4 bg-white shadow-xs print:shadow-none">
                   {qrCodeUrl ? (
                     <div className="flex flex-col items-center">
-                      <img
-                        src={qrCodeUrl}
-                        alt="UPI Payment QR"
-                        className="w-40 h-40 border border-slate-200 rounded-lg p-1 bg-white"
-                      />
-                      <span className="text-[10px] font-bold text-slate-500 mt-2 flex items-center gap-1 uppercase tracking-wider">
-                        <QrCode className="w-3.5 h-3.5" />
-                        <span>UPI QR Code</span>
+                      <div className="p-1.5 bg-slate-50 border border-slate-100 rounded-lg">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={qrCodeUrl}
+                          alt="UPI Payment QR"
+                          className="w-32 h-32 object-contain"
+                        />
+                      </div>
+                      <span className="text-[9px] font-bold text-slate-500 mt-2 flex items-center gap-1 uppercase tracking-wider">
+                        <QrCode className="w-3 h-3 text-slate-400" />
+                        <span>Scan to Pay (UPI)</span>
                       </span>
                     </div>
                   ) : (
                     <div className="flex flex-col items-center justify-center py-6">
-                      <div className="w-6 h-6 border-2 border-blue-600/30 border-t-blue-600 rounded-full animate-spin mb-2" />
-                      <span className="text-[10px] text-slate-400 font-bold">Creating QR...</span>
+                      <div className="w-5 h-5 border-2 border-blue-600/30 border-t-blue-600 rounded-full animate-spin mb-2" />
+                      <span className="text-[10px] text-slate-400 font-bold">Generating QR Code...</span>
                     </div>
                   )}
                 </div>
@@ -918,8 +988,10 @@ export default function InvoicesPage() {
             </div>
             
             {/* Footer declaration */}
-            <div className="text-center text-[10px] text-slate-400 border-t border-slate-100 pt-6 mt-8 font-semibold">
-              Thank you for your business! If you have any questions, please contact hello@renewalflow.com.
+            <div className="text-center text-[10px] text-slate-400 border-t border-slate-100 pt-8 mt-12 font-medium">
+              <p className="text-slate-700 font-bold text-xs mb-1">Thank you for your business!</p>
+              <p>This is a computer-generated invoice and does not require a physical signature.</p>
+              <p className="mt-1">For support or queries regarding this bill, please contact <strong className="text-slate-600 font-semibold">{settings?.companyEmail || 'hello@renewalflow.com'}</strong>.</p>
             </div>
           </div>
         </div>
