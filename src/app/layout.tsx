@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import Sidebar from '@/components/Sidebar';
@@ -16,6 +16,14 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+export const viewport: Viewport = {
+  themeColor: '#2563eb',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: 'cover',
+};
+
 export const metadata: Metadata = {
   title: {
     default: 'RenewalFlow - Client & Renewal Manager',
@@ -26,6 +34,11 @@ export const metadata: Metadata = {
   authors: [{ name: 'Sivabharath' }],
   creator: 'Sivabharath',
   metadataBase: new URL('https://renewal-flow-saas.vercel.app'),
+  appleWebApp: {
+    capable: true,
+    title: 'RenewalFlow',
+    statusBarStyle: 'default',
+  },
   openGraph: {
     type: 'website',
     locale: 'en_US',

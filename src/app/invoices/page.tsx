@@ -756,7 +756,7 @@ export default function InvoicesPage() {
       {/* View Printable Invoice Modal (Full Sheet / UPI QR) */}
       {isViewOpen && selectedInvoice && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex justify-center items-start z-50 p-0 sm:p-4 overflow-y-auto print:bg-transparent print:p-0 print:static print:h-auto print:overflow-visible">
-          <div className="bg-white max-w-3xl w-full shadow-2xl p-6 sm:p-10 relative min-h-screen sm:min-h-0 sm:my-8 sm:rounded-2xl flex flex-col justify-between animate-in fade-in slide-in-from-bottom-8 duration-200 print:shadow-none print:border-none print:p-6 print:my-0 print:rounded-none">
+          <div className="bg-white max-w-3xl w-full shadow-2xl p-6 sm:p-10 relative min-h-screen sm:min-h-0 sm:my-8 sm:rounded-2xl flex flex-col justify-between animate-in fade-in slide-in-from-bottom-8 duration-200 print:shadow-none print:border-none print:p-6 print:my-0 print:rounded-none print:min-h-0 print:h-auto print:block print:justify-start">
             {/* Top accent bar */}
             <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-t-2xl print:hidden" />
 
@@ -787,23 +787,25 @@ export default function InvoicesPage() {
                 {/* Left Column: Brand & Logo */}
                 <div className="flex flex-col gap-3 print:gap-1.5">
                   {settings?.showLogo && settings?.companyLogo ? (
-                    <div className="max-h-16 flex items-center mb-1 print:mb-0.5">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={settings.companyLogo}
-                        alt="Company Logo"
-                        className="max-h-16 max-w-[220px] object-contain print:max-h-12"
-                      />
-                    </div>
+                    <>
+                      <div className="max-h-16 flex items-center mb-1 print:mb-0.5">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={settings.companyLogo}
+                          alt="Company Logo"
+                          className="max-h-16 max-w-[220px] object-contain print:max-h-12"
+                        />
+                      </div>
+                      <p className="font-bold text-slate-800 text-sm leading-none mb-1 print:mb-0 print:text-xs">
+                        {settings?.companyName}
+                      </p>
+                    </>
                   ) : (
-                    <h2 className="text-2xl font-black tracking-tight text-blue-600 print:text-xl">
+                    <h2 className="text-2xl font-black tracking-tight text-blue-600 print:text-xl leading-none">
                       {settings?.companyName || 'RenewalFlow Agency'}
                     </h2>
                   )}
                   <div className="text-slate-500 font-semibold space-y-1 print:space-y-0.5">
-                    <p className="font-bold text-slate-800 text-sm leading-none mb-1 print:mb-0 print:text-xs">
-                      {settings?.companyName || 'RenewalFlow Agency'}
-                    </p>
                     <p className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5 text-slate-400 shrink-0 print:w-3 print:h-3" /> {settings?.companyEmail}</p>
                     <p className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5 text-slate-400 shrink-0 print:w-3 print:h-3" /> {settings?.companyPhone}</p>
                   </div>
@@ -853,7 +855,9 @@ export default function InvoicesPage() {
                   <h3 className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-2.5 print:mb-1">Billed To</h3>
                   <div className="space-y-1">
                     <p className="text-sm font-bold text-slate-900 print:text-xs">{selectedInvoice.client.companyName}</p>
-                    <p className="text-xs font-semibold text-slate-700">{selectedInvoice.client.name}</p>
+                    {selectedInvoice.client.name !== selectedInvoice.client.companyName && (
+                      <p className="text-xs font-semibold text-slate-700">{selectedInvoice.client.name}</p>
+                    )}
                     <p className="text-xs text-slate-500 leading-relaxed max-w-[280px] whitespace-pre-line">{selectedInvoice.client.address}</p>
                     <div className="pt-2 print:pt-1 text-[10px] text-slate-400 space-y-0.5">
                       <p>Email: <span className="text-slate-600 font-medium">{selectedInvoice.client.email}</span></p>
