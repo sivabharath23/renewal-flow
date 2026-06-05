@@ -4,6 +4,11 @@ import db from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { getSessionUser, getUserFilter } from '@/lib/auth-helpers';
 
+export async function checkIsAdmin() {
+  const user = await getSessionUser();
+  return user ? (user.role === 'ADMIN' || user.email === 'admin@renewalflow.com') : false;
+}
+
 export async function getClients(searchQuery?: string) {
   try {
     const filter = await getUserFilter();
@@ -26,6 +31,14 @@ export async function getClients(searchQuery?: string) {
         _count: {
           select: { projects: true },
         },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            agencyType: true,
+          }
+        }
       },
       orderBy: { name: 'asc' },
     });

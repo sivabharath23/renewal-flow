@@ -16,25 +16,37 @@ async function main() {
     where: { email }
   });
 
+  let adminId = '';
+
   if (!defaultAdmin) {
     const hashedPassword = hashPassword('admin123');
-    await prisma.user.create({
+    const created = await prisma.user.create({
       data: {
         name: 'Administrator',
         email,
         password: hashedPassword,
+        role: 'ADMIN',
       }
     });
+    adminId = created.id;
     console.log('Created default admin user (admin@renewalflow.com / admin123)');
   } else {
-    console.log('Admin user already exists');
+    const updated = await prisma.user.update({
+      where: { email },
+      data: { role: 'ADMIN' }
+    });
+    adminId = updated.id;
+    console.log('Admin user already exists, ensured role is ADMIN');
   }
 
-  // Create default settings
-  const settingsCount = await prisma.setting.count();
+  // Create default settings linked to admin
+  const settingsCount = await prisma.setting.count({
+    where: { userId: adminId }
+  });
   if (settingsCount === 0) {
     await prisma.setting.create({
       data: {
+        userId: adminId,
         companyName: 'RenewalFlow Agency',
         companyEmail: 'hello@renewalflow.com',
         companyPhone: '+1 234 567 890',
@@ -44,9 +56,9 @@ async function main() {
         notificationEmail: 'alerts@renewalflow.com',
       }
     });
-    console.log('Created default settings');
+    console.log('Created default settings for Admin');
   } else {
-    console.log('Settings already exist');
+    console.log('Settings already exist for Admin');
   }
 
   console.log('Seeding complete!');

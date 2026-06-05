@@ -38,13 +38,32 @@ export async function registerAction(prevState: any, formData: FormData) {
 
     const hashedPassword = hashPassword(password);
 
+    // Generate custom sequential ID starting at RF-001
+    const rfUsers = await db.user.findMany({
+      where: { id: { startsWith: 'RF-' } },
+      select: { id: true }
+    });
+    
+    let nextNum = 1;
+    if (rfUsers.length > 0) {
+      const nums = rfUsers.map(u => {
+        const part = u.id.split('-')[1];
+        const parsed = parseInt(part, 10);
+        return isNaN(parsed) ? 0 : parsed;
+      });
+      nextNum = Math.max(...nums) + 1;
+    }
+    const nextId = `RF-${String(nextNum).padStart(3, '0')}`;
+
     // Create user
     const user = await db.user.create({
       data: {
+        id: nextId,
         name,
         email,
         password: hashedPassword,
         agencyType,
+        role: 'CLIENT',
       },
     });
 

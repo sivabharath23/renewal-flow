@@ -14,7 +14,7 @@ export async function getSessionUser() {
     
     const user = await db.user.findUnique({
       where: { id: userId },
-      select: { id: true, name: true, email: true }
+      select: { id: true, name: true, email: true, role: true }
     });
     
     return user;
@@ -27,7 +27,7 @@ export async function getSessionUser() {
 export async function getUserFilter() {
   const user = await getSessionUser();
   if (!user) return null;
-  if (user.email === 'admin@renewalflow.com') {
+  if (user.role === 'ADMIN' || user.email === 'admin@renewalflow.com') {
     return {};
   }
   return { userId: user.id };

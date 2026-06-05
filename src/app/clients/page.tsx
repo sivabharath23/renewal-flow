@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, startTransition } from 'react';
-import { getClients, createClientAction, updateClientAction, deleteClientAction } from './actions';
+import { getClients, createClientAction, updateClientAction, deleteClientAction, checkIsAdmin } from './actions';
 import { useToast } from '@/context/ToastContext';
 import {
   Users,
@@ -31,11 +31,18 @@ interface ClientType {
   _count?: {
     projects: number;
   };
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+    agencyType: string | null;
+  } | null;
 }
 
 export default function ClientsPage() {
   const { showToast } = useToast();
   const [clients, setClients] = useState<ClientType[]>([]);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -53,6 +60,8 @@ export default function ClientsPage() {
   const loadClients = async (query = '') => {
     setLoading(true);
     const data = await getClients(query);
+    const adminCheck = await checkIsAdmin();
+    setIsAdmin(adminCheck);
     setClients(data as ClientType[]);
     setLoading(false);
   };
@@ -182,6 +191,11 @@ export default function ClientsPage() {
                           GST: {client.gstNo}
                         </span>
                       )}
+                      {isAdmin && (
+                        <span className="text-[9px] bg-slate-50 border border-slate-100 text-slate-500 px-1.5 py-0.5 rounded-md font-semibold mt-1 inline-block">
+                          Registered By: {client.user?.name || 'Admin'} ({client.user?.id || 'N/A'})
+                        </span>
+                      )}
                     </div>
                     <span className="inline-flex items-center justify-center px-2 py-1 rounded-lg bg-slate-50 border border-slate-150 text-[10px] font-bold text-slate-600 shrink-0">
                       {client._count?.projects || 0} Projects
@@ -241,6 +255,7 @@ export default function ClientsPage() {
                     <th className="px-6 py-4">Client Name</th>
                     <th className="px-6 py-4">Company</th>
                     <th className="px-6 py-4">Contact Info</th>
+                    {isAdmin && <th className="px-6 py-4">Registered By</th>}
                     <th className="px-6 py-4 text-center">Total Projects</th>
                     <th className="px-6 py-4 text-right">Actions</th>
                   </tr>
@@ -272,6 +287,14 @@ export default function ClientsPage() {
                           </span>
                         </div>
                       </td>
+                      {isAdmin && (
+                        <td className="px-6 py-4">
+                          <div className="flex flex-col">
+                            <span className="font-bold text-slate-700">{client.user?.name || 'Admin'}</span>
+                            <span className="text-[10px] text-slate-400 font-semibold">{client.user?.id || 'N/A'}</span>
+                          </div>
+                        </td>
+                      )}
                       <td className="px-6 py-4 text-center">
                         <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-slate-50 border border-slate-100 text-xs font-bold text-slate-600">
                           {client._count?.projects || 0}
@@ -645,6 +668,15 @@ export default function ClientsPage() {
                   <p className="p-3 bg-slate-50 rounded-xl text-slate-600 text-xs italic font-medium leading-relaxed">
                     "{selectedClient.notes}"
                   </p>
+                </div>
+              )}
+
+              {isAdmin && selectedClient.user && (
+                <div className="border-t border-slate-50 pt-3">
+                  <span className="text-[10px] text-slate-400 font-bold block mb-1">Registered By Tenant</span>
+                  <span className="text-slate-800 text-sm block font-semibold">
+                    {selectedClient.user.name} ({selectedClient.user.id}) - {selectedClient.user.email}
+                  </span>
                 </div>
               )}
             </div>
