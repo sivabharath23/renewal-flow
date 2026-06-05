@@ -67,6 +67,7 @@ interface CompanySettingsType {
   companyPhone: string;
   upiId: string;
   upiName: string;
+  companyLogo: string | null;
 }
 
 export default function InvoicesPage() {
@@ -762,9 +763,20 @@ export default function InvoicesPage() {
               {/* Invoice Header */}
               <div className="flex justify-between items-start border-b border-slate-100 pb-6 mt-12 sm:mt-6">
                 <div>
-                  <h2 className="text-xl font-black text-blue-600 leading-tight">
-                    {settings?.companyName || 'RenewalFlow Agency'}
-                  </h2>
+                  {settings?.companyLogo ? (
+                    <div className="mb-3 max-h-14 flex items-center">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={settings.companyLogo}
+                        alt="Company Logo"
+                        className="max-h-14 max-w-[200px] object-contain"
+                      />
+                    </div>
+                  ) : (
+                    <h2 className="text-xl font-black text-blue-600 leading-tight">
+                      {settings?.companyName || 'RenewalFlow Agency'}
+                    </h2>
+                  )}
                   <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mt-1">
                     Tax Invoice / Bill
                   </span>

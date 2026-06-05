@@ -13,8 +13,11 @@ import {
   Phone,
   Coins,
   ShieldCheck,
-  Save
+  Save,
+  Upload,
+  Trash2
 } from 'lucide-react';
+import ImageCropper from '@/components/ImageCropper';
 
 interface SettingsType {
   companyName: string;
@@ -24,6 +27,7 @@ interface SettingsType {
   upiName: string;
   reminderDays: string;
   notificationEmail: string;
+  companyLogo: string | null;
 }
 
 export default function SettingsPage() {
@@ -36,10 +40,17 @@ export default function SettingsPage() {
   const [formSuccess, setFormSuccess] = useState(false);
   const [actionPending, setActionPending] = useState(false);
 
+  // Logo uploading states
+  const [logo, setLogo] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
   const loadSettings = async () => {
     setLoading(true);
     const data = await getSettings();
     setSettings(data as SettingsType);
+    if (data?.companyLogo) {
+      setLogo(data.companyLogo);
+    }
     setLoading(false);
   };
 
@@ -140,20 +151,101 @@ export default function SettingsPage() {
                 </div>
               )}
 
-              {/* Hiddens to pass values of non-active forms */}
-              <input type="hidden" name="companyName" defaultValue={settings.companyName} />
-              <input type="hidden" name="companyEmail" defaultValue={settings.companyEmail} />
-              <input type="hidden" name="companyPhone" defaultValue={settings.companyPhone} />
-              <input type="hidden" name="upiId" defaultValue={settings.upiId} />
-              <input type="hidden" name="upiName" defaultValue={settings.upiName} />
-              <input type="hidden" name="reminderDays" defaultValue={settings.reminderDays} />
-              <input type="hidden" name="notificationEmail" defaultValue={settings.notificationEmail} />
+              {/* Conditional hiddens to pass values of non-active forms, preventing name collision */}
+              {activeSection !== 'COMPANY' && (
+                <>
+                  <input type="hidden" name="companyName" value={settings.companyName} />
+                  <input type="hidden" name="companyEmail" value={settings.companyEmail} />
+                  <input type="hidden" name="companyPhone" value={settings.companyPhone} />
+                </>
+              )}
+              {activeSection !== 'PAYMENT' && (
+                <>
+                  <input type="hidden" name="upiId" value={settings.upiId} />
+                  <input type="hidden" name="upiName" value={settings.upiName} />
+                </>
+              )}
+              {activeSection !== 'REMINDER' && (
+                <>
+                  <input type="hidden" name="reminderDays" value={settings.reminderDays} />
+                  <input type="hidden" name="notificationEmail" value={settings.notificationEmail} />
+                </>
+              )}
+              
+              {/* Always submit the companyLogo */}
+              <input type="hidden" name="companyLogo" value={logo || ''} />
 
               {activeSection === 'COMPANY' && (
                 <div className="space-y-4">
                   <div className="mb-4">
                     <h3 className="text-base font-bold text-slate-800">Company Profile</h3>
                     <p className="text-xs text-slate-400 mt-0.5">Details display on PDF invoices and printable receipt headers.</p>
+                  </div>
+
+                  {/* Logo Upload Section */}
+                  <div className="space-y-2 pb-2">
+                    <label className="text-xs font-bold text-slate-600 block">Company Logo</label>
+                    <div className="flex items-center gap-4 flex-wrap">
+                      {logo ? (
+                        <div className="relative group rounded-xl overflow-hidden border border-slate-200 bg-white p-2 w-48 h-18 flex items-center justify-center shadow-xs">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={logo} alt="Company logo preview" className="max-h-full max-w-full object-contain" />
+                          <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity gap-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const input = document.getElementById('logo-file-input');
+                                input?.click();
+                              }}
+                              className="p-1.5 bg-white/20 hover:bg-white/40 text-white rounded-md transition-colors cursor-pointer"
+                              title="Change Logo"
+                            >
+                              <Upload className="w-4 h-4" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setLogo(null)}
+                              className="p-1.5 bg-red-600/80 hover:bg-red-600 text-white rounded-md transition-colors cursor-pointer"
+                              title="Delete Logo"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const input = document.getElementById('logo-file-input');
+                            input?.click();
+                          }}
+                          className="w-48 h-18 border-2 border-dashed border-slate-200 hover:border-blue-500 rounded-xl flex flex-col items-center justify-center text-slate-400 hover:text-blue-600 transition-all cursor-pointer bg-slate-50 hover:bg-blue-50/20"
+                        >
+                          <Upload className="w-5 h-5 mb-0.5" />
+                          <span className="text-[10px] font-bold">Upload Logo</span>
+                        </button>
+                      )}
+                      <input
+                        id="logo-file-input"
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setSelectedImage(reader.result as string);
+                            };
+                            reader.readAsDataURL(file);
+                            e.target.value = '';
+                          }
+                        }}
+                      />
+                      <div className="text-[10px] text-slate-400 max-w-[240px] leading-relaxed">
+                        Supports PNG or JPG. Select an image to crop and adjust its alignment to display perfectly in invoice headers.
+                      </div>
+                    </div>
                   </div>
 
                   <div className="space-y-1">
@@ -302,6 +394,17 @@ export default function SettingsPage() {
           </div>
         </div>
       ) : null}
+
+      {selectedImage && (
+        <ImageCropper
+          imageUrl={selectedImage}
+          onCancel={() => setSelectedImage(null)}
+          onCrop={(croppedBase64) => {
+            setLogo(croppedBase64);
+            setSelectedImage(null);
+          }}
+        />
+      )}
     </div>
   );
 }
