@@ -2,19 +2,26 @@
 
 import db from '@/lib/db';
 import { revalidatePath } from 'next/cache';
+import { getUserFilter } from '@/lib/auth-helpers';
 
 export async function getProjects(searchQuery?: string) {
   try {
+    const filter = await getUserFilter();
+    if (!filter) return [];
+
     return await db.project.findMany({
-      where: searchQuery
-        ? {
-            OR: [
-              { projectName: { contains: searchQuery } },
-              { client: { name: { contains: searchQuery } } },
-              { client: { companyName: { contains: searchQuery } } },
-            ],
-          }
-        : undefined,
+      where: {
+        client: filter,
+        ...(searchQuery
+          ? {
+              OR: [
+                { projectName: { contains: searchQuery } },
+                { client: { name: { contains: searchQuery } } },
+                { client: { companyName: { contains: searchQuery } } },
+              ],
+            }
+          : {}),
+      },
       include: {
         client: true,
         _count: {
@@ -45,6 +52,17 @@ export async function createProjectAction(formData: FormData) {
   }
 
   try {
+    const filter = await getUserFilter();
+    if (!filter) return { error: 'Unauthorized' };
+
+    // Verify client belongs to user
+    const clientExists = await db.client.findFirst({
+      where: { id: clientId, ...filter },
+    });
+    if (!clientExists) {
+      return { error: 'Invalid client selected.' };
+    }
+
     await db.project.create({
       data: { projectName, clientId, description, status },
     });
@@ -68,6 +86,25 @@ export async function updateProjectAction(id: string, formData: FormData) {
   }
 
   try {
+    const filter = await getUserFilter();
+    if (!filter) return { error: 'Unauthorized' };
+
+    // Verify project belongs to user
+    const projectExists = await db.project.findFirst({
+      where: { id, client: filter },
+    });
+    if (!projectExists) {
+      return { error: 'Project not found or unauthorized.' };
+    }
+
+    // Verify new client belongs to user
+    const clientExists = await db.client.findFirst({
+      where: { id: clientId, ...filter },
+    });
+    if (!clientExists) {
+      return { error: 'Invalid client selected.' };
+    }
+
     await db.project.update({
       where: { id },
       data: { projectName, clientId, description, status },
@@ -83,6 +120,17 @@ export async function updateProjectAction(id: string, formData: FormData) {
 
 export async function deleteProjectAction(id: string) {
   try {
+    const filter = await getUserFilter();
+    if (!filter) return { error: 'Unauthorized' };
+
+    // Verify project belongs to user
+    const projectExists = await db.project.findFirst({
+      where: { id, client: filter },
+    });
+    if (!projectExists) {
+      return { error: 'Project not found or unauthorized.' };
+    }
+
     await db.project.delete({
       where: { id },
     });

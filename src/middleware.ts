@@ -7,14 +7,16 @@ export function middleware(request: NextRequest) {
 
   const isServerAction = request.headers.has('next-action') || request.headers.get('accept') === 'text/x-component';
 
-  // Allow login, public auth api, static assets, favicon, etc.
+  // Allow login, register, forgot-password, public auth api, static assets, favicon, etc.
   if (
     pathname === '/login' ||
+    pathname === '/register' ||
+    pathname.startsWith('/forgot-password') ||
     pathname.startsWith('/api/auth') ||
     pathname.startsWith('/_next') ||
     pathname.includes('favicon.ico')
   ) {
-    if (session && pathname === '/login' && !isServerAction) {
+    if (session && (pathname === '/login' || pathname === '/register' || pathname.startsWith('/forgot-password')) && !isServerAction) {
       return NextResponse.redirect(new URL('/dashboard', request.url));
     }
     return NextResponse.next();

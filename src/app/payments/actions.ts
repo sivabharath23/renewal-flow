@@ -4,13 +4,22 @@ import db from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import fs from 'fs';
 import path from 'path';
+import { getUserFilter } from '@/lib/auth-helpers';
 
 export async function getPayments(statusFilter?: string) {
   try {
+    const filter = await getUserFilter();
+    if (!filter) return [];
+
     return await db.payment.findMany({
-      where: statusFilter && statusFilter !== 'ALL'
-        ? { status: statusFilter }
-        : undefined,
+      where: {
+        invoice: {
+          client: filter,
+        },
+        ...(statusFilter && statusFilter !== 'ALL'
+          ? { status: statusFilter }
+          : {}),
+      },
       include: {
         invoice: {
           include: {
@@ -40,6 +49,17 @@ export async function submitPaymentProofAction(formData: FormData) {
   }
 
   try {
+    const filter = await getUserFilter();
+    if (!filter) return { error: 'Unauthorized' };
+
+    // Verify parent invoice belongs to user
+    const invoiceExists = await db.invoice.findFirst({
+      where: { id: invoiceId, client: filter },
+    });
+    if (!invoiceExists) {
+      return { error: 'Invoice not found or unauthorized.' };
+    }
+
     const amount = parseFloat(amountStr);
     const paidDate = new Date(paidDateStr);
 
@@ -97,18 +117,21 @@ export async function submitPaymentProofAction(formData: FormData) {
 
 export async function approvePaymentAction(paymentId: string) {
   try {
-    const payment = await db.payment.findUnique({
-      where: { id: paymentId },
+    const filter = await getUserFilter();
+    if (!filter) return { error: 'Unauthorized' };
+
+    const payment = await db.payment.findFirst({
+      where: { id: paymentId, invoice: { client: filter } },
     });
 
     if (!payment) {
-      return { error: 'Payment record not found.' };
+      return { error: 'Payment record not found or unauthorized.' };
     }
 
     // 1. Update Payment status to VERIFIED
     await db.payment.update({
       where: { id: paymentId },
-      data: { status: 'VERIFIED', remarks: 'Payment approved by Administrator.' },
+      data: { status: 'VERIFIED', remarks: 'Payment approved.' },
     });
 
     // 2. Update parent Invoice status to PAID
@@ -133,7 +156,18 @@ export async function rejectPaymentAction(paymentId: string, remarks: string) {
   }
 
   try {
-    // Update Payment status to REJECTED with admin remarks
+    const filter = await getUserFilter();
+    if (!filter) return { error: 'Unauthorized' };
+
+    const payment = await db.payment.findFirst({
+      where: { id: paymentId, invoice: { client: filter } },
+    });
+
+    if (!payment) {
+      return { error: 'Payment record not found or unauthorized.' };
+    }
+
+    // Update Payment status to REJECTED with remarks
     await db.payment.update({
       where: { id: paymentId },
       data: { status: 'REJECTED', remarks },

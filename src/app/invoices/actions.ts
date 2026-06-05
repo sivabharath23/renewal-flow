@@ -3,20 +3,27 @@
 import db from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import QRCode from 'qrcode';
+import { getUserFilter, getSessionUser } from '@/lib/auth-helpers';
 
 export async function getInvoices(searchQuery?: string) {
   try {
+    const filter = await getUserFilter();
+    if (!filter) return [];
+
     return await db.invoice.findMany({
-      where: searchQuery
-        ? {
-            OR: [
-              { invoiceNumber: { contains: searchQuery } },
-              { client: { name: { contains: searchQuery } } },
-              { client: { companyName: { contains: searchQuery } } },
-              { project: { projectName: { contains: searchQuery } } },
-            ],
-          }
-        : undefined,
+      where: {
+        client: filter,
+        ...(searchQuery
+          ? {
+              OR: [
+                { invoiceNumber: { contains: searchQuery } },
+                { client: { name: { contains: searchQuery } } },
+                { client: { companyName: { contains: searchQuery } } },
+                { project: { projectName: { contains: searchQuery } } },
+              ],
+            }
+          : {}),
+      },
       include: {
         client: true,
         project: true,
@@ -30,17 +37,46 @@ export async function getInvoices(searchQuery?: string) {
   }
 }
 
-export async function getCompanySettings() {
+export async function getCompanySettings(invoiceId?: string) {
   try {
-    let settings = await db.setting.findFirst();
+    let targetUserId: string | null = null;
+
+    if (invoiceId) {
+      const invoice = await db.invoice.findUnique({
+        where: { id: invoiceId },
+        include: { client: true },
+      });
+      if (invoice && invoice.client.userId) {
+        targetUserId = invoice.client.userId;
+      }
+    }
+
+    if (!targetUserId) {
+      const user = await getSessionUser();
+      if (user) {
+        targetUserId = user.id;
+      }
+    }
+
+    if (!targetUserId) return null;
+
+    let settings = await db.setting.findUnique({
+      where: { userId: targetUserId },
+    });
+
     if (!settings) {
+      const user = await db.user.findUnique({
+        where: { id: targetUserId },
+        select: { email: true, name: true },
+      });
       settings = await db.setting.create({
         data: {
+          userId: targetUserId,
           companyName: 'RenewalFlow Agency',
-          companyEmail: 'hello@renewalflow.com',
+          companyEmail: user?.email || 'hello@renewalflow.com',
           companyPhone: '+1 234 567 890',
           upiId: '9003793639@ptsbi',
-          upiName: 'Sivabharath',
+          upiName: user?.name || 'Sivabharath',
         },
       });
     }
@@ -53,7 +89,10 @@ export async function getCompanySettings() {
 
 export async function generateUPIQRCode(amount: number, invoiceNumber: string) {
   try {
-    const settings = await getCompanySettings();
+    const invoice = await db.invoice.findUnique({
+      where: { invoiceNumber },
+    });
+    const settings = await getCompanySettings(invoice?.id);
     const upiId = settings?.upiId || '9003793639@ptsbi';
     const upiName = settings?.upiName || 'Sivabharath';
 
@@ -88,6 +127,25 @@ export async function createInvoiceAction(formData: FormData) {
   }
 
   try {
+    const filter = await getUserFilter();
+    if (!filter) return { error: 'Unauthorized' };
+
+    // Verify client belongs to user
+    const clientExists = await db.client.findFirst({
+      where: { id: clientId, ...filter },
+    });
+    if (!clientExists) {
+      return { error: 'Invalid client selected.' };
+    }
+
+    // Verify project belongs to user
+    const projectExists = await db.project.findFirst({
+      where: { id: projectId, client: filter },
+    });
+    if (!projectExists) {
+      return { error: 'Invalid project selected.' };
+    }
+
     const invoiceDate = new Date(invoiceDateStr);
     const dueDate = new Date(dueDateStr);
     const amount = parseFloat(amountStr);
@@ -137,6 +195,33 @@ export async function updateInvoiceAction(id: string, formData: FormData) {
   }
 
   try {
+    const filter = await getUserFilter();
+    if (!filter) return { error: 'Unauthorized' };
+
+    // Verify invoice belongs to user
+    const invoiceExists = await db.invoice.findFirst({
+      where: { id, client: filter },
+    });
+    if (!invoiceExists) {
+      return { error: 'Invoice not found or unauthorized.' };
+    }
+
+    // Verify client belongs to user
+    const clientExists = await db.client.findFirst({
+      where: { id: clientId, ...filter },
+    });
+    if (!clientExists) {
+      return { error: 'Invalid client selected.' };
+    }
+
+    // Verify project belongs to user
+    const projectExists = await db.project.findFirst({
+      where: { id: projectId, client: filter },
+    });
+    if (!projectExists) {
+      return { error: 'Invalid project selected.' };
+    }
+
     const invoiceDate = new Date(invoiceDateStr);
     const dueDate = new Date(dueDateStr);
     const amount = parseFloat(amountStr);
@@ -166,6 +251,17 @@ export async function updateInvoiceAction(id: string, formData: FormData) {
 
 export async function deleteInvoiceAction(id: string) {
   try {
+    const filter = await getUserFilter();
+    if (!filter) return { error: 'Unauthorized' };
+
+    // Verify invoice belongs to user
+    const invoiceExists = await db.invoice.findFirst({
+      where: { id, client: filter },
+    });
+    if (!invoiceExists) {
+      return { error: 'Invoice not found or unauthorized.' };
+    }
+
     await db.invoice.delete({
       where: { id },
     });

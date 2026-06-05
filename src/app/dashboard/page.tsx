@@ -1,6 +1,8 @@
 import db from '@/lib/db';
 import Link from 'next/link';
 import { Metadata } from 'next';
+import { getUserFilter } from '@/lib/auth-helpers';
+import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
   title: 'Dashboard',
@@ -24,17 +26,23 @@ import {
 export const revalidate = 0; // Disable static caching for real-time dashboard data
 
 export default async function DashboardPage() {
+  const filter = await getUserFilter();
+  if (!filter) {
+    redirect('/login');
+  }
+
   const now = new Date();
   const thirtyDaysFromNow = new Date();
   thirtyDaysFromNow.setDate(now.getDate() + 30);
 
   // Fetch Stats
-  const totalClients = await db.client.count();
-  const totalProjects = await db.project.count();
-  const activeDomains = await db.domain.count({ where: { status: 'ACTIVE' } });
+  const totalClients = await db.client.count({ where: filter });
+  const totalProjects = await db.project.count({ where: { client: filter } });
+  const activeDomains = await db.domain.count({ where: { status: 'ACTIVE', project: { client: filter } } });
   
   const expiringDomains = await db.domain.findMany({
     where: {
+      project: { client: filter },
       expiryDate: {
         gte: now,
         lte: thirtyDaysFromNow,
@@ -47,6 +55,7 @@ export default async function DashboardPage() {
 
   const expiringDomainsCount = await db.domain.count({
     where: {
+      project: { client: filter },
       expiryDate: {
         gte: now,
         lte: thirtyDaysFromNow,
@@ -54,9 +63,10 @@ export default async function DashboardPage() {
     },
   });
 
-  const totalServers = await db.server.count();
+  const totalServers = await db.server.count({ where: { project: { client: filter } } });
   const expiringServers = await db.server.findMany({
     where: {
+      project: { client: filter },
       expiryDate: {
         gte: now,
         lte: thirtyDaysFromNow,
@@ -69,6 +79,7 @@ export default async function DashboardPage() {
 
   const expiringServersCount = await db.server.count({
     where: {
+      project: { client: filter },
       expiryDate: {
         gte: now,
         lte: thirtyDaysFromNow,
@@ -78,6 +89,7 @@ export default async function DashboardPage() {
 
   const expiringAmcContracts = await db.aMCContract.findMany({
     where: {
+      project: { client: filter },
       endDate: {
         gte: now,
         lte: thirtyDaysFromNow,
@@ -90,6 +102,7 @@ export default async function DashboardPage() {
 
   const expiringAmcCount = await db.aMCContract.count({
     where: {
+      project: { client: filter },
       endDate: {
         gte: now,
         lte: thirtyDaysFromNow,
@@ -98,20 +111,21 @@ export default async function DashboardPage() {
   });
 
   const pendingInvoices = await db.invoice.findMany({
-    where: { status: 'PENDING' },
+    where: { status: 'PENDING', client: filter },
     include: { client: true },
     take: 5,
     orderBy: { dueDate: 'asc' },
   });
 
   const pendingInvoicesCount = await db.invoice.count({
-    where: { status: 'PENDING' },
+    where: { status: 'PENDING', client: filter },
   });
 
   // Calculate Revenue
   const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const paidInvoicesThisMonth = await db.invoice.findMany({
     where: {
+      client: filter,
       status: 'PAID',
       updatedAt: {
         gte: firstDayOfMonth,
@@ -131,6 +145,7 @@ export default async function DashboardPage() {
 
     const paidInMonth = await db.invoice.findMany({
       where: {
+        client: filter,
         status: 'PAID',
         updatedAt: {
           gte: start,

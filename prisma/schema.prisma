@@ -16,12 +16,16 @@ model User {
   agencyType       String?
   otpCode          String?
   otpExpiry        DateTime?
+  clients          Client[]
+  setting          Setting?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 }
 
 model Client {
   id          String    @id @default(cuid())
+  userId      String?
+  user        User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
   name        String
   companyName String
   email       String
@@ -140,6 +144,8 @@ model Reminder {
 
 model Setting {
   id                String   @id @default(cuid())
+  userId            String?  @unique
+  user              User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   companyName       String   @default("RenewalFlow")
   companyLogo       String?
   showLogo          Boolean  @default(true)

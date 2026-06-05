@@ -2,19 +2,26 @@
 
 import db from '@/lib/db';
 import { revalidatePath } from 'next/cache';
+import { getUserFilter } from '@/lib/auth-helpers';
 
 export async function getDomains(searchQuery?: string) {
   try {
+    const filter = await getUserFilter();
+    if (!filter) return [];
+
     return await db.domain.findMany({
-      where: searchQuery
-        ? {
-            OR: [
-              { domainName: { contains: searchQuery } },
-              { registrar: { contains: searchQuery } },
-              { project: { projectName: { contains: searchQuery } } },
-            ],
-          }
-        : undefined,
+      where: {
+        project: { client: filter },
+        ...(searchQuery
+          ? {
+              OR: [
+                { domainName: { contains: searchQuery } },
+                { registrar: { contains: searchQuery } },
+                { project: { projectName: { contains: searchQuery } } },
+              ],
+            }
+          : {}),
+      },
       include: {
         project: {
           include: {
@@ -46,6 +53,17 @@ export async function createDomainAction(formData: FormData) {
   }
 
   try {
+    const filter = await getUserFilter();
+    if (!filter) return { error: 'Unauthorized' };
+
+    // Verify project belongs to user
+    const projectExists = await db.project.findFirst({
+      where: { id: projectId, client: filter },
+    });
+    if (!projectExists) {
+      return { error: 'Invalid project selected.' };
+    }
+
     const purchaseDate = new Date(purchaseDateStr);
     const expiryDate = new Date(expiryDateStr);
     const renewalAmount = parseFloat(renewalAmountStr);
@@ -89,6 +107,25 @@ export async function updateDomainAction(id: string, formData: FormData) {
   }
 
   try {
+    const filter = await getUserFilter();
+    if (!filter) return { error: 'Unauthorized' };
+
+    // Verify domain belongs to user
+    const domainExists = await db.domain.findFirst({
+      where: { id, project: { client: filter } },
+    });
+    if (!domainExists) {
+      return { error: 'Domain record not found or unauthorized.' };
+    }
+
+    // Verify new project belongs to user
+    const projectExists = await db.project.findFirst({
+      where: { id: projectId, client: filter },
+    });
+    if (!projectExists) {
+      return { error: 'Invalid project selected.' };
+    }
+
     const purchaseDate = new Date(purchaseDateStr);
     const expiryDate = new Date(expiryDateStr);
     const renewalAmount = parseFloat(renewalAmountStr);
@@ -119,6 +156,17 @@ export async function updateDomainAction(id: string, formData: FormData) {
 
 export async function deleteDomainAction(id: string) {
   try {
+    const filter = await getUserFilter();
+    if (!filter) return { error: 'Unauthorized' };
+
+    // Verify domain belongs to user
+    const domainExists = await db.domain.findFirst({
+      where: { id, project: { client: filter } },
+    });
+    if (!domainExists) {
+      return { error: 'Domain record not found or unauthorized.' };
+    }
+
     await db.domain.delete({
       where: { id },
     });

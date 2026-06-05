@@ -24,6 +24,15 @@ export async function getSessionUser() {
   }
 }
 
+export async function getUserFilter() {
+  const user = await getSessionUser();
+  if (!user) return null;
+  if (user.email === 'admin@renewalflow.com') {
+    return {};
+  }
+  return { userId: user.id };
+}
+
 export async function logoutUser() {
   const cookieStore = await cookies();
   cookieStore.delete('auth_session');

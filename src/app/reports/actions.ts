@@ -1,14 +1,19 @@
 'use server';
 
 import db from '@/lib/db';
+import { getUserFilter } from '@/lib/auth-helpers';
 
 export async function getRevenueReport(startDateStr?: string, endDateStr?: string) {
   try {
+    const filter = await getUserFilter();
+    if (!filter) return [];
+
     const start = startDateStr ? new Date(startDateStr) : new Date(new Date().getFullYear(), 0, 1);
     const end = endDateStr ? new Date(endDateStr) : new Date();
 
     const invoices = await db.invoice.findMany({
       where: {
+        client: filter,
         status: 'PAID',
         updatedAt: {
           gte: start,
@@ -37,7 +42,11 @@ export async function getRevenueReport(startDateStr?: string, endDateStr?: strin
 
 export async function getClientReport() {
   try {
+    const filter = await getUserFilter();
+    if (!filter) return [];
+
     const clients = await db.client.findMany({
+      where: filter,
       include: {
         projects: {
           include: {
@@ -76,11 +85,17 @@ export async function getClientReport() {
 
 export async function getDomainReport(startDateStr?: string, endDateStr?: string) {
   try {
+    const filter = await getUserFilter();
+    if (!filter) return [];
+
     const start = startDateStr ? new Date(startDateStr) : new Date();
     const end = endDateStr ? new Date(endDateStr) : new Date(new Date().getFullYear(), new Date().getMonth() + 12, 1);
 
     const domains = await db.domain.findMany({
       where: {
+        project: {
+          client: filter,
+        },
         expiryDate: {
           gte: start,
           lte: end,
@@ -111,11 +126,17 @@ export async function getDomainReport(startDateStr?: string, endDateStr?: string
 
 export async function getServerReport(startDateStr?: string, endDateStr?: string) {
   try {
+    const filter = await getUserFilter();
+    if (!filter) return [];
+
     const start = startDateStr ? new Date(startDateStr) : new Date();
     const end = endDateStr ? new Date(endDateStr) : new Date(new Date().getFullYear(), new Date().getMonth() + 12, 1);
 
     const servers = await db.server.findMany({
       where: {
+        project: {
+          client: filter,
+        },
         expiryDate: {
           gte: start,
           lte: end,
@@ -146,11 +167,17 @@ export async function getServerReport(startDateStr?: string, endDateStr?: string
 
 export async function getAMCReport(startDateStr?: string, endDateStr?: string) {
   try {
+    const filter = await getUserFilter();
+    if (!filter) return [];
+
     const start = startDateStr ? new Date(startDateStr) : new Date();
     const end = endDateStr ? new Date(endDateStr) : new Date(new Date().getFullYear(), new Date().getMonth() + 12, 1);
 
     const amcs = await db.aMCContract.findMany({
       where: {
+        project: {
+          client: filter,
+        },
         endDate: {
           gte: start,
           lte: end,
@@ -181,8 +208,12 @@ export async function getAMCReport(startDateStr?: string, endDateStr?: string) {
 
 export async function getPendingPaymentsReport() {
   try {
+    const filter = await getUserFilter();
+    if (!filter) return [];
+
     const invoices = await db.invoice.findMany({
       where: {
+        client: filter,
         status: 'PENDING',
       },
       include: {

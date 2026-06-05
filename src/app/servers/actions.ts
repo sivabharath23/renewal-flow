@@ -2,20 +2,27 @@
 
 import db from '@/lib/db';
 import { revalidatePath } from 'next/cache';
+import { getUserFilter } from '@/lib/auth-helpers';
 
 export async function getServers(searchQuery?: string) {
   try {
+    const filter = await getUserFilter();
+    if (!filter) return [];
+
     return await db.server.findMany({
-      where: searchQuery
-        ? {
-            OR: [
-              { provider: { contains: searchQuery } },
-              { planName: { contains: searchQuery } },
-              { ipAddress: { contains: searchQuery } },
-              { project: { projectName: { contains: searchQuery } } },
-            ],
-          }
-        : undefined,
+      where: {
+        project: { client: filter },
+        ...(searchQuery
+          ? {
+              OR: [
+                { provider: { contains: searchQuery } },
+                { planName: { contains: searchQuery } },
+                { ipAddress: { contains: searchQuery } },
+                { project: { projectName: { contains: searchQuery } } },
+              ],
+            }
+          : {}),
+      },
       include: {
         project: {
           include: {
@@ -46,6 +53,17 @@ export async function createServerAction(formData: FormData) {
   }
 
   try {
+    const filter = await getUserFilter();
+    if (!filter) return { error: 'Unauthorized' };
+
+    // Verify project belongs to user
+    const projectExists = await db.project.findFirst({
+      where: { id: projectId, client: filter },
+    });
+    if (!projectExists) {
+      return { error: 'Invalid project selected.' };
+    }
+
     const purchaseDate = new Date(purchaseDateStr);
     const expiryDate = new Date(expiryDateStr);
     const amount = parseFloat(amountStr);
@@ -87,6 +105,25 @@ export async function updateServerAction(id: string, formData: FormData) {
   }
 
   try {
+    const filter = await getUserFilter();
+    if (!filter) return { error: 'Unauthorized' };
+
+    // Verify server belongs to user
+    const serverExists = await db.server.findFirst({
+      where: { id, project: { client: filter } },
+    });
+    if (!serverExists) {
+      return { error: 'Server record not found or unauthorized.' };
+    }
+
+    // Verify new project belongs to user
+    const projectExists = await db.project.findFirst({
+      where: { id: projectId, client: filter },
+    });
+    if (!projectExists) {
+      return { error: 'Invalid project selected.' };
+    }
+
     const purchaseDate = new Date(purchaseDateStr);
     const expiryDate = new Date(expiryDateStr);
     const amount = parseFloat(amountStr);
@@ -116,6 +153,17 @@ export async function updateServerAction(id: string, formData: FormData) {
 
 export async function deleteServerAction(id: string) {
   try {
+    const filter = await getUserFilter();
+    if (!filter) return { error: 'Unauthorized' };
+
+    // Verify server belongs to user
+    const serverExists = await db.server.findFirst({
+      where: { id, project: { client: filter } },
+    });
+    if (!serverExists) {
+      return { error: 'Server record not found or unauthorized.' };
+    }
+
     await db.server.delete({
       where: { id },
     });

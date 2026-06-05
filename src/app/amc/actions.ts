@@ -2,19 +2,26 @@
 
 import db from '@/lib/db';
 import { revalidatePath } from 'next/cache';
+import { getUserFilter } from '@/lib/auth-helpers';
 
 export async function getAMCs(searchQuery?: string) {
   try {
+    const filter = await getUserFilter();
+    if (!filter) return [];
+
     return await db.aMCContract.findMany({
-      where: searchQuery
-        ? {
-            OR: [
-              { project: { projectName: { contains: searchQuery } } },
-              { project: { client: { name: { contains: searchQuery } } } },
-              { project: { client: { companyName: { contains: searchQuery } } } },
-            ],
-          }
-        : undefined,
+      where: {
+        project: { client: filter },
+        ...(searchQuery
+          ? {
+              OR: [
+                { project: { projectName: { contains: searchQuery } } },
+                { project: { client: { name: { contains: searchQuery } } } },
+                { project: { client: { companyName: { contains: searchQuery } } } },
+              ],
+            }
+          : {}),
+      },
       include: {
         project: {
           include: {
@@ -44,6 +51,17 @@ export async function createAMCAction(formData: FormData) {
   }
 
   try {
+    const filter = await getUserFilter();
+    if (!filter) return { error: 'Unauthorized' };
+
+    // Verify project belongs to user
+    const projectExists = await db.project.findFirst({
+      where: { id: projectId, client: filter },
+    });
+    if (!projectExists) {
+      return { error: 'Invalid project selected.' };
+    }
+
     const startDate = new Date(startDateStr);
     const endDate = new Date(endDateStr);
     const amount = parseFloat(amountStr);
@@ -83,6 +101,25 @@ export async function updateAMCAction(id: string, formData: FormData) {
   }
 
   try {
+    const filter = await getUserFilter();
+    if (!filter) return { error: 'Unauthorized' };
+
+    // Verify AMC belongs to user
+    const amcExists = await db.aMCContract.findFirst({
+      where: { id, project: { client: filter } },
+    });
+    if (!amcExists) {
+      return { error: 'AMC contract record not found or unauthorized.' };
+    }
+
+    // Verify new project belongs to user
+    const projectExists = await db.project.findFirst({
+      where: { id: projectId, client: filter },
+    });
+    if (!projectExists) {
+      return { error: 'Invalid project selected.' };
+    }
+
     const startDate = new Date(startDateStr);
     const endDate = new Date(endDateStr);
     const amount = parseFloat(amountStr);
@@ -111,6 +148,17 @@ export async function updateAMCAction(id: string, formData: FormData) {
 
 export async function deleteAMCAction(id: string) {
   try {
+    const filter = await getUserFilter();
+    if (!filter) return { error: 'Unauthorized' };
+
+    // Verify AMC belongs to user
+    const amcExists = await db.aMCContract.findFirst({
+      where: { id, project: { client: filter } },
+    });
+    if (!amcExists) {
+      return { error: 'AMC contract record not found or unauthorized.' };
+    }
+
     await db.aMCContract.delete({
       where: { id },
     });

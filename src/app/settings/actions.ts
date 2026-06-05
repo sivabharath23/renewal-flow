@@ -2,18 +2,26 @@
 
 import db from '@/lib/db';
 import { revalidatePath } from 'next/cache';
+import { getSessionUser } from '@/lib/auth-helpers';
 
 export async function getSettings() {
   try {
-    let settings = await db.setting.findFirst();
+    const user = await getSessionUser();
+    if (!user) return null;
+
+    let settings = await db.setting.findUnique({
+      where: { userId: user.id },
+    });
+
     if (!settings) {
       settings = await db.setting.create({
         data: {
+          userId: user.id,
           companyName: 'RenewalFlow Agency',
-          companyEmail: 'hello@renewalflow.com',
+          companyEmail: user.email,
           companyPhone: '+1 234 567 890',
           upiId: '9003793639@ptsbi',
-          upiName: 'Sivabharath',
+          upiName: user.name || 'Sivabharath',
           reminderDays: '30,15,7,3,1',
           notificationEmail: 'alerts@renewalflow.com',
         },
@@ -42,7 +50,12 @@ export async function updateSettingsAction(formData: FormData) {
   }
 
   try {
-    const existing = await db.setting.findFirst();
+    const user = await getSessionUser();
+    if (!user) return { error: 'Unauthorized' };
+
+    const existing = await db.setting.findUnique({
+      where: { userId: user.id },
+    });
     const logoToSave = companyLogo === '' ? null : companyLogo;
 
     if (existing) {
@@ -63,6 +76,7 @@ export async function updateSettingsAction(formData: FormData) {
     } else {
       await db.setting.create({
         data: {
+          userId: user.id,
           companyName,
           companyEmail,
           companyPhone,

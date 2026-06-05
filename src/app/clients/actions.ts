@@ -2,19 +2,26 @@
 
 import db from '@/lib/db';
 import { revalidatePath } from 'next/cache';
+import { getSessionUser, getUserFilter } from '@/lib/auth-helpers';
 
 export async function getClients(searchQuery?: string) {
   try {
+    const filter = await getUserFilter();
+    if (!filter) return [];
+
     return await db.client.findMany({
-      where: searchQuery
-        ? {
-            OR: [
-              { name: { contains: searchQuery } },
-              { companyName: { contains: searchQuery } },
-              { email: { contains: searchQuery } },
-            ],
-          }
-        : undefined,
+      where: {
+        ...filter,
+        ...(searchQuery
+          ? {
+              OR: [
+                { name: { contains: searchQuery } },
+                { companyName: { contains: searchQuery } },
+                { email: { contains: searchQuery } },
+              ],
+            }
+          : {}),
+      },
       include: {
         _count: {
           select: { projects: true },
@@ -42,8 +49,11 @@ export async function createClientAction(formData: FormData) {
   }
 
   try {
+    const user = await getSessionUser();
+    if (!user) return { error: 'Unauthorized' };
+
     await db.client.create({
-      data: { name, companyName, email, phone, address, gstNo, notes },
+      data: { name, companyName, email, phone, address, gstNo, notes, userId: user.id },
     });
     revalidatePath('/clients');
     revalidatePath('/dashboard');
@@ -68,6 +78,17 @@ export async function updateClientAction(id: string, formData: FormData) {
   }
 
   try {
+    const filter = await getUserFilter();
+    if (!filter) return { error: 'Unauthorized' };
+
+    const existing = await db.client.findFirst({
+      where: { id, ...filter },
+    });
+
+    if (!existing) {
+      return { error: 'Client record not found or unauthorized.' };
+    }
+
     await db.client.update({
       where: { id },
       data: { name, companyName, email, phone, address, gstNo, notes },
@@ -83,6 +104,17 @@ export async function updateClientAction(id: string, formData: FormData) {
 
 export async function deleteClientAction(id: string) {
   try {
+    const filter = await getUserFilter();
+    if (!filter) return { error: 'Unauthorized' };
+
+    const existing = await db.client.findFirst({
+      where: { id, ...filter },
+    });
+
+    if (!existing) {
+      return { error: 'Client record not found or unauthorized.' };
+    }
+
     await db.client.delete({
       where: { id },
     });
