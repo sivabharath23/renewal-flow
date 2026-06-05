@@ -9,18 +9,24 @@ generator client {
 }
 
 model User {
-  id               String    @id @default(cuid())
+  id               String        @id @default(cuid())
   name             String
-  email            String    @unique
+  email            String        @unique
   password         String
-  role             String    @default("CLIENT")
+  role             String        @default("CLIENT")
   agencyType       String?
   otpCode          String?
   otpExpiry        DateTime?
   clients          Client[]
+  projects         Project[]
+  domains          Domain[]
+  servers          Server[]
+  amcContracts     AMCContract[]
+  invoices         Invoice[]
+  payments         Payment[]
   setting          Setting?
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
 }
 
 model Client {
@@ -42,6 +48,8 @@ model Client {
 
 model Project {
   id           String        @id @default(cuid())
+  userId       String?
+  user         User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
   clientId     String
   client       Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
   projectName  String
@@ -57,6 +65,8 @@ model Project {
 
 model Domain {
   id            String   @id @default(cuid())
+  userId        String?
+  user          User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   projectId     String
   project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   domainName    String
@@ -73,6 +83,8 @@ model Domain {
 
 model Server {
   id           String   @id @default(cuid())
+  userId       String?
+  user         User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   projectId    String
   project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   provider     String
@@ -88,6 +100,8 @@ model Server {
 
 model AMCContract {
   id           String   @id @default(cuid())
+  userId       String?
+  user         User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   projectId    String
   project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   startDate    DateTime
@@ -102,6 +116,8 @@ model AMCContract {
 
 model Invoice {
   id            String    @id @default(cuid())
+  userId        String?
+  user          User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
   invoiceNumber String    @unique
   clientId      String
   client        Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
@@ -120,6 +136,8 @@ model Invoice {
 
 model Payment {
   id             String   @id @default(cuid())
+  userId         String?
+  user           User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   invoiceId      String
   invoice        Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
   amount         Float

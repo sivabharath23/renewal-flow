@@ -2,7 +2,7 @@
 
 import db from '@/lib/db';
 import { revalidatePath } from 'next/cache';
-import { getUserFilter } from '@/lib/auth-helpers';
+import { getUserFilter, getSessionUser } from '@/lib/auth-helpers';
 
 export async function getDomains(searchQuery?: string) {
   try {
@@ -11,7 +11,7 @@ export async function getDomains(searchQuery?: string) {
 
     return await db.domain.findMany({
       where: {
-        project: { client: filter },
+        ...filter,
         ...(searchQuery
           ? {
               OR: [
@@ -53,12 +53,15 @@ export async function createDomainAction(formData: FormData) {
   }
 
   try {
+    const user = await getSessionUser();
+    if (!user) return { error: 'Unauthorized' };
+
     const filter = await getUserFilter();
     if (!filter) return { error: 'Unauthorized' };
 
     // Verify project belongs to user
     const projectExists = await db.project.findFirst({
-      where: { id: projectId, client: filter },
+      where: { id: projectId, ...filter },
     });
     if (!projectExists) {
       return { error: 'Invalid project selected.' };
@@ -79,6 +82,7 @@ export async function createDomainAction(formData: FormData) {
         autoRenew,
         status,
         notes,
+        userId: user.id,
       },
     });
 
@@ -112,7 +116,7 @@ export async function updateDomainAction(id: string, formData: FormData) {
 
     // Verify domain belongs to user
     const domainExists = await db.domain.findFirst({
-      where: { id, project: { client: filter } },
+      where: { id, ...filter },
     });
     if (!domainExists) {
       return { error: 'Domain record not found or unauthorized.' };
@@ -120,7 +124,7 @@ export async function updateDomainAction(id: string, formData: FormData) {
 
     // Verify new project belongs to user
     const projectExists = await db.project.findFirst({
-      where: { id: projectId, client: filter },
+      where: { id: projectId, ...filter },
     });
     if (!projectExists) {
       return { error: 'Invalid project selected.' };
@@ -161,7 +165,7 @@ export async function deleteDomainAction(id: string) {
 
     // Verify domain belongs to user
     const domainExists = await db.domain.findFirst({
-      where: { id, project: { client: filter } },
+      where: { id, ...filter },
     });
     if (!domainExists) {
       return { error: 'Domain record not found or unauthorized.' };

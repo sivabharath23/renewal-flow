@@ -2,7 +2,7 @@
 
 import db from '@/lib/db';
 import { revalidatePath } from 'next/cache';
-import { getUserFilter } from '@/lib/auth-helpers';
+import { getUserFilter, getSessionUser } from '@/lib/auth-helpers';
 
 export async function getAMCs(searchQuery?: string) {
   try {
@@ -11,7 +11,7 @@ export async function getAMCs(searchQuery?: string) {
 
     return await db.aMCContract.findMany({
       where: {
-        project: { client: filter },
+        ...filter,
         ...(searchQuery
           ? {
               OR: [
@@ -51,12 +51,15 @@ export async function createAMCAction(formData: FormData) {
   }
 
   try {
+    const user = await getSessionUser();
+    if (!user) return { error: 'Unauthorized' };
+
     const filter = await getUserFilter();
     if (!filter) return { error: 'Unauthorized' };
 
     // Verify project belongs to user
     const projectExists = await db.project.findFirst({
-      where: { id: projectId, client: filter },
+      where: { id: projectId, ...filter },
     });
     if (!projectExists) {
       return { error: 'Invalid project selected.' };
@@ -75,6 +78,7 @@ export async function createAMCAction(formData: FormData) {
         renewalCycle,
         status,
         notes,
+        userId: user.id,
       },
     });
 
@@ -106,7 +110,7 @@ export async function updateAMCAction(id: string, formData: FormData) {
 
     // Verify AMC belongs to user
     const amcExists = await db.aMCContract.findFirst({
-      where: { id, project: { client: filter } },
+      where: { id, ...filter },
     });
     if (!amcExists) {
       return { error: 'AMC contract record not found or unauthorized.' };
@@ -114,7 +118,7 @@ export async function updateAMCAction(id: string, formData: FormData) {
 
     // Verify new project belongs to user
     const projectExists = await db.project.findFirst({
-      where: { id: projectId, client: filter },
+      where: { id: projectId, ...filter },
     });
     if (!projectExists) {
       return { error: 'Invalid project selected.' };
@@ -153,7 +157,7 @@ export async function deleteAMCAction(id: string) {
 
     // Verify AMC belongs to user
     const amcExists = await db.aMCContract.findFirst({
-      where: { id, project: { client: filter } },
+      where: { id, ...filter },
     });
     if (!amcExists) {
       return { error: 'AMC contract record not found or unauthorized.' };

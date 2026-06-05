@@ -12,7 +12,7 @@ export async function getInvoices(searchQuery?: string) {
 
     return await db.invoice.findMany({
       where: {
-        client: filter,
+        ...filter,
         ...(searchQuery
           ? {
               OR: [
@@ -44,10 +44,9 @@ export async function getCompanySettings(invoiceId?: string) {
     if (invoiceId) {
       const invoice = await db.invoice.findUnique({
         where: { id: invoiceId },
-        include: { client: true },
       });
-      if (invoice && invoice.client.userId) {
-        targetUserId = invoice.client.userId;
+      if (invoice && invoice.userId) {
+        targetUserId = invoice.userId;
       }
     }
 
@@ -127,6 +126,9 @@ export async function createInvoiceAction(formData: FormData) {
   }
 
   try {
+    const user = await getSessionUser();
+    if (!user) return { error: 'Unauthorized' };
+
     const filter = await getUserFilter();
     if (!filter) return { error: 'Unauthorized' };
 
@@ -140,7 +142,7 @@ export async function createInvoiceAction(formData: FormData) {
 
     // Verify project belongs to user
     const projectExists = await db.project.findFirst({
-      where: { id: projectId, client: filter },
+      where: { id: projectId, ...filter },
     });
     if (!projectExists) {
       return { error: 'Invalid project selected.' };
@@ -168,6 +170,7 @@ export async function createInvoiceAction(formData: FormData) {
         amount,
         description,
         status,
+        userId: user.id,
       },
     });
 
@@ -200,7 +203,7 @@ export async function updateInvoiceAction(id: string, formData: FormData) {
 
     // Verify invoice belongs to user
     const invoiceExists = await db.invoice.findFirst({
-      where: { id, client: filter },
+      where: { id, ...filter },
     });
     if (!invoiceExists) {
       return { error: 'Invoice not found or unauthorized.' };
@@ -216,7 +219,7 @@ export async function updateInvoiceAction(id: string, formData: FormData) {
 
     // Verify project belongs to user
     const projectExists = await db.project.findFirst({
-      where: { id: projectId, client: filter },
+      where: { id: projectId, ...filter },
     });
     if (!projectExists) {
       return { error: 'Invalid project selected.' };
@@ -256,7 +259,7 @@ export async function deleteInvoiceAction(id: string) {
 
     // Verify invoice belongs to user
     const invoiceExists = await db.invoice.findFirst({
-      where: { id, client: filter },
+      where: { id, ...filter },
     });
     if (!invoiceExists) {
       return { error: 'Invoice not found or unauthorized.' };

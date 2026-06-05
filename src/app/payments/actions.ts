@@ -4,7 +4,7 @@ import db from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import fs from 'fs';
 import path from 'path';
-import { getUserFilter } from '@/lib/auth-helpers';
+import { getUserFilter, getSessionUser } from '@/lib/auth-helpers';
 
 export async function getPayments(statusFilter?: string) {
   try {
@@ -13,9 +13,7 @@ export async function getPayments(statusFilter?: string) {
 
     return await db.payment.findMany({
       where: {
-        invoice: {
-          client: filter,
-        },
+        ...filter,
         ...(statusFilter && statusFilter !== 'ALL'
           ? { status: statusFilter }
           : {}),
@@ -49,12 +47,15 @@ export async function submitPaymentProofAction(formData: FormData) {
   }
 
   try {
+    const user = await getSessionUser();
+    if (!user) return { error: 'Unauthorized' };
+
     const filter = await getUserFilter();
     if (!filter) return { error: 'Unauthorized' };
 
     // Verify parent invoice belongs to user
     const invoiceExists = await db.invoice.findFirst({
-      where: { id: invoiceId, client: filter },
+      where: { id: invoiceId, ...filter },
     });
     if (!invoiceExists) {
       return { error: 'Invoice not found or unauthorized.' };
@@ -93,6 +94,7 @@ export async function submitPaymentProofAction(formData: FormData) {
         proofImage,
         remarks,
         status: 'PENDING',
+        userId: invoiceExists.userId || user.id,
       },
     });
 
@@ -121,7 +123,7 @@ export async function approvePaymentAction(paymentId: string) {
     if (!filter) return { error: 'Unauthorized' };
 
     const payment = await db.payment.findFirst({
-      where: { id: paymentId, invoice: { client: filter } },
+      where: { id: paymentId, ...filter },
     });
 
     if (!payment) {
@@ -160,7 +162,7 @@ export async function rejectPaymentAction(paymentId: string, remarks: string) {
     if (!filter) return { error: 'Unauthorized' };
 
     const payment = await db.payment.findFirst({
-      where: { id: paymentId, invoice: { client: filter } },
+      where: { id: paymentId, ...filter },
     });
 
     if (!payment) {

@@ -2,7 +2,7 @@
 
 import db from '@/lib/db';
 import { revalidatePath } from 'next/cache';
-import { getUserFilter } from '@/lib/auth-helpers';
+import { getUserFilter, getSessionUser } from '@/lib/auth-helpers';
 
 export async function getServers(searchQuery?: string) {
   try {
@@ -11,7 +11,7 @@ export async function getServers(searchQuery?: string) {
 
     return await db.server.findMany({
       where: {
-        project: { client: filter },
+        ...filter,
         ...(searchQuery
           ? {
               OR: [
@@ -53,12 +53,15 @@ export async function createServerAction(formData: FormData) {
   }
 
   try {
+    const user = await getSessionUser();
+    if (!user) return { error: 'Unauthorized' };
+
     const filter = await getUserFilter();
     if (!filter) return { error: 'Unauthorized' };
 
     // Verify project belongs to user
     const projectExists = await db.project.findFirst({
-      where: { id: projectId, client: filter },
+      where: { id: projectId, ...filter },
     });
     if (!projectExists) {
       return { error: 'Invalid project selected.' };
@@ -78,6 +81,7 @@ export async function createServerAction(formData: FormData) {
         expiryDate,
         amount,
         notes,
+        userId: user.id,
       },
     });
 
@@ -110,7 +114,7 @@ export async function updateServerAction(id: string, formData: FormData) {
 
     // Verify server belongs to user
     const serverExists = await db.server.findFirst({
-      where: { id, project: { client: filter } },
+      where: { id, ...filter },
     });
     if (!serverExists) {
       return { error: 'Server record not found or unauthorized.' };
@@ -118,7 +122,7 @@ export async function updateServerAction(id: string, formData: FormData) {
 
     // Verify new project belongs to user
     const projectExists = await db.project.findFirst({
-      where: { id: projectId, client: filter },
+      where: { id: projectId, ...filter },
     });
     if (!projectExists) {
       return { error: 'Invalid project selected.' };
@@ -158,7 +162,7 @@ export async function deleteServerAction(id: string) {
 
     // Verify server belongs to user
     const serverExists = await db.server.findFirst({
-      where: { id, project: { client: filter } },
+      where: { id, ...filter },
     });
     if (!serverExists) {
       return { error: 'Server record not found or unauthorized.' };

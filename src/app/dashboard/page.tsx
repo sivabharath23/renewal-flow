@@ -37,12 +37,12 @@ export default async function DashboardPage() {
 
   // Fetch Stats
   const totalClients = await db.client.count({ where: filter });
-  const totalProjects = await db.project.count({ where: { client: filter } });
-  const activeDomains = await db.domain.count({ where: { status: 'ACTIVE', project: { client: filter } } });
+  const totalProjects = await db.project.count({ where: filter });
+  const activeDomains = await db.domain.count({ where: { status: 'ACTIVE', ...filter } });
   
   const expiringDomains = await db.domain.findMany({
     where: {
-      project: { client: filter },
+      ...filter,
       expiryDate: {
         gte: now,
         lte: thirtyDaysFromNow,
@@ -52,21 +52,21 @@ export default async function DashboardPage() {
     take: 5,
     orderBy: { expiryDate: 'asc' },
   });
-
+ 
   const expiringDomainsCount = await db.domain.count({
     where: {
-      project: { client: filter },
+      ...filter,
       expiryDate: {
         gte: now,
         lte: thirtyDaysFromNow,
       },
     },
   });
-
-  const totalServers = await db.server.count({ where: { project: { client: filter } } });
+ 
+  const totalServers = await db.server.count({ where: filter });
   const expiringServers = await db.server.findMany({
     where: {
-      project: { client: filter },
+      ...filter,
       expiryDate: {
         gte: now,
         lte: thirtyDaysFromNow,
@@ -76,20 +76,20 @@ export default async function DashboardPage() {
     take: 5,
     orderBy: { expiryDate: 'asc' },
   });
-
+ 
   const expiringServersCount = await db.server.count({
     where: {
-      project: { client: filter },
+      ...filter,
       expiryDate: {
         gte: now,
         lte: thirtyDaysFromNow,
       },
     },
   });
-
+ 
   const expiringAmcContracts = await db.aMCContract.findMany({
     where: {
-      project: { client: filter },
+      ...filter,
       endDate: {
         gte: now,
         lte: thirtyDaysFromNow,
@@ -99,33 +99,33 @@ export default async function DashboardPage() {
     take: 5,
     orderBy: { endDate: 'asc' },
   });
-
+ 
   const expiringAmcCount = await db.aMCContract.count({
     where: {
-      project: { client: filter },
+      ...filter,
       endDate: {
         gte: now,
         lte: thirtyDaysFromNow,
       },
     },
   });
-
+ 
   const pendingInvoices = await db.invoice.findMany({
-    where: { status: 'PENDING', client: filter },
+    where: { status: 'PENDING', ...filter },
     include: { client: true },
     take: 5,
     orderBy: { dueDate: 'asc' },
   });
-
+ 
   const pendingInvoicesCount = await db.invoice.count({
-    where: { status: 'PENDING', client: filter },
+    where: { status: 'PENDING', ...filter },
   });
-
+ 
   // Calculate Revenue
   const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const paidInvoicesThisMonth = await db.invoice.findMany({
     where: {
-      client: filter,
+      ...filter,
       status: 'PAID',
       updatedAt: {
         gte: firstDayOfMonth,
@@ -134,7 +134,7 @@ export default async function DashboardPage() {
     select: { amount: true },
   });
   const revenueThisMonth = paidInvoicesThisMonth.reduce((acc, inv) => acc + inv.amount, 0);
-
+ 
   // Fetch monthly revenue data for the chart (last 6 months)
   const chartData = [];
   for (let i = 5; i >= 0; i--) {
@@ -142,10 +142,10 @@ export default async function DashboardPage() {
     const label = d.toLocaleString('default', { month: 'short' });
     const start = new Date(d.getFullYear(), d.getMonth(), 1);
     const end = new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59);
-
+ 
     const paidInMonth = await db.invoice.findMany({
       where: {
-        client: filter,
+        ...filter,
         status: 'PAID',
         updatedAt: {
           gte: start,

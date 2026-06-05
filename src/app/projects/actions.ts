@@ -2,7 +2,7 @@
 
 import db from '@/lib/db';
 import { revalidatePath } from 'next/cache';
-import { getUserFilter } from '@/lib/auth-helpers';
+import { getUserFilter, getSessionUser } from '@/lib/auth-helpers';
 
 export async function getProjects(searchQuery?: string) {
   try {
@@ -11,7 +11,7 @@ export async function getProjects(searchQuery?: string) {
 
     return await db.project.findMany({
       where: {
-        client: filter,
+        ...filter,
         ...(searchQuery
           ? {
               OR: [
@@ -52,6 +52,9 @@ export async function createProjectAction(formData: FormData) {
   }
 
   try {
+    const user = await getSessionUser();
+    if (!user) return { error: 'Unauthorized' };
+
     const filter = await getUserFilter();
     if (!filter) return { error: 'Unauthorized' };
 
@@ -64,7 +67,13 @@ export async function createProjectAction(formData: FormData) {
     }
 
     await db.project.create({
-      data: { projectName, clientId, description, status },
+      data: {
+        projectName,
+        clientId,
+        description,
+        status,
+        userId: user.id,
+      },
     });
     revalidatePath('/projects');
     revalidatePath('/dashboard');
@@ -91,7 +100,7 @@ export async function updateProjectAction(id: string, formData: FormData) {
 
     // Verify project belongs to user
     const projectExists = await db.project.findFirst({
-      where: { id, client: filter },
+      where: { id, ...filter },
     });
     if (!projectExists) {
       return { error: 'Project not found or unauthorized.' };
@@ -125,7 +134,7 @@ export async function deleteProjectAction(id: string) {
 
     // Verify project belongs to user
     const projectExists = await db.project.findFirst({
-      where: { id, client: filter },
+      where: { id, ...filter },
     });
     if (!projectExists) {
       return { error: 'Project not found or unauthorized.' };

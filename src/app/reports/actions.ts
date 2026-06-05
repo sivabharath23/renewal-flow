@@ -13,7 +13,7 @@ export async function getRevenueReport(startDateStr?: string, endDateStr?: strin
 
     const invoices = await db.invoice.findMany({
       where: {
-        client: filter,
+        ...filter,
         status: 'PAID',
         updatedAt: {
           gte: start,
@@ -93,9 +93,7 @@ export async function getDomainReport(startDateStr?: string, endDateStr?: string
 
     const domains = await db.domain.findMany({
       where: {
-        project: {
-          client: filter,
-        },
+        ...filter,
         expiryDate: {
           gte: start,
           lte: end,
@@ -134,9 +132,7 @@ export async function getServerReport(startDateStr?: string, endDateStr?: string
 
     const servers = await db.server.findMany({
       where: {
-        project: {
-          client: filter,
-        },
+        ...filter,
         expiryDate: {
           gte: start,
           lte: end,
@@ -175,9 +171,7 @@ export async function getAMCReport(startDateStr?: string, endDateStr?: string) {
 
     const amcs = await db.aMCContract.findMany({
       where: {
-        project: {
-          client: filter,
-        },
+        ...filter,
         endDate: {
           gte: start,
           lte: end,
@@ -213,7 +207,7 @@ export async function getPendingPaymentsReport() {
 
     const invoices = await db.invoice.findMany({
       where: {
-        client: filter,
+        ...filter,
         status: 'PENDING',
       },
       include: {
