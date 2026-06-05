@@ -756,7 +756,7 @@ export default function InvoicesPage() {
       {/* View Printable Invoice Modal (Full Sheet / UPI QR) */}
       {isViewOpen && selectedInvoice && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex justify-center items-start z-50 p-0 sm:p-4 overflow-y-auto print:bg-transparent print:p-0 print:static print:h-auto print:overflow-visible">
-          <div className="bg-white max-w-3xl w-full shadow-2xl p-6 sm:p-10 relative min-h-screen sm:min-h-0 sm:my-8 sm:rounded-2xl flex flex-col justify-between animate-in fade-in slide-in-from-bottom-8 duration-200 print:shadow-none print:border-none print:p-0 print:my-0 print:rounded-none">
+          <div className="bg-white max-w-3xl w-full shadow-2xl p-6 sm:p-10 relative min-h-screen sm:min-h-0 sm:my-8 sm:rounded-2xl flex flex-col justify-between animate-in fade-in slide-in-from-bottom-8 duration-200 print:shadow-none print:border-none print:p-6 print:my-0 print:rounded-none">
             {/* Top accent bar */}
             <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-t-2xl print:hidden" />
 
@@ -781,57 +781,57 @@ export default function InvoicesPage() {
             </div>
 
             {/* Printable Area starts */}
-            <div className="flex-1 flex flex-col gap-8 text-slate-800 text-xs font-medium mt-10 print:mt-0">
+            <div className="flex-1 flex flex-col gap-8 print:gap-4 text-slate-800 text-xs font-medium mt-10 print:mt-0">
               {/* Invoice Header */}
-              <div className="flex justify-between items-start border-b border-slate-100 pb-8 mt-6">
+              <div className="flex justify-between items-start border-b border-slate-100 pb-8 print:pb-4 mt-6 print:mt-2">
                 {/* Left Column: Brand & Logo */}
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-3 print:gap-1.5">
                   {settings?.showLogo && settings?.companyLogo ? (
-                    <div className="max-h-16 flex items-center mb-1">
+                    <div className="max-h-16 flex items-center mb-1 print:mb-0.5">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={settings.companyLogo}
                         alt="Company Logo"
-                        className="max-h-16 max-w-[220px] object-contain"
+                        className="max-h-16 max-w-[220px] object-contain print:max-h-12"
                       />
                     </div>
                   ) : (
-                    <h2 className="text-2xl font-black tracking-tight text-blue-600">
+                    <h2 className="text-2xl font-black tracking-tight text-blue-600 print:text-xl">
                       {settings?.companyName || 'RenewalFlow Agency'}
                     </h2>
                   )}
-                  <div className="text-slate-500 font-semibold space-y-1">
-                    <p className="font-bold text-slate-800 text-sm leading-none mb-1">
+                  <div className="text-slate-500 font-semibold space-y-1 print:space-y-0.5">
+                    <p className="font-bold text-slate-800 text-sm leading-none mb-1 print:mb-0 print:text-xs">
                       {settings?.companyName || 'RenewalFlow Agency'}
                     </p>
-                    <p className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5 text-slate-400 shrink-0" /> {settings?.companyEmail}</p>
-                    <p className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5 text-slate-400 shrink-0" /> {settings?.companyPhone}</p>
+                    <p className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5 text-slate-400 shrink-0 print:w-3 print:h-3" /> {settings?.companyEmail}</p>
+                    <p className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5 text-slate-400 shrink-0 print:w-3 print:h-3" /> {settings?.companyPhone}</p>
                   </div>
                 </div>
 
                 {/* Right Column: Invoice Details */}
-                <div className="text-right flex flex-col items-end gap-4">
+                <div className="text-right flex flex-col items-end gap-4 print:gap-2">
                   <div>
-                    <h1 className="text-3xl font-light tracking-widest text-slate-900 uppercase">INVOICE</h1>
-                    <div className="inline-block mt-2 px-3 py-1 bg-blue-50/50 text-blue-600 rounded-lg border border-blue-100/50 text-xs font-bold">
+                    <h1 className="text-3xl font-light tracking-widest text-slate-900 uppercase print:text-xl print:tracking-wider">INVOICE</h1>
+                    <div className="inline-block mt-2 px-3 py-1 bg-blue-50/50 text-blue-600 rounded-lg border border-blue-100/50 text-xs font-bold print:mt-1 print:py-0.5 print:px-2 print:text-[10px]">
                       Invoice No: {selectedInvoice.invoiceNumber}
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-right mt-1">
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-right mt-1 print:gap-y-1 print:mt-0">
                     <div>
                       <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Date of Issue</p>
-                      <p className="text-slate-700 font-bold mt-0.5">
+                      <p className="text-slate-700 font-bold mt-0.5 print:mt-0">
                         {new Date(selectedInvoice.invoiceDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </p>
                     </div>
                     <div>
                       <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Due Date</p>
-                      <p className="text-slate-700 font-bold mt-0.5">
+                      <p className="text-slate-700 font-bold mt-0.5 print:mt-0">
                         {new Date(selectedInvoice.dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </p>
                     </div>
-                    <div className="col-span-2 flex justify-end items-center gap-2 mt-1">
+                    <div className="col-span-2 flex justify-end items-center gap-2 mt-1 print:mt-0.5">
                       <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Status:</span>
                       <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider ${
                         selectedInvoice.status === 'PAID' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' :
@@ -847,19 +847,19 @@ export default function InvoicesPage() {
               </div>
 
               {/* Client & Project grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 border-b border-slate-100 pb-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 print:gap-4 border-b border-slate-100 pb-8 print:pb-4">
                 {/* Billed To client info */}
                 <div>
-                  <h3 className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-2.5">Billed To</h3>
+                  <h3 className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-2.5 print:mb-1">Billed To</h3>
                   <div className="space-y-1">
-                    <p className="text-sm font-bold text-slate-900">{selectedInvoice.client.companyName}</p>
+                    <p className="text-sm font-bold text-slate-900 print:text-xs">{selectedInvoice.client.companyName}</p>
                     <p className="text-xs font-semibold text-slate-700">{selectedInvoice.client.name}</p>
                     <p className="text-xs text-slate-500 leading-relaxed max-w-[280px] whitespace-pre-line">{selectedInvoice.client.address}</p>
-                    <div className="pt-2 text-[10px] text-slate-400 space-y-0.5">
+                    <div className="pt-2 print:pt-1 text-[10px] text-slate-400 space-y-0.5">
                       <p>Email: <span className="text-slate-600 font-medium">{selectedInvoice.client.email}</span></p>
                       <p>Phone: <span className="text-slate-600 font-medium">{selectedInvoice.client.phone}</span></p>
                       {selectedInvoice.client.gstNo && (
-                        <p className="font-bold text-slate-700 uppercase pt-1">GSTIN: {selectedInvoice.client.gstNo}</p>
+                        <p className="font-bold text-slate-700 uppercase pt-1 print:pt-0.5">GSTIN: {selectedInvoice.client.gstNo}</p>
                       )}
                     </div>
                   </div>
@@ -867,10 +867,10 @@ export default function InvoicesPage() {
 
                 {/* Project details */}
                 <div>
-                  <h3 className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-2.5">Project Details</h3>
-                  <div className="space-y-1.5">
-                    <p className="text-sm font-bold text-slate-900">{selectedInvoice.project.projectName}</p>
-                    <div className="p-3 bg-slate-50/50 rounded-xl border border-slate-100/50 print:bg-transparent">
+                  <h3 className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-2.5 print:mb-1">Project Details</h3>
+                  <div className="space-y-1.5 print:space-y-1">
+                    <p className="text-sm font-bold text-slate-900 print:text-xs">{selectedInvoice.project.projectName}</p>
+                    <div className="p-3 print:p-2 bg-slate-50/50 rounded-xl border border-slate-100/50 print:bg-transparent print:border-none print:p-0">
                       <p className="text-xs text-slate-600 leading-relaxed">
                         {selectedInvoice.description || 'Deliverables, development and maintenance services as per contract terms.'}
                       </p>
@@ -880,51 +880,51 @@ export default function InvoicesPage() {
               </div>
 
               {/* Table of charges */}
-              <div className="mt-2">
+              <div className="mt-2 print:mt-0">
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="border-b border-slate-200 text-slate-500 text-[9px] font-bold uppercase tracking-wider">
-                      <th className="py-3 pr-4 w-12 text-center">#</th>
-                      <th className="py-3 px-4">Item & Description</th>
-                      <th className="py-3 px-4 text-center w-20">Qty</th>
-                      <th className="py-3 px-4 text-right w-32">Rate</th>
-                      <th className="py-3 pl-4 text-right w-36">Amount</th>
+                      <th className="py-3 print:py-1.5 pr-4 w-12 text-center">#</th>
+                      <th className="py-3 print:py-1.5 px-4">Item & Description</th>
+                      <th className="py-3 print:py-1.5 text-center w-20">Qty</th>
+                      <th className="py-3 print:py-1.5 text-right w-32">Rate</th>
+                      <th className="py-3 print:py-1.5 pl-4 text-right w-36">Amount</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr className="border-b border-slate-100 hover:bg-slate-50/30 transition-colors">
-                      <td className="py-4 pr-4 font-semibold text-slate-400 text-center">1</td>
-                      <td className="py-4 px-4">
-                        <span className="font-bold text-slate-900 text-sm block">{selectedInvoice.project.projectName}</span>
-                        <span className="text-xs text-slate-500 block mt-1 leading-relaxed">
+                      <td className="py-4 print:py-2 pr-4 font-semibold text-slate-400 text-center">1</td>
+                      <td className="py-4 print:py-2 px-4">
+                        <span className="font-bold text-slate-900 text-sm print:text-xs block">{selectedInvoice.project.projectName}</span>
+                        <span className="text-xs text-slate-500 block mt-1 leading-relaxed print:mt-0.5">
                           {selectedInvoice.description || 'Assigned contract deliverables'}
                         </span>
                       </td>
-                      <td className="py-4 px-4 text-center text-slate-600">1</td>
-                      <td className="py-4 px-4 text-right text-slate-600">
+                      <td className="py-4 print:py-2 px-4 text-center text-slate-600">1</td>
+                      <td className="py-4 print:py-2 px-4 text-right text-slate-600">
                         ₹{selectedInvoice.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                       </td>
-                      <td className="py-4 pl-4 text-right font-bold text-slate-900 text-sm">
+                      <td className="py-4 print:py-2 pl-4 text-right font-bold text-slate-900 text-sm print:text-xs">
                         ₹{selectedInvoice.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                       </td>
                     </tr>
                     
                     {/* Summary rows */}
                     <tr>
-                      <td colSpan={3} className="py-4"></td>
-                      <td className="py-4 px-4 text-right text-slate-500 font-medium uppercase text-[9px] border-b border-slate-100">
+                      <td colSpan={3} className="py-4 print:py-1"></td>
+                      <td className="py-4 print:py-1.5 px-4 text-right text-slate-500 font-medium uppercase text-[9px] border-b border-slate-100">
                         Subtotal
                       </td>
-                      <td className="py-4 pl-4 text-right text-slate-900 font-semibold text-sm border-b border-slate-100">
+                      <td className="py-4 print:py-1.5 pl-4 text-right text-slate-900 font-semibold text-sm print:text-xs border-b border-slate-100">
                         ₹{selectedInvoice.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                       </td>
                     </tr>
                     <tr className="bg-slate-50/30 print:bg-transparent">
-                      <td colSpan={3} className="py-4"></td>
-                      <td className="py-4 px-4 text-right text-slate-900 font-bold uppercase text-[9px]">
+                      <td colSpan={3} className="py-4 print:py-1"></td>
+                      <td className="py-4 print:py-1.5 px-4 text-right text-slate-900 font-bold uppercase text-[9px]">
                         Total Due
                       </td>
-                      <td className="py-4 pl-4 text-right text-blue-600 font-black text-lg">
+                      <td className="py-4 print:py-1.5 pl-4 text-right text-blue-600 font-black text-lg print:text-base">
                         ₹{selectedInvoice.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                       </td>
                     </tr>
@@ -933,52 +933,52 @@ export default function InvoicesPage() {
               </div>
 
               {/* Payment Box & UPI QR */}
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-6 border border-slate-100 rounded-2xl p-5 bg-slate-50/30 mt-6 print:bg-transparent">
-                <div className="md:col-span-3 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-6 print:gap-4 border border-slate-100 rounded-2xl p-5 print:p-3 bg-slate-50/30 mt-6 print:mt-2 print:bg-transparent print:border-slate-200/60 print:rounded-xl">
+                <div className="md:col-span-3 space-y-4 print:space-y-2">
                   <div>
-                    <h4 className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
-                      <Coins className="w-4 h-4 text-blue-600" />
+                    <h4 className="font-bold text-slate-900 text-xs flex items-center gap-1.5 print:text-[11px]">
+                      <Coins className="w-4 h-4 text-blue-600 print:w-3.5 print:h-3.5" />
                       <span>Payment Instructions</span>
                     </h4>
-                    <p className="text-slate-500 text-[10px] leading-relaxed mt-1">
+                    <p className="text-slate-500 text-[10px] leading-relaxed mt-1 print:text-[9px] print:leading-snug">
                       Please scan the UPI QR code on the right with any UPI-enabled application (Google Pay, PhonePe, Paytm, BHIM) to make an instant, secure transfer. Alternatively, you can use the UPI handle details below.
                     </p>
                   </div>
                   
-                  <div className="grid grid-cols-1 gap-2 text-[10px] text-slate-600">
-                    <div className="flex justify-between py-1.5 border-b border-slate-100">
+                  <div className="grid grid-cols-1 gap-2 print:gap-1 text-[10px] text-slate-600 print:text-[9px]">
+                    <div className="flex justify-between py-1.5 print:py-0.5 border-b border-slate-100 print:border-slate-250/20">
                       <span className="text-slate-400 font-semibold">UPI VPA ID</span>
                       <strong className="text-slate-800 font-bold">{settings?.upiId || '9003793639@ptsbi'}</strong>
                     </div>
-                    <div className="flex justify-between py-1.5 border-b border-slate-100">
+                    <div className="flex justify-between py-1.5 print:py-0.5 border-b border-slate-100 print:border-slate-250/20">
                       <span className="text-slate-400 font-semibold">Payee Name</span>
                       <strong className="text-slate-800 font-bold">{settings?.upiName || 'Sivabharath'}</strong>
                     </div>
-                    <div className="flex justify-between py-1.5 border-b border-slate-100">
+                    <div className="flex justify-between py-1.5 print:py-0.5 border-b border-slate-100 print:border-slate-250/20">
                       <span className="text-slate-400 font-semibold">Reference Code</span>
                       <strong className="text-slate-800 font-bold">{selectedInvoice.invoiceNumber}</strong>
                     </div>
                   </div>
                 </div>
 
-                <div className="md:col-span-2 flex flex-col items-center justify-center border border-slate-150 rounded-xl p-4 bg-white shadow-xs print:shadow-none">
+                <div className="md:col-span-2 flex flex-col items-center justify-center border border-slate-150 rounded-xl p-4 bg-white shadow-xs print:shadow-none print:border-none print:p-0 print:bg-transparent">
                   {qrCodeUrl ? (
                     <div className="flex flex-col items-center">
-                      <div className="p-1.5 bg-slate-50 border border-slate-100 rounded-lg">
+                      <div className="p-1.5 bg-slate-50 border border-slate-100 rounded-lg print:p-0.5 print:border-slate-200">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={qrCodeUrl}
                           alt="UPI Payment QR"
-                          className="w-32 h-32 object-contain"
+                          className="w-32 h-32 print:w-22 print:h-22 object-contain"
                         />
                       </div>
-                      <span className="text-[9px] font-bold text-slate-500 mt-2 flex items-center gap-1 uppercase tracking-wider">
-                        <QrCode className="w-3 h-3 text-slate-400" />
+                      <span className="text-[9px] font-bold text-slate-500 mt-2 flex items-center gap-1 uppercase tracking-wider print:mt-1 print:text-[8px]">
+                        <QrCode className="w-3 h-3 text-slate-400 print:w-2.5 print:h-2.5" />
                         <span>Scan to Pay (UPI)</span>
                       </span>
                     </div>
                   ) : (
-                    <div className="flex flex-col items-center justify-center py-6">
+                    <div className="flex flex-col items-center justify-center py-6 print:py-2">
                       <div className="w-5 h-5 border-2 border-blue-600/30 border-t-blue-600 rounded-full animate-spin mb-2" />
                       <span className="text-[10px] text-slate-400 font-bold">Generating QR Code...</span>
                     </div>
@@ -988,10 +988,10 @@ export default function InvoicesPage() {
             </div>
             
             {/* Footer declaration */}
-            <div className="text-center text-[10px] text-slate-400 border-t border-slate-100 pt-8 mt-12 font-medium">
-              <p className="text-slate-700 font-bold text-xs mb-1">Thank you for your business!</p>
+            <div className="text-center text-[10px] text-slate-400 border-t border-slate-100 pt-8 print:pt-3 mt-12 print:mt-4 font-medium print:text-[9px]">
+              <p className="text-slate-700 font-bold text-xs mb-1 print:text-[10px] print:mb-0">Thank you for your business!</p>
               <p>This is a computer-generated invoice and does not require a physical signature.</p>
-              <p className="mt-1">For support or queries regarding this bill, please contact <strong className="text-slate-600 font-semibold">{settings?.companyEmail || 'hello@renewalflow.com'}</strong>.</p>
+              <p className="mt-1 print:mt-0.5">For support or queries regarding this bill, please contact <strong className="text-slate-600 font-semibold">{settings?.companyEmail || 'hello@renewalflow.com'}</strong>.</p>
             </div>
           </div>
         </div>
