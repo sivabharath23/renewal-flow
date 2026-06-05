@@ -36,10 +36,11 @@ export async function GET() {
             lt: nextDay,
           },
         },
-        include: { project: { include: { client: true } } },
+        include: { project: { include: { client: true } }, user: { include: { setting: true } } },
       });
 
       for (const domain of expiringDomains) {
+        const domainAlertEmail = domain.user?.setting?.notificationEmail || domain.user?.email || alertEmail;
         const subject = `[RenewalFlow] Domain Expiry Reminder: ${domain.domainName} in ${days} days`;
         const html = `
           <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; rounded-lg: 12px;">
@@ -74,11 +75,12 @@ export async function GET() {
           </div>
         `;
 
-        await sendEmail({ to: alertEmail, subject, html });
+        await sendEmail({ to: domainAlertEmail, subject, html });
 
         // Record reminder log in DB
         await db.reminder.create({
           data: {
+            userId: domain.userId,
             referenceType: 'DOMAIN',
             referenceId: domain.id,
             reminderDate: today,
@@ -97,10 +99,11 @@ export async function GET() {
             lt: nextDay,
           },
         },
-        include: { project: { include: { client: true } } },
+        include: { project: { include: { client: true } }, user: { include: { setting: true } } },
       });
 
       for (const server of expiringServers) {
+        const serverAlertEmail = server.user?.setting?.notificationEmail || server.user?.email || alertEmail;
         const subject = `[RenewalFlow] Hosting Renewal Reminder: ${server.provider} in ${days} days`;
         const html = `
           <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; rounded-lg: 12px;">
@@ -135,10 +138,11 @@ export async function GET() {
           </div>
         `;
 
-        await sendEmail({ to: alertEmail, subject, html });
+        await sendEmail({ to: serverAlertEmail, subject, html });
 
         await db.reminder.create({
           data: {
+            userId: server.userId,
             referenceType: 'SERVER',
             referenceId: server.id,
             reminderDate: today,
@@ -158,10 +162,11 @@ export async function GET() {
             lt: nextDay,
           },
         },
-        include: { project: { include: { client: true } } },
+        include: { project: { include: { client: true } }, user: { include: { setting: true } } },
       });
 
       for (const amc of expiringAMCs) {
+        const amcAlertEmail = amc.user?.setting?.notificationEmail || amc.user?.email || alertEmail;
         const subject = `[RenewalFlow] AMC Renewal Reminder: ${amc.project.projectName} in ${days} days`;
         const html = `
           <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; rounded-lg: 12px;">
@@ -196,10 +201,11 @@ export async function GET() {
           </div>
         `;
 
-        await sendEmail({ to: alertEmail, subject, html });
+        await sendEmail({ to: amcAlertEmail, subject, html });
 
         await db.reminder.create({
           data: {
+            userId: amc.userId,
             referenceType: 'AMC',
             referenceId: amc.id,
             reminderDate: today,
@@ -219,7 +225,7 @@ export async function GET() {
           lt: today,
         },
       },
-      include: { client: true, project: true },
+      include: { client: true, project: true, user: { include: { setting: true } } },
     });
 
     for (const invoice of overdueInvoices) {
@@ -233,6 +239,7 @@ export async function GET() {
       });
 
       if (!alreadySentToday) {
+        const invoiceAlertEmail = invoice.user?.setting?.notificationEmail || invoice.user?.email || alertEmail;
         const subject = `[RenewalFlow] OVERDUE Invoice Alert: ${invoice.invoiceNumber}`;
         const html = `
           <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; rounded-lg: 12px;">
@@ -267,10 +274,11 @@ export async function GET() {
           </div>
         `;
 
-        await sendEmail({ to: alertEmail, subject, html });
+        await sendEmail({ to: invoiceAlertEmail, subject, html });
 
         await db.reminder.create({
           data: {
+            userId: invoice.userId,
             referenceType: 'INVOICE',
             referenceId: invoice.id,
             reminderDate: today,

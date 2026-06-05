@@ -24,6 +24,7 @@ model User {
   amcContracts     AMCContract[]
   invoices         Invoice[]
   payments         Payment[]
+  reminders        Reminder[]
   setting          Setting?
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
@@ -152,6 +153,8 @@ model Payment {
 
 model Reminder {
   id               String   @id @default(cuid())
+  userId           String?
+  user             User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   referenceType    String   // DOMAIN, SERVER, AMC, INVOICE
   referenceId      String
   reminderDate     DateTime

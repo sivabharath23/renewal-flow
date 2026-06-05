@@ -20,7 +20,8 @@ import {
   Menu,
   X,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Bell
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -63,6 +64,7 @@ export default function Sidebar({ user }: SidebarProps) {
     { name: 'Invoices', path: '/invoices', icon: Receipt },
     { name: 'Payments', path: '/payments', icon: CreditCard },
     { name: 'Reports', path: '/reports', icon: BarChart3 },
+    { name: 'Notifications', path: '/notifications', icon: Bell },
     { name: 'Settings', path: '/settings', icon: Settings },
   ];
 

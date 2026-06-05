@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { getAMCs, createAMCAction, updateAMCAction, deleteAMCAction } from './actions';
 import { getProjects } from '@/app/projects/actions';
+import { useToast } from '@/context/ToastContext';
+import ConfirmModal from '@/components/ConfirmModal';
 import {
   FileText,
   Search,
@@ -45,11 +47,17 @@ interface ProjectOptionType {
   };
 }
 
-export default function AMCPage() {
+export default function AMCsPage() {
+  const { showToast } = useToast();
   const [amcs, setAMCs] = useState<AMCType[]>([]);
   const [projects, setProjects] = useState<ProjectOptionType[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+
+  // Delete confirm state
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [deletePending, setDeletePending] = useState(false);
 
   // Modals
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -115,12 +123,22 @@ export default function AMCPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this AMC contract tracker?')) return;
-    const result = await deleteAMCAction(id);
+  const handleDeleteClick = (id: string) => {
+    setDeleteTargetId(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTargetId) return;
+    setDeletePending(true);
+    const result = await deleteAMCAction(deleteTargetId);
+    setDeletePending(false);
+    setDeleteConfirmOpen(false);
+    setDeleteTargetId(null);
     if (result.error) {
-      alert(result.error);
+      showToast(result.error, 'error');
     } else {
+      showToast('AMC contract tracker deleted successfully!', 'success');
       loadData(searchQuery);
     }
   };
@@ -310,7 +328,7 @@ export default function AMCPage() {
                         <span>Edit</span>
                       </button>
                       <button
-                        onClick={() => handleDelete(amc.id)}
+                        onClick={() => handleDeleteClick(amc.id)}
                         className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-red-600 hover:bg-red-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -401,7 +419,7 @@ export default function AMCPage() {
                               <Edit2 className="w-4 h-4" />
                             </button>
                             <button
-                              onClick={() => handleDelete(amc.id)}
+                              onClick={() => handleDeleteClick(amc.id)}
                               className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
                               title="Delete AMC"
                             >
@@ -798,6 +816,21 @@ export default function AMCPage() {
           </div>
         </div>
       )}
+
+      {/* Custom Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={deleteConfirmOpen}
+        title="Delete AMC Contract Tracker"
+        message="Are you sure you want to delete this AMC contract tracker? All associated alert reminders for this AMC contract will also be deleted."
+        confirmText="Delete"
+        isDanger={true}
+        isLoading={deletePending}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => {
+          setDeleteConfirmOpen(false);
+          setDeleteTargetId(null);
+        }}
+      />
     </div>
   );
 }

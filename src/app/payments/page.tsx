@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getPayments, submitPaymentProofAction, approvePaymentAction, rejectPaymentAction } from './actions';
 import { getInvoices } from '@/app/invoices/actions';
+import { useToast } from '@/context/ToastContext';
+import ConfirmModal from '@/components/ConfirmModal';
 import {
   CreditCard,
   Plus,
@@ -73,6 +75,12 @@ export default function PaymentsPage() {
   const [formSuccess, setFormSuccess] = useState(false);
   const [actionPending, setActionPending] = useState(false);
 
+  const { showToast } = useToast();
+  // Approve confirm state
+  const [approveConfirmOpen, setApproveConfirmOpen] = useState(false);
+  const [approveTargetId, setApproveTargetId] = useState<string | null>(null);
+  const [approvePending, setApprovePending] = useState(false);
+
   const loadData = useCallback(async () => {
     setLoading(true);
     const payData = await getPayments(statusFilter);
@@ -116,12 +124,22 @@ export default function PaymentsPage() {
     }
   };
 
-  const handleApprove = async (id: string) => {
-    if (!confirm('Are you sure you want to verify and approve this payment? This will settle the invoice as PAID.')) return;
-    const result = await approvePaymentAction(id);
+  const handleApproveClick = (id: string) => {
+    setApproveTargetId(id);
+    setApproveConfirmOpen(true);
+  };
+
+  const handleConfirmApprove = async () => {
+    if (!approveTargetId) return;
+    setApprovePending(true);
+    const result = await approvePaymentAction(approveTargetId);
+    setApprovePending(false);
+    setApproveConfirmOpen(false);
+    setApproveTargetId(null);
     if (result.error) {
-      alert(result.error);
+      showToast(result.error, 'error');
     } else {
+      showToast('Payment verified and approved successfully!', 'success');
       loadData();
     }
   };
@@ -135,8 +153,9 @@ export default function PaymentsPage() {
 
     const result = await rejectPaymentAction(rejectPaymentId, remarks);
     if (result.error) {
-      alert(result.error);
+      showToast(result.error, 'error');
     } else {
+      showToast('Payment proof rejected.', 'warning');
       setIsRejectOpen(false);
       setRejectPaymentId(null);
       loadData();
@@ -300,7 +319,7 @@ export default function PaymentsPage() {
                     {payment.status === 'PENDING' && (
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() => handleApprove(payment.id)}
+                          onClick={() => handleApproveClick(payment.id)}
                           className="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs hover:shadow-md transition-all cursor-pointer"
                         >
                           Approve
@@ -526,6 +545,21 @@ export default function PaymentsPage() {
           </div>
         </div>
       )}
+
+      {/* Custom Approve Confirmation Modal */}
+      <ConfirmModal
+        isOpen={approveConfirmOpen}
+        title="Approve Payment"
+        message="Are you sure you want to verify and approve this payment proof? This will settle the parent invoice status as PAID."
+        confirmText="Approve"
+        isDanger={false}
+        isLoading={approvePending}
+        onConfirm={handleConfirmApprove}
+        onCancel={() => {
+          setApproveConfirmOpen(false);
+          setApproveTargetId(null);
+        }}
+      />
     </div>
   );
 }

@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { getInvoices, getCompanySettings, generateUPIQRCode, createInvoiceAction, updateInvoiceAction, deleteInvoiceAction } from './actions';
 import { getClients } from '@/app/clients/actions';
+import { useToast } from '@/context/ToastContext';
+import ConfirmModal from '@/components/ConfirmModal';
 import { getProjects } from '@/app/projects/actions';
 import {
   Receipt,
@@ -72,10 +74,16 @@ interface CompanySettingsType {
 }
 
 export default function InvoicesPage() {
+  const { showToast } = useToast();
   const [invoices, setInvoices] = useState<InvoiceType[]>([]);
   const [clients, setClients] = useState<ClientOptionType[]>([]);
   const [projects, setProjects] = useState<ProjectOptionType[]>([]);
   const [settings, setSettings] = useState<CompanySettingsType | null>(null);
+  
+  // Delete confirm state
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [deletePending, setDeletePending] = useState(false);
   
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
@@ -165,12 +173,22 @@ export default function InvoicesPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this invoice?')) return;
-    const result = await deleteInvoiceAction(id);
+  const handleDeleteClick = (id: string) => {
+    setDeleteTargetId(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTargetId) return;
+    setDeletePending(true);
+    const result = await deleteInvoiceAction(deleteTargetId);
+    setDeletePending(false);
+    setDeleteConfirmOpen(false);
+    setDeleteTargetId(null);
     if (result.error) {
-      alert(result.error);
+      showToast(result.error, 'error');
     } else {
+      showToast('Invoice deleted successfully!', 'success');
       loadData(searchQuery);
     }
   };
@@ -313,7 +331,7 @@ export default function InvoicesPage() {
                       <span>Edit</span>
                     </button>
                     <button
-                      onClick={() => handleDelete(invoice.id)}
+                      onClick={() => handleDeleteClick(invoice.id)}
                       className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-red-600 hover:bg-red-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -400,7 +418,7 @@ export default function InvoicesPage() {
                             <Edit2 className="w-4 h-4" />
                           </button>
                           <button
-                            onClick={() => handleDelete(invoice.id)}
+                            onClick={() => handleDeleteClick(invoice.id)}
                             className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
                             title="Delete Invoice"
                           >
@@ -906,6 +924,21 @@ export default function InvoicesPage() {
           </div>
         </div>
       )}
+
+      {/* Custom Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={deleteConfirmOpen}
+        title="Delete Invoice"
+        message="Are you sure you want to delete this invoice? All associated payment logs will be removed."
+        confirmText="Delete"
+        isDanger={true}
+        isLoading={deletePending}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => {
+          setDeleteConfirmOpen(false);
+          setDeleteTargetId(null);
+        }}
+      />
     </div>
   );
 }
