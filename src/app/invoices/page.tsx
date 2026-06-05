@@ -23,7 +23,8 @@ import {
   Building,
   Mail,
   Phone,
-  Coins
+  Coins,
+  MessageSquare
 } from 'lucide-react';
 
 interface InvoiceType {
@@ -218,6 +219,41 @@ export default function InvoicesPage() {
 
   const triggerPrint = () => {
     window.print();
+  };
+
+  const getWhatsAppShareUrl = () => {
+    if (!selectedInvoice) return '#';
+    
+    // Clean phone number (digits only)
+    let phoneClean = selectedInvoice.client.phone.replace(/\D/g, '');
+    if (phoneClean.length === 10) {
+      phoneClean = '91' + phoneClean; // Default to India country code if 10 digits
+    }
+
+    const formattedDate = new Date(selectedInvoice.invoiceDate).toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+    const formattedDueDate = new Date(selectedInvoice.dueDate).toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+    const formattedAmount = selectedInvoice.amount.toLocaleString('en-IN', {
+      minimumFractionDigits: 2,
+    });
+
+    const companyName = settings?.companyName || 'RenewalFlow Agency';
+    const clientName = selectedInvoice.client.name;
+    const invoiceNo = selectedInvoice.invoiceNumber;
+    const projectName = selectedInvoice.project.projectName;
+    const upiId = settings?.upiId || '9003793639@ptsbi';
+    const upiName = settings?.upiName || 'Sivabharath';
+
+    const text = `Hello *${clientName}*,\n\nHere is your invoice *${invoiceNo}* for the project *${projectName}*.\n\n*Invoice Summary:*\n- *Invoice Date:* ${formattedDate}\n- *Due Date:* ${formattedDueDate}\n- *Amount Due:* ₹${formattedAmount}\n- *Status:* ${selectedInvoice.status}\n\n*Payment Details:*\n- *UPI ID:* ${upiId}\n- *Payee Name:* ${upiName}\n- *Reference Code:* ${invoiceNo}\n\nPlease make the payment using the details above or submit your proof in the dashboard.\n\nThank you,\n*${companyName}*`;
+
+    return `https://wa.me/${phoneClean}?text=${encodeURIComponent(text)}`;
   };
 
   return (
@@ -769,6 +805,15 @@ export default function InvoicesPage() {
                 <Printer className="w-4 h-4" />
                 <span>Print / Save PDF</span>
               </button>
+              <a
+                href={getWhatsAppShareUrl()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 hover:border-emerald-250 rounded-xl transition-all flex items-center gap-1.5 font-bold text-xs cursor-pointer border border-slate-200 shadow-xs"
+              >
+                <MessageSquare className="w-4 h-4 text-emerald-500" />
+                <span>Send via WhatsApp</span>
+              </a>
               <button
                 onClick={() => {
                   setIsViewOpen(false);
