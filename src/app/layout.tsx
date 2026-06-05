@@ -4,6 +4,7 @@ import './globals.css';
 import Sidebar from '@/components/Sidebar';
 import { getSessionUser } from '@/lib/auth-helpers';
 import { ToastProvider } from '@/context/ToastContext';
+import TenantSwitcher from '@/components/TenantSwitcher';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -61,6 +62,14 @@ export default async function RootLayout({
               
               {/* Page content wrapper */}
               <div className="flex-1 flex flex-col min-w-0">
+                {user.role === 'ADMIN' && (
+                  <header className="hidden md:flex items-center justify-between px-8 py-4 bg-white border-b border-slate-200/50 no-print shrink-0 h-16">
+                    <div>
+                      <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Administrative Session</h2>
+                    </div>
+                    <TenantSwitcher />
+                  </header>
+                )}
                 <main className="flex-1 p-6 pt-22 md:p-8 bg-slate-50/50 overflow-y-auto">
                   {children}
                 </main>

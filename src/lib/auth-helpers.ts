@@ -27,7 +27,13 @@ export async function getSessionUser() {
 export async function getUserFilter() {
   const user = await getSessionUser();
   if (!user) return null;
+  
   if (user.role === 'ADMIN' || user.email === 'admin@renewalflow.com') {
+    const cookieStore = await cookies();
+    const impersonateUserId = cookieStore.get('admin_impersonate_user_id')?.value;
+    if (impersonateUserId) {
+      return { userId: impersonateUserId };
+    }
     return {};
   }
   return { userId: user.id };

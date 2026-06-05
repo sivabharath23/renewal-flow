@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { logoutAction } from '@/app/login/actions';
+import TenantSwitcher from './TenantSwitcher';
 import {
   LayoutDashboard,
   Users,
@@ -28,6 +29,7 @@ interface SidebarProps {
   user: {
     name: string;
     email: string;
+    role: string;
   } | null;
 }
 
@@ -158,6 +160,13 @@ export default function Sidebar({ user }: SidebarProps) {
               {currentCollapseState ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
             </button>
           </div>
+
+          {/* Mobile Tenant Switcher */}
+          {user && user.role === 'ADMIN' && (
+            <div className="md:hidden px-3.5 mb-2 shrink-0">
+              <TenantSwitcher />
+            </div>
+          )}
 
           {/* Navigation Menu */}
           <nav className="flex flex-col gap-1 overflow-y-auto max-h-[calc(100vh-220px)] pr-1">
