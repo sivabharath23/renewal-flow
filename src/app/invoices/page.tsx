@@ -251,7 +251,8 @@ export default function InvoicesPage() {
     const upiId = settings?.upiId || '9003793639@ptsbi';
     const upiName = settings?.upiName || 'Sivabharath';
 
-    const text = `Hello *${clientName}*,\n\nHere is your invoice *${invoiceNo}* for the project *${projectName}*.\n\n*Invoice Summary:*\n- *Invoice Date:* ${formattedDate}\n- *Due Date:* ${formattedDueDate}\n- *Amount Due:* ₹${formattedAmount}\n- *Status:* ${selectedInvoice.status}\n\n*Payment Details:*\n- *UPI ID:* ${upiId}\n- *Payee Name:* ${upiName}\n- *Reference Code:* ${invoiceNo}\n\nPlease make the payment using the details above or submit your proof in the dashboard.\n\nThank you,\n*${companyName}*`;
+    const onlineUrl = `${window.location.origin}/invoices`;
+    const text = `Hello *${clientName}*,\n\nHere is your invoice *${invoiceNo}* for the project *${projectName}*.\n\n*Invoice Summary:*\n- *Invoice Date:* ${formattedDate}\n- *Due Date:* ${formattedDueDate}\n- *Amount Due:* ₹${formattedAmount}\n- *Status:* ${selectedInvoice.status}\n\n*Payment Details:*\n- *UPI ID:* ${upiId}\n- *Payee Name:* ${upiName}\n- *Reference Code:* ${invoiceNo}\n\nYou can view your invoice online or upload proof here: ${onlineUrl}\n\nPlease make the payment using the details above.\n\nThank you,\n*${companyName}*`;
 
     return `https://wa.me/${phoneClean}?text=${encodeURIComponent(text)}`;
   };
@@ -807,6 +808,7 @@ export default function InvoicesPage() {
               </button>
               <a
                 href={getWhatsAppShareUrl()}
+                onClick={() => showToast("Opening WhatsApp. Print the invoice, then drag & drop the PDF into the chat!", "info")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 hover:border-emerald-250 rounded-xl transition-all flex items-center gap-1.5 font-bold text-xs cursor-pointer border border-slate-200 shadow-xs"
