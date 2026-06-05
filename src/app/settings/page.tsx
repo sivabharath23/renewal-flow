@@ -28,6 +28,7 @@ interface SettingsType {
   reminderDays: string;
   notificationEmail: string;
   companyLogo: string | null;
+  showLogo: boolean;
 }
 
 export default function SettingsPage() {
@@ -157,6 +158,7 @@ export default function SettingsPage() {
                   <input type="hidden" name="companyName" value={settings.companyName} />
                   <input type="hidden" name="companyEmail" value={settings.companyEmail} />
                   <input type="hidden" name="companyPhone" value={settings.companyPhone} />
+                  {settings.showLogo && <input type="hidden" name="showLogo" value="on" />}
                 </>
               )}
               {activeSection !== 'PAYMENT' && (
@@ -247,6 +249,25 @@ export default function SettingsPage() {
                       </div>
                     </div>
                   </div>
+
+                  {/* Show Logo Toggle Switch */}
+                  {logo && (
+                    <div className="flex items-center justify-between pb-3 pt-1 border-b border-slate-100">
+                      <div>
+                        <span className="text-xs font-bold text-slate-700 block">Show Logo on Invoices</span>
+                        <span className="text-[10px] text-slate-400 block">Disable to temporarily hide company branding from invoice PDFs.</span>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer select-none">
+                        <input
+                          type="checkbox"
+                          name="showLogo"
+                          defaultChecked={settings.showLogo}
+                          className="sr-only peer"
+                        />
+                        <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                      </label>
+                    </div>
+                  )}
 
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-slate-600 block">Company name</label>

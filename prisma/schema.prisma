@@ -142,6 +142,7 @@ model Setting {
   id                String   @id @default(cuid())
   companyName       String   @default("RenewalFlow")
   companyLogo       String?
+  showLogo          Boolean  @default(true)
   companyEmail      String   @default("hello@renewalflow.com")
   companyPhone      String   @default("+1234567890")
   upiId             String   @default("9003793639@ptsbi")

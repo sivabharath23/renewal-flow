@@ -35,6 +35,7 @@ export async function updateSettingsAction(formData: FormData) {
   const reminderDays = formData.get('reminderDays') as string;
   const notificationEmail = formData.get('notificationEmail') as string;
   const companyLogo = formData.get('companyLogo') as string | null;
+  const showLogo = formData.get('showLogo') === 'on';
 
   if (!companyName || !companyEmail || !companyPhone || !upiId || !upiName || !reminderDays || !notificationEmail) {
     return { error: 'All configurations are required.' };
@@ -56,6 +57,7 @@ export async function updateSettingsAction(formData: FormData) {
           reminderDays,
           notificationEmail,
           companyLogo: logoToSave,
+          showLogo,
         },
       });
     } else {
@@ -69,6 +71,7 @@ export async function updateSettingsAction(formData: FormData) {
           reminderDays,
           notificationEmail,
           companyLogo: logoToSave,
+          showLogo,
         },
       });
     }

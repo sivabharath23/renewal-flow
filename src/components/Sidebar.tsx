@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { logoutAction } from '@/app/login/actions';
@@ -18,7 +18,9 @@ import {
   LogOut,
   ShieldCheck,
   Menu,
-  X
+  X,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -33,6 +35,23 @@ export default function Sidebar({ user }: SidebarProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
+  
+  // Collapse state for desktop viewports
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Initialize collapse state from localStorage after mount to prevent SSR mismatch
+  useEffect(() => {
+    const saved = localStorage.getItem('sidebar_collapsed') === 'true';
+    setIsCollapsed(saved);
+    setMounted(true);
+  }, []);
+
+  const toggleCollapse = () => {
+    const nextState = !isCollapsed;
+    setIsCollapsed(nextState);
+    localStorage.setItem('sidebar_collapsed', String(nextState));
+  };
 
   const menuItems = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
@@ -56,6 +75,9 @@ export default function Sidebar({ user }: SidebarProps) {
       router.refresh();
     }
   };
+
+  // Prevent flash of expanded sidebar on mount if previously collapsed
+  const currentCollapseState = mounted ? isCollapsed : false;
 
   return (
     <>
@@ -93,33 +115,45 @@ export default function Sidebar({ user }: SidebarProps) {
 
       {/* Sidebar Navigation Sheet */}
       <aside
-        className={`fixed md:sticky top-0 bottom-0 left-0 z-40 md:z-25 w-64 h-screen glass-sidebar p-4 flex flex-col justify-between transition-transform duration-300 ease-in-out no-print ${
+        className={`fixed md:sticky top-0 bottom-0 left-0 z-40 md:z-25 h-screen glass-sidebar p-4 flex flex-col justify-between transition-all duration-300 ease-in-out no-print ${
           isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
-        }`}
+        } ${currentCollapseState ? 'w-64 md:w-20' : 'w-64'}`}
       >
         <div className="flex flex-col gap-6">
           {/* Brand Header */}
-          <div className="flex items-center justify-between px-3 py-2">
+          <div className={`flex items-center justify-between px-3 py-2 ${currentCollapseState ? 'md:flex-col md:gap-4 md:px-0' : ''}`}>
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-200">
+              <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-200 shrink-0">
                 <ShieldCheck className="w-5.5 h-5.5" />
               </div>
-              <div>
-                <h1 className="text-lg font-bold text-slate-800 tracking-tight leading-none">
-                  Renewal<span className="text-blue-600">Flow</span>
-                </h1>
-                <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
-                  Management Portal
-                </span>
-              </div>
+              {!currentCollapseState && (
+                <div className="animate-fade-in duration-200">
+                  <h1 className="text-lg font-bold text-slate-800 tracking-tight leading-none">
+                    Renewal<span className="text-blue-600">Flow</span>
+                  </h1>
+                  <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
+                    Management Portal
+                  </span>
+                </div>
+              )}
             </div>
-            {/* Close button inside sidebar for mobile */}
+
+            {/* Mobile Close button */}
             <button
               onClick={() => setIsOpen(false)}
               className="p-1.5 text-slate-400 hover:text-slate-700 md:hidden rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
               aria-label="Close Menu"
             >
               <X className="w-5 h-5" />
+            </button>
+
+            {/* Desktop Collapse Toggle */}
+            <button
+              onClick={toggleCollapse}
+              className="hidden md:flex p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer border border-slate-100 shadow-xs"
+              aria-label={currentCollapseState ? 'Expand Sidebar' : 'Collapse Sidebar'}
+            >
+              {currentCollapseState ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
             </button>
           </div>
 
@@ -133,14 +167,17 @@ export default function Sidebar({ user }: SidebarProps) {
                   key={item.path}
                   href={item.path}
                   onClick={() => setIsOpen(false)}
-                  className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
+                  className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer group ${
+                    currentCollapseState ? 'md:justify-center md:px-0 md:w-12 md:mx-auto' : ''
+                  } ${
                     isActive
                       ? 'bg-blue-50 text-blue-600 shadow-xs border-l-3 border-blue-600 pl-2.5'
                       : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
                   }`}
+                  title={currentCollapseState ? item.name : undefined}
                 >
-                  <Icon className={`w-4.5 h-4.5 ${isActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600'}`} />
-                  <span>{item.name}</span>
+                  <Icon className={`w-4.5 h-4.5 shrink-0 ${isActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600'}`} />
+                  {!currentCollapseState && <span className="animate-fade-in duration-150">{item.name}</span>}
                 </Link>
               );
             })}
@@ -149,18 +186,29 @@ export default function Sidebar({ user }: SidebarProps) {
 
         {/* User Session profile and logout */}
         <div className="border-t border-slate-100 pt-4 flex flex-col gap-3">
-          {user && (
-            <div className="px-3 flex flex-col">
+          {user && !currentCollapseState && (
+            <div className="px-3 flex flex-col animate-fade-in duration-150">
               <span className="text-xs font-bold text-slate-800 truncate">{user.name}</span>
               <span className="text-[10px] text-slate-400 font-medium truncate">{user.email}</span>
             </div>
           )}
+          {user && currentCollapseState && (
+            <div 
+              className="hidden md:flex justify-center text-[10px] font-black w-8 h-8 rounded-full bg-blue-50 text-blue-600 border border-blue-100 items-center mx-auto cursor-default select-none uppercase" 
+              title={`${user.name} (${user.email})`}
+            >
+              {user.name.charAt(0)}
+            </div>
+          )}
           <button
             onClick={() => setIsLogoutConfirmOpen(true)}
-            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-red-500 hover:bg-red-50 hover:text-red-600 transition-all cursor-pointer"
+            className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-red-500 hover:bg-red-50 hover:text-red-600 transition-all cursor-pointer ${
+              currentCollapseState ? 'md:justify-center md:px-0 md:w-12 md:mx-auto' : ''
+            }`}
+            title={currentCollapseState ? 'Sign Out' : undefined}
           >
-            <LogOut className="w-4.5 h-4.5" />
-            <span>Sign Out</span>
+            <LogOut className="w-4.5 h-4.5 shrink-0" />
+            {!currentCollapseState && <span className="animate-fade-in duration-150">Sign Out</span>}
           </button>
         </div>
       </aside>

@@ -68,6 +68,7 @@ interface CompanySettingsType {
   upiId: string;
   upiName: string;
   companyLogo: string | null;
+  showLogo: boolean;
 }
 
 export default function InvoicesPage() {
@@ -202,9 +203,9 @@ export default function InvoicesPage() {
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto no-print">
+    <div className="space-y-6 max-w-7xl mx-auto">
       {/* Header section */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 no-print">
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">Billing & Invoices</h1>
@@ -228,7 +229,7 @@ export default function InvoicesPage() {
       </div>
 
       {/* Search Bar */}
-      <div className="relative max-w-md">
+      <div className="relative max-w-md no-print">
         <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
           <Search className="w-4 h-4" />
         </div>
@@ -242,7 +243,7 @@ export default function InvoicesPage() {
       </div>
 
       {/* Invoices List Table */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden no-print">
         {loading ? (
           <div className="py-24 text-center">
             <div className="w-8 h-8 border-3 border-blue-600/30 border-t-blue-600 rounded-full animate-spin mx-auto mb-4" />
@@ -736,8 +737,8 @@ export default function InvoicesPage() {
 
       {/* View Printable Invoice Modal (Full Sheet / UPI QR) */}
       {isViewOpen && selectedInvoice && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex justify-center items-start z-50 p-0 sm:p-4 overflow-y-auto no-print">
-          <div className="bg-white max-w-3xl w-full shadow-2xl p-6 sm:p-10 relative min-h-screen sm:min-h-0 sm:my-8 sm:rounded-2xl flex flex-col justify-between animate-in fade-in slide-in-from-bottom-8 duration-200">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex justify-center items-start z-50 p-0 sm:p-4 overflow-y-auto print:bg-transparent print:p-0 print:static print:h-auto print:overflow-visible">
+          <div className="bg-white max-w-3xl w-full shadow-2xl p-6 sm:p-10 relative min-h-screen sm:min-h-0 sm:my-8 sm:rounded-2xl flex flex-col justify-between animate-in fade-in slide-in-from-bottom-8 duration-200 print:shadow-none print:border-none print:p-0 print:my-0 print:rounded-none">
             {/* Top Close / Print bar (HIDDEN IN PRINT MODE) */}
             <div className="absolute top-4 right-4 flex items-center gap-2 no-print">
               <button
@@ -763,7 +764,7 @@ export default function InvoicesPage() {
               {/* Invoice Header */}
               <div className="flex justify-between items-start border-b border-slate-100 pb-6 mt-12 sm:mt-6">
                 <div>
-                  {settings?.companyLogo ? (
+                  {settings?.showLogo && settings?.companyLogo && (
                     <div className="mb-3 max-h-14 flex items-center">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
@@ -772,11 +773,10 @@ export default function InvoicesPage() {
                         className="max-h-14 max-w-[200px] object-contain"
                       />
                     </div>
-                  ) : (
-                    <h2 className="text-xl font-black text-blue-600 leading-tight">
-                      {settings?.companyName || 'RenewalFlow Agency'}
-                    </h2>
                   )}
+                  <h2 className="text-xl font-black text-blue-600 leading-tight">
+                    {settings?.companyName || 'RenewalFlow Agency'}
+                  </h2>
                   <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mt-1">
                     Tax Invoice / Bill
                   </span>
