@@ -5,6 +5,7 @@ import Sidebar from '@/components/Sidebar';
 import { getSessionUser } from '@/lib/auth-helpers';
 import { ToastProvider } from '@/context/ToastContext';
 import TenantSwitcher from '@/components/TenantSwitcher';
+import PWARegister from '@/components/PWARegister';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -68,6 +69,7 @@ export default async function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased font-sans`}>
         <ToastProvider>
+          <PWARegister />
           {user ? (
             <div className="flex min-h-screen">
               {/* Sidebar Navigation */}

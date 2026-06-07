@@ -5,6 +5,7 @@ import { getProjects, createProjectAction, updateProjectAction, deleteProjectAct
 import { getClients } from '@/app/clients/actions';
 import { useToast } from '@/context/ToastContext';
 import ConfirmModal from '@/components/ConfirmModal';
+import Pagination from '@/components/Pagination';
 import {
   Briefcase,
   Search,
@@ -54,6 +55,12 @@ export default function ProjectsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const LIMIT = 10;
+
   // Modals
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -69,21 +76,30 @@ export default function ProjectsPage() {
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [deletePending, setDeletePending] = useState(false);
 
-  const loadData = async (query = '') => {
+  const loadData = async (query = '', page = 1) => {
     setLoading(true);
-    const projData = await getProjects(query);
+    const projData = await getProjects(query, page, LIMIT);
     const clientData = await getClients();
-    setProjects(projData as unknown as ProjectType[]);
+    
+    if (projData && 'data' in projData) {
+      setProjects(projData.data as unknown as ProjectType[]);
+      setTotalCount(projData.total);
+      setTotalPages(projData.pages);
+    } else {
+      setProjects([]);
+      setTotalCount(0);
+      setTotalPages(0);
+    }
     setClients(clientData as ClientOptionType[]);
     setLoading(false);
   };
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      loadData(searchQuery);
+      loadData(searchQuery, currentPage);
     }, 300);
     return () => clearTimeout(timer);
-  }, [searchQuery]);
+  }, [searchQuery, currentPage]);
 
   const handleAddSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -100,7 +116,8 @@ export default function ProjectsPage() {
     } else {
       setIsAddOpen(false);
       showToast('Project created successfully!', 'success');
-      loadData(searchQuery);
+      setCurrentPage(1);
+      loadData(searchQuery, 1);
     }
   };
 
@@ -121,7 +138,7 @@ export default function ProjectsPage() {
       setIsEditOpen(false);
       setSelectedProject(null);
       showToast('Project updated successfully!', 'success');
-      loadData(searchQuery);
+      loadData(searchQuery, currentPage);
     }
   };
 
@@ -141,7 +158,9 @@ export default function ProjectsPage() {
       showToast(result.error, 'error');
     } else {
       showToast('Project deleted successfully!', 'success');
-      loadData(searchQuery);
+      const nextPage = projects.length === 1 && currentPage > 1 ? currentPage - 1 : currentPage;
+      setCurrentPage(nextPage);
+      loadData(searchQuery, nextPage);
     }
   };
 
@@ -165,7 +184,7 @@ export default function ProjectsPage() {
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">Projects Registry</h1>
             <span className="text-xs bg-blue-50 text-blue-600 font-bold px-2 py-0.5 rounded-full border border-blue-100">
-              {projects.length} Total
+              {totalCount} Total
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1">Manage deliverables and contracts linked to your clients.</p>
@@ -192,7 +211,10 @@ export default function ProjectsPage() {
           type="text"
           placeholder="Search by project name or client..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            setCurrentPage(1);
+          }}
           className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
         />
       </div>
@@ -350,6 +372,13 @@ export default function ProjectsPage() {
                 </tbody>
               </table>
             </div>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalCount={totalCount}
+              limit={LIMIT}
+              onPageChange={(p) => setCurrentPage(p)}
+            />
           </>
         ) : (
           <div className="py-24 text-center max-w-sm mx-auto flex flex-col items-center justify-center">

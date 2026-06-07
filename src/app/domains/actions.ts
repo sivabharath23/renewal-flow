@@ -4,24 +4,51 @@ import db from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { getUserFilter, getSessionUser } from '@/lib/auth-helpers';
 
-export async function getDomains(searchQuery?: string) {
+export async function getDomains(searchQuery?: string, page?: number, limit?: number) {
   try {
     const filter = await getUserFilter();
-    if (!filter) return [];
+    if (!filter) return page !== undefined ? { data: [], total: 0, pages: 0 } : [];
+
+    const whereClause = {
+      ...filter,
+      ...(searchQuery
+        ? {
+            OR: [
+              { domainName: { contains: searchQuery } },
+              { registrar: { contains: searchQuery } },
+              { project: { projectName: { contains: searchQuery } } },
+            ],
+          }
+        : {}),
+    };
+
+    if (page !== undefined && limit !== undefined) {
+      const skip = (page - 1) * limit;
+      const [total, data] = await Promise.all([
+        db.domain.count({ where: whereClause }),
+        db.domain.findMany({
+          where: whereClause,
+          include: {
+            project: {
+              include: {
+                client: true,
+              },
+            },
+          },
+          orderBy: { expiryDate: 'asc' },
+          skip,
+          take: limit,
+        })
+      ]);
+      return {
+        data,
+        total,
+        pages: Math.ceil(total / limit),
+      };
+    }
 
     return await db.domain.findMany({
-      where: {
-        ...filter,
-        ...(searchQuery
-          ? {
-              OR: [
-                { domainName: { contains: searchQuery } },
-                { registrar: { contains: searchQuery } },
-                { project: { projectName: { contains: searchQuery } } },
-              ],
-            }
-          : {}),
-      },
+      where: whereClause,
       include: {
         project: {
           include: {
@@ -33,7 +60,7 @@ export async function getDomains(searchQuery?: string) {
     });
   } catch (error) {
     console.error('Failed to fetch domains:', error);
-    return [];
+    return page !== undefined ? { data: [], total: 0, pages: 0 } : [];
   }
 }
 

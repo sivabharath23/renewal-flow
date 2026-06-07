@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { getInvoices, getCompanySettings, generateUPIQRCode, createInvoiceAction, updateInvoiceAction, deleteInvoiceAction } from './actions';
 import InvoiceTemplateRenderer from '@/components/InvoiceTemplateRenderer';
+import InvoiceTemplatePicker from '@/components/InvoiceTemplatePicker';
 import {
-  INVOICE_TEMPLATE_PRESETS,
   InvoiceTemplateId,
   parseCustomConfig,
 } from '@/lib/invoice-templates';
@@ -803,22 +803,7 @@ export default function InvoicesPage() {
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex justify-center items-start z-50 p-0 sm:p-4 overflow-y-auto print:bg-transparent print:p-0 print:static print:h-auto print:overflow-visible">
           <div className="bg-white max-w-3xl w-full shadow-2xl p-6 sm:p-10 relative min-h-screen sm:min-h-0 sm:my-8 sm:rounded-2xl flex flex-col justify-between animate-in fade-in slide-in-from-bottom-8 duration-200 print:shadow-none print:border-none print:p-6 print:my-0 print:rounded-none print:min-h-0 print:h-auto print:block print:justify-start">
             {/* Top Close / Print bar (HIDDEN IN PRINT MODE) */}
-            <div className="absolute top-6 left-6 right-6 flex flex-wrap items-center justify-between gap-2 no-print">
-              <div className="flex items-center gap-2">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Template</label>
-                <select
-                  value={viewTemplate}
-                  onChange={(e) => setViewTemplate(e.target.value as InvoiceTemplateId)}
-                  className="px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                >
-                  {INVOICE_TEMPLATE_PRESETS.map((preset) => (
-                    <option key={preset.id} value={preset.id}>
-                      {preset.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="flex items-center gap-2">
+            <div className="absolute top-6 left-6 right-6 flex flex-wrap items-center justify-end gap-2 no-print">
               <button
                 onClick={triggerPrint}
                 className="p-2 text-slate-600 hover:text-blue-600 hover:bg-slate-100 rounded-xl transition-all flex items-center gap-1.5 font-bold text-xs cursor-pointer border border-slate-200 shadow-xs"
@@ -845,7 +830,17 @@ export default function InvoicesPage() {
               >
                 <X className="w-5 h-5" />
               </button>
-              </div>
+            </div>
+
+            <div className="mt-16 mb-4 no-print">
+              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Choose Template</p>
+              <InvoiceTemplatePicker
+                selectedTemplate={viewTemplate}
+                onSelect={setViewTemplate}
+                customConfig={parseCustomConfig(settings?.invoiceTemplateCustom)}
+                settings={settings}
+                mode="compact"
+              />
             </div>
 
             <InvoiceTemplateRenderer

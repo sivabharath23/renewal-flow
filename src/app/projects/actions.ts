@@ -4,24 +4,55 @@ import db from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { getUserFilter, getSessionUser } from '@/lib/auth-helpers';
 
-export async function getProjects(searchQuery?: string) {
+export async function getProjects(searchQuery?: string, page?: number, limit?: number) {
   try {
     const filter = await getUserFilter();
-    if (!filter) return [];
+    if (!filter) return page !== undefined ? { data: [], total: 0, pages: 0 } : [];
+
+    const whereClause = {
+      ...filter,
+      ...(searchQuery
+        ? {
+            OR: [
+              { projectName: { contains: searchQuery } },
+              { client: { name: { contains: searchQuery } } },
+              { client: { companyName: { contains: searchQuery } } },
+            ],
+          }
+        : {}),
+    };
+
+    if (page !== undefined && limit !== undefined) {
+      const skip = (page - 1) * limit;
+      const [total, data] = await Promise.all([
+        db.project.count({ where: whereClause }),
+        db.project.findMany({
+          where: whereClause,
+          include: {
+            client: true,
+            _count: {
+              select: {
+                domains: true,
+                servers: true,
+                amcContracts: true,
+                invoices: true,
+              },
+            },
+          },
+          orderBy: { projectName: 'asc' },
+          skip,
+          take: limit,
+        })
+      ]);
+      return {
+        data,
+        total,
+        pages: Math.ceil(total / limit),
+      };
+    }
 
     return await db.project.findMany({
-      where: {
-        ...filter,
-        ...(searchQuery
-          ? {
-              OR: [
-                { projectName: { contains: searchQuery } },
-                { client: { name: { contains: searchQuery } } },
-                { client: { companyName: { contains: searchQuery } } },
-              ],
-            }
-          : {}),
-      },
+      where: whereClause,
       include: {
         client: true,
         _count: {
@@ -37,7 +68,7 @@ export async function getProjects(searchQuery?: string) {
     });
   } catch (error) {
     console.error('Failed to fetch projects:', error);
-    return [];
+    return page !== undefined ? { data: [], total: 0, pages: 0 } : [];
   }
 }
 

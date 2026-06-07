@@ -9,24 +9,57 @@ export async function checkIsAdmin() {
   return user ? (user.role === 'ADMIN' || user.email === 'admin@renewalflow.com') : false;
 }
 
-export async function getClients(searchQuery?: string) {
+export async function getClients(searchQuery?: string, page?: number, limit?: number) {
   try {
     const filter = await getUserFilter();
-    if (!filter) return [];
+    if (!filter) return page !== undefined ? { data: [], total: 0, pages: 0 } : [];
+
+    const whereClause = {
+      ...filter,
+      ...(searchQuery
+        ? {
+            OR: [
+              { name: { contains: searchQuery } },
+              { companyName: { contains: searchQuery } },
+              { email: { contains: searchQuery } },
+            ],
+          }
+        : {}),
+    };
+
+    if (page !== undefined && limit !== undefined) {
+      const skip = (page - 1) * limit;
+      const [total, data] = await Promise.all([
+        db.client.count({ where: whereClause }),
+        db.client.findMany({
+          where: whereClause,
+          include: {
+            _count: {
+              select: { projects: true },
+            },
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                agencyType: true,
+              }
+            }
+          },
+          orderBy: { name: 'asc' },
+          skip,
+          take: limit,
+        })
+      ]);
+      return {
+        data,
+        total,
+        pages: Math.ceil(total / limit),
+      };
+    }
 
     return await db.client.findMany({
-      where: {
-        ...filter,
-        ...(searchQuery
-          ? {
-              OR: [
-                { name: { contains: searchQuery } },
-                { companyName: { contains: searchQuery } },
-                { email: { contains: searchQuery } },
-              ],
-            }
-          : {}),
-      },
+      where: whereClause,
       include: {
         _count: {
           select: { projects: true },
@@ -44,7 +77,7 @@ export async function getClients(searchQuery?: string) {
     });
   } catch (error) {
     console.error('Failed to fetch clients:', error);
-    return [];
+    return page !== undefined ? { data: [], total: 0, pages: 0 } : [];
   }
 }
 

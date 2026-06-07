@@ -4,6 +4,7 @@ import { useState, useEffect, startTransition } from 'react';
 import { getClients, createClientAction, updateClientAction, deleteClientAction, checkIsAdmin } from './actions';
 import { useToast } from '@/context/ToastContext';
 import ConfirmModal from '@/components/ConfirmModal';
+import Pagination from '@/components/Pagination';
 import {
   Users,
   Search,
@@ -47,6 +48,12 @@ export default function ClientsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const LIMIT = 10;
+
   // Modal states
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -63,21 +70,30 @@ export default function ClientsPage() {
   const [deletePending, setDeletePending] = useState(false);
 
   // Load clients
-  const loadClients = async (query = '') => {
+  const loadClients = async (query = '', page = 1) => {
     setLoading(true);
-    const data = await getClients(query);
+    const result = await getClients(query, page, LIMIT);
     const adminCheck = await checkIsAdmin();
     setIsAdmin(adminCheck);
-    setClients(data as ClientType[]);
+    
+    if (result && 'data' in result) {
+      setClients(result.data as ClientType[]);
+      setTotalCount(result.total);
+      setTotalPages(result.pages);
+    } else {
+      setClients([]);
+      setTotalCount(0);
+      setTotalPages(0);
+    }
     setLoading(false);
   };
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      loadClients(searchQuery);
+      loadClients(searchQuery, currentPage);
     }, 300); // Debounce search
     return () => clearTimeout(timer);
-  }, [searchQuery]);
+  }, [searchQuery, currentPage]);
 
   // Handle Create Client
   const handleAddSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -95,7 +111,8 @@ export default function ClientsPage() {
     } else {
       setIsAddOpen(false);
       showToast('Client added successfully!', 'success');
-      loadClients(searchQuery);
+      setCurrentPage(1); // Go to page 1 to see new client
+      loadClients(searchQuery, 1);
     }
   };
 
@@ -117,7 +134,7 @@ export default function ClientsPage() {
       setIsEditOpen(false);
       setSelectedClient(null);
       showToast('Client details updated!', 'success');
-      loadClients(searchQuery);
+      loadClients(searchQuery, currentPage);
     }
   };
 
@@ -138,7 +155,10 @@ export default function ClientsPage() {
       showToast(result.error, 'error');
     } else {
       showToast('Client deleted successfully!', 'success');
-      loadClients(searchQuery);
+      // If we are on a page > 1 and this was the last item, go to previous page
+      const nextPage = clients.length === 1 && currentPage > 1 ? currentPage - 1 : currentPage;
+      setCurrentPage(nextPage);
+      loadClients(searchQuery, nextPage);
     }
   };
 
@@ -150,7 +170,7 @@ export default function ClientsPage() {
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">Clients Directory</h1>
             <span className="text-xs bg-blue-50 text-blue-600 font-bold px-2 py-0.5 rounded-full border border-blue-100">
-              {clients.length} Total
+              {totalCount} Total
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1">Manage and track your client profile and billing details.</p>
@@ -177,7 +197,10 @@ export default function ClientsPage() {
           type="text"
           placeholder="Search by client name, company, or email..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            setCurrentPage(1);
+          }}
           className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
         />
       </div>
@@ -293,7 +316,7 @@ export default function ClientsPage() {
                       <td className="px-6 py-4">
                         <div className="flex flex-col gap-0.5">
                           <span className="flex items-center gap-1 text-slate-500 text-xs">
-                            <Mail className="w-3.5 h-3.5 text-slate-400" />
+                             <Mail className="w-3.5 h-3.5 text-slate-400" />
                             {client.email}
                           </span>
                           <span className="flex items-center gap-1 text-slate-500 text-xs">
@@ -352,6 +375,13 @@ export default function ClientsPage() {
                 </tbody>
               </table>
             </div>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalCount={totalCount}
+              limit={LIMIT}
+              onPageChange={(p) => setCurrentPage(p)}
+            />
           </>
         ) : (
           <div className="py-24 text-center max-w-sm mx-auto flex flex-col items-center justify-center">

@@ -17,13 +17,14 @@ import {
   FileText
 } from 'lucide-react';
 import {
-  INVOICE_TEMPLATE_PRESETS,
   DEFAULT_CUSTOM_CONFIG,
   parseCustomConfig,
   serializeCustomConfig,
   InvoiceTemplateCustomConfig,
 } from '@/lib/invoice-templates';
 import ImageCropper from '@/components/ImageCropper';
+import InvoiceTemplatePicker from '@/components/InvoiceTemplatePicker';
+import { InvoiceTemplateId } from '@/lib/invoice-templates';
 
 interface SettingsType {
   companyName: string;
@@ -43,7 +44,7 @@ export default function SettingsPage() {
   const [settings, setSettings] = useState<SettingsType | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState<'COMPANY' | 'PAYMENT' | 'REMINDER' | 'INVOICE'>('COMPANY');
-  const [selectedTemplate, setSelectedTemplate] = useState('classic');
+  const [selectedTemplate, setSelectedTemplate] = useState<InvoiceTemplateId>('classic');
   const [customTemplate, setCustomTemplate] = useState<InvoiceTemplateCustomConfig>(DEFAULT_CUSTOM_CONFIG);
 
   // Form states
@@ -63,7 +64,7 @@ export default function SettingsPage() {
       setLogo(data.companyLogo);
     }
     if (data) {
-      setSelectedTemplate(data.invoiceTemplate || 'classic');
+      setSelectedTemplate((data.invoiceTemplate || 'classic') as InvoiceTemplateId);
       setCustomTemplate(parseCustomConfig(data.invoiceTemplateCustom));
     }
     setLoading(false);
@@ -396,23 +397,24 @@ export default function SettingsPage() {
                     <p className="text-xs text-slate-400 mt-0.5">Pick a printable invoice layout or build your own with custom colors and sections.</p>
                   </div>
 
+                  <input type="hidden" name="invoiceTemplate" value={selectedTemplate} />
                   <input type="hidden" name="invoiceTemplateCustom" value={serializeCustomConfig(customTemplate)} />
 
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-600 block">Default Template</label>
-                    <select
-                      name="invoiceTemplate"
-                      value={selectedTemplate}
-                      onChange={(e) => setSelectedTemplate(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
-                    >
-                      {INVOICE_TEMPLATE_PRESETS.map((preset) => (
-                        <option key={preset.id} value={preset.id}>
-                          {preset.label} — {preset.description}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <InvoiceTemplatePicker
+                    selectedTemplate={selectedTemplate}
+                    onSelect={setSelectedTemplate}
+                    customConfig={customTemplate}
+                    settings={{
+                      companyName: settings.companyName,
+                      companyEmail: settings.companyEmail,
+                      companyPhone: settings.companyPhone,
+                      upiId: settings.upiId,
+                      upiName: settings.upiName,
+                      companyLogo: logo,
+                      showLogo: settings.showLogo,
+                    }}
+                    mode="full"
+                  />
 
                   {selectedTemplate === 'custom' && (
                     <div className="space-y-4 p-4 bg-slate-50 border border-slate-100 rounded-xl">
@@ -500,12 +502,6 @@ export default function SettingsPage() {
                     </div>
                   )}
 
-                  <div className="p-3 bg-blue-50/50 border border-blue-100 rounded-xl">
-                    <p className="text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Tip</p>
-                    <p className="text-xs text-slate-600">
-                      You can also switch templates when viewing an invoice before printing or saving as PDF.
-                    </p>
-                  </div>
                 </div>
               )}
 
