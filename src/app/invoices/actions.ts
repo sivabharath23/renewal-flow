@@ -4,6 +4,11 @@ import db from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import QRCode from 'qrcode';
 import { getUserFilter, getSessionUser } from '@/lib/auth-helpers';
+import {
+  getTemplateForFormat,
+  getNextSequence,
+  renderInvoiceFormat,
+} from '@/lib/invoice-format';
 
 export async function getInvoices(searchQuery?: string) {
   try {
@@ -76,6 +81,8 @@ export async function getCompanySettings(invoiceId?: string) {
           companyPhone: '+1 234 567 890',
           upiId: '9003793639@ptsbi',
           upiName: user?.name || 'Sivabharath',
+          invoiceNumberFormat: 'inv-year-seq',
+          customInvoiceFormat: 'INV-{YEAR}-{SEQ}',
         },
       });
     }
@@ -83,6 +90,48 @@ export async function getCompanySettings(invoiceId?: string) {
   } catch (error) {
     console.error('Failed to fetch settings:', error);
     return null;
+  }
+}
+
+export async function generateNextInvoiceNumber(
+  formatId?: string,
+  customTemplate?: string,
+  invoiceDateStr?: string
+) {
+  try {
+    const filter = await getUserFilter();
+    if (!filter) return { error: 'Unauthorized' };
+
+    const settings = await getCompanySettings();
+    const resolvedFormatId = formatId || settings?.invoiceNumberFormat || 'inv-year-seq';
+    const resolvedCustom =
+      customTemplate ||
+      (resolvedFormatId === 'custom' ? settings?.customInvoiceFormat : null);
+    const template = getTemplateForFormat(resolvedFormatId, resolvedCustom);
+    const invoiceDate = invoiceDateStr ? new Date(invoiceDateStr) : new Date();
+
+    const invoices = await db.invoice.findMany({
+      where: filter,
+      select: { invoiceNumber: true },
+    });
+
+    const nextSeq = getNextSequence(
+      invoices.map((inv) => inv.invoiceNumber),
+      template,
+      invoiceDate
+    );
+
+    return {
+      invoiceNumber: renderInvoiceFormat(template, {
+        date: invoiceDate,
+        sequence: nextSeq,
+      }),
+      template,
+      formatId: resolvedFormatId,
+    };
+  } catch (error) {
+    console.error('Failed to generate invoice number:', error);
+    return { error: 'Failed to generate invoice number.' };
   }
 }
 

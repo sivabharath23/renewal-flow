@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getInvoices, getCompanySettings, generateUPIQRCode, createInvoiceAction, updateInvoiceAction, deleteInvoiceAction } from './actions';
+import { getInvoices, getCompanySettings, generateUPIQRCode, generateNextInvoiceNumber, createInvoiceAction, updateInvoiceAction, deleteInvoiceAction } from './actions';
+import { INVOICE_FORMAT_PRESETS } from '@/lib/invoice-format';
 import { getClients } from '@/app/clients/actions';
 import { useToast } from '@/context/ToastContext';
 import ConfirmModal from '@/components/ConfirmModal';
@@ -26,6 +27,15 @@ import {
   Coins,
   MessageSquare
 } from 'lucide-react';
+
+function formatDateStringForInput(dateVal: string | Date) {
+  if (!dateVal) return '';
+  const d = new Date(dateVal);
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  const year = d.getFullYear();
+  return `${year}-${month}-${day}`;
+}
 
 interface InvoiceType {
   id: string;
@@ -72,6 +82,8 @@ interface CompanySettingsType {
   upiName: string;
   companyLogo: string | null;
   showLogo: boolean;
+  invoiceNumberFormat: string;
+  customInvoiceFormat: string;
 }
 
 export default function InvoicesPage() {
@@ -99,8 +111,27 @@ export default function InvoicesPage() {
   // Form helpers
   const [formError, setFormError] = useState<string | null>(null);
   const [actionPending, setActionPending] = useState(false);
+  const [selectedFormat, setSelectedFormat] = useState('inv-year-seq');
+  const [customFormat, setCustomFormat] = useState('INV-{YEAR}-{SEQ}');
+  const [generatedInvoiceNumber, setGeneratedInvoiceNumber] = useState('');
+  const [addInvoiceDate, setAddInvoiceDate] = useState(formatDateStringForInput(new Date()));
 
   const statusOptions = ['DRAFT', 'PENDING', 'PAID', 'CANCELLED'];
+
+  const refreshGeneratedInvoiceNumber = async (
+    formatId: string,
+    custom: string,
+    invoiceDate: string
+  ) => {
+    const result = await generateNextInvoiceNumber(
+      formatId,
+      formatId === 'custom' ? custom : undefined,
+      invoiceDate
+    );
+    if (result.invoiceNumber) {
+      setGeneratedInvoiceNumber(result.invoiceNumber);
+    }
+  };
 
   const loadData = async (query = '') => {
     setLoading(true);
@@ -112,7 +143,12 @@ export default function InvoicesPage() {
     setInvoices(invData as unknown as InvoiceType[]);
     setClients(clientData as ClientOptionType[]);
     setProjects(projData as unknown as ProjectOptionType[]);
-    setSettings(settingsData as CompanySettingsType);
+    const typedSettings = settingsData as CompanySettingsType;
+    setSettings(typedSettings);
+    if (typedSettings) {
+      setSelectedFormat(typedSettings.invoiceNumberFormat || 'inv-year-seq');
+      setCustomFormat(typedSettings.customInvoiceFormat || 'INV-{YEAR}-{SEQ}');
+    }
     setLoading(false);
   };
 
@@ -137,6 +173,11 @@ export default function InvoicesPage() {
       setQrCodeUrl(null);
     }
   }, [isViewOpen, selectedInvoice]);
+
+  useEffect(() => {
+    if (!isAddOpen) return;
+    refreshGeneratedInvoiceNumber(selectedFormat, customFormat, addInvoiceDate);
+  }, [isAddOpen, selectedFormat, customFormat, addInvoiceDate]);
 
   const handleAddSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -208,15 +249,6 @@ export default function InvoicesPage() {
     }
   };
 
-  const formatDateStringForInput = (dateVal: string | Date) => {
-    if (!dateVal) return '';
-    const d = new Date(dateVal);
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    const year = d.getFullYear();
-    return `${year}-${month}-${day}`;
-  };
-
   const triggerPrint = () => {
     window.print();
   };
@@ -274,6 +306,7 @@ export default function InvoicesPage() {
         <button
           onClick={() => {
             setFormError(null);
+            setAddInvoiceDate(formatDateStringForInput(new Date()));
             setIsAddOpen(true);
           }}
           className="px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold shadow-md shadow-blue-200 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-200 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
@@ -502,15 +535,48 @@ export default function InvoicesPage() {
               )}
 
               <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-600 block">Invoice Number Format</label>
+                <select
+                  value={selectedFormat}
+                  onChange={(e) => setSelectedFormat(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                >
+                  {INVOICE_FORMAT_PRESETS.map((preset) => (
+                    <option key={preset.id} value={preset.id}>
+                      {preset.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {selectedFormat === 'custom' && (
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-600 block">Custom Format Template</label>
+                  <input
+                    type="text"
+                    value={customFormat}
+                    onChange={(e) => setCustomFormat(e.target.value)}
+                    placeholder="INV-{YEAR}-{SEQ}"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium font-mono"
+                  />
+                  <p className="text-[10px] text-slate-400">
+                    Use tokens like {'{YEAR}'}, {'{SEQ}'}, {'{YYYYMM}'} — save a default in Settings → Invoice Numbering.
+                  </p>
+                </div>
+              )}
+
+              <div className="space-y-1">
                 <label className="text-xs font-bold text-slate-600 block">Invoice Number</label>
                 <input
                   type="text"
                   name="invoiceNumber"
                   required
                   placeholder="INV-2026-001"
-                  defaultValue={`INV-${new Date().getFullYear()}-${String(invoices.length + 1).padStart(3, '0')}`}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+                  value={generatedInvoiceNumber}
+                  onChange={(e) => setGeneratedInvoiceNumber(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium font-mono"
                 />
+                <p className="text-[10px] text-slate-400">Auto-generated from format — you can edit manually if needed.</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -565,7 +631,8 @@ export default function InvoicesPage() {
                     type="date"
                     name="invoiceDate"
                     required
-                    defaultValue={formatDateStringForInput(new Date())}
+                    value={addInvoiceDate}
+                    onChange={(e) => setAddInvoiceDate(e.target.value)}
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
                   />
                 </div>

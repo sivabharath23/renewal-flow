@@ -175,8 +175,10 @@ model Setting {
   companyPhone      String   @default("+1234567890")
   upiId             String   @default("9003793639@ptsbi")
   upiName           String   @default("Sivabharath")
-  reminderDays      String   @default("30,15,7,3,1")
-  notificationEmail String   @default("alerts@renewalflow.com")
-  createdAt         DateTime @default(now())
+  reminderDays         String   @default("30,15,7,3,1")
+  notificationEmail    String   @default("alerts@renewalflow.com")
+  invoiceNumberFormat  String   @default("inv-year-seq")
+  customInvoiceFormat  String   @default("INV-{YEAR}-{SEQ}")
+  createdAt            DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }

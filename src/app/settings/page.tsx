@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { getSettings, updateSettingsAction } from './actions';
 import {
-  Settings,
   Building,
   CreditCard,
   Bell,
@@ -12,11 +11,17 @@ import {
   Mail,
   Phone,
   Coins,
-  ShieldCheck,
   Save,
   Upload,
-  Trash2
+  Trash2,
+  Hash
 } from 'lucide-react';
+import {
+  INVOICE_FORMAT_PRESETS,
+  INVOICE_FORMAT_TOKEN_HELP,
+  getTemplateForFormat,
+  renderInvoiceFormat,
+} from '@/lib/invoice-format';
 import ImageCropper from '@/components/ImageCropper';
 
 interface SettingsType {
@@ -29,12 +34,16 @@ interface SettingsType {
   notificationEmail: string;
   companyLogo: string | null;
   showLogo: boolean;
+  invoiceNumberFormat: string;
+  customInvoiceFormat: string;
 }
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<SettingsType | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeSection, setActiveSection] = useState<'COMPANY' | 'PAYMENT' | 'REMINDER'>('COMPANY');
+  const [activeSection, setActiveSection] = useState<'COMPANY' | 'PAYMENT' | 'REMINDER' | 'INVOICE'>('COMPANY');
+  const [selectedFormat, setSelectedFormat] = useState('inv-year-seq');
+  const [customFormat, setCustomFormat] = useState('INV-{YEAR}-{SEQ}');
 
   // Form states
   const [formError, setFormError] = useState<string | null>(null);
@@ -51,6 +60,10 @@ export default function SettingsPage() {
     setSettings(data as SettingsType);
     if (data?.companyLogo) {
       setLogo(data.companyLogo);
+    }
+    if (data) {
+      setSelectedFormat(data.invoiceNumberFormat || 'inv-year-seq');
+      setCustomFormat(data.customInvoiceFormat || 'INV-{YEAR}-{SEQ}');
     }
     setLoading(false);
   };
@@ -133,6 +146,17 @@ export default function SettingsPage() {
               <Bell className="w-4 h-4" />
               <span>Email Reminders</span>
             </button>
+            <button
+              onClick={() => setActiveSection('INVOICE')}
+              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all text-left cursor-pointer ${
+                activeSection === 'INVOICE'
+                  ? 'bg-blue-50 text-blue-600 border-l-3 border-blue-600 pl-2'
+                  : 'hover:bg-slate-50 hover:text-slate-800'
+              }`}
+            >
+              <Hash className="w-4 h-4" />
+              <span>Invoice Numbering</span>
+            </button>
           </div>
 
           {/* Form Settings Content */}
@@ -171,6 +195,12 @@ export default function SettingsPage() {
                 <>
                   <input type="hidden" name="reminderDays" value={settings.reminderDays} />
                   <input type="hidden" name="notificationEmail" value={settings.notificationEmail} />
+                </>
+              )}
+              {activeSection !== 'INVOICE' && (
+                <>
+                  <input type="hidden" name="invoiceNumberFormat" value={settings.invoiceNumberFormat || 'inv-year-seq'} />
+                  <input type="hidden" name="customInvoiceFormat" value={settings.customInvoiceFormat || 'INV-{YEAR}-{SEQ}'} />
                 </>
               )}
               
@@ -354,6 +384,70 @@ export default function SettingsPage() {
                       placeholder="Sivabharath"
                       className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
                     />
+                  </div>
+                </div>
+              )}
+
+              {activeSection === 'INVOICE' && (
+                <div className="space-y-4">
+                  <div className="mb-4">
+                    <h3 className="text-base font-bold text-slate-800">Invoice Numbering</h3>
+                    <p className="text-xs text-slate-400 mt-0.5">Choose a preset format or define your own template for auto-generated invoice numbers.</p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-600 block">Default Invoice Format</label>
+                    <select
+                      name="invoiceNumberFormat"
+                      value={selectedFormat}
+                      onChange={(e) => setSelectedFormat(e.target.value)}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                    >
+                      {INVOICE_FORMAT_PRESETS.map((preset) => (
+                        <option key={preset.id} value={preset.id}>
+                          {preset.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {selectedFormat === 'custom' && (
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-slate-600 block">Custom Format Template</label>
+                      <input
+                        type="text"
+                        name="customInvoiceFormat"
+                        value={customFormat}
+                        onChange={(e) => setCustomFormat(e.target.value)}
+                        placeholder="INV-{YEAR}-{SEQ}"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium font-mono"
+                      />
+                      <div className="mt-2 p-3 bg-slate-50 border border-slate-100 rounded-xl">
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Available tokens</p>
+                        <ul className="text-[10px] text-slate-500 space-y-0.5">
+                          {INVOICE_FORMAT_TOKEN_HELP.map((token) => (
+                            <li key={token}>{token}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedFormat !== 'custom' && (
+                    <input type="hidden" name="customInvoiceFormat" value={settings.customInvoiceFormat || 'INV-{YEAR}-{SEQ}'} />
+                  )}
+
+                  <div className="p-3 bg-blue-50/50 border border-blue-100 rounded-xl">
+                    <p className="text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Preview</p>
+                    <p className="text-sm font-bold text-slate-800 font-mono">
+                      {renderInvoiceFormat(
+                        getTemplateForFormat(
+                          selectedFormat,
+                          selectedFormat === 'custom' ? customFormat : settings.customInvoiceFormat
+                        ),
+                        { sequence: 1 }
+                      )}
+                    </p>
                   </div>
                 </div>
               )}

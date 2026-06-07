@@ -24,6 +24,8 @@ export async function getSettings() {
           upiName: user.name || 'Sivabharath',
           reminderDays: '30,15,7,3,1',
           notificationEmail: 'alerts@renewalflow.com',
+          invoiceNumberFormat: 'inv-year-seq',
+          customInvoiceFormat: 'INV-{YEAR}-{SEQ}',
         },
       });
     }
@@ -44,6 +46,8 @@ export async function updateSettingsAction(formData: FormData) {
   const notificationEmail = formData.get('notificationEmail') as string;
   const companyLogo = formData.get('companyLogo') as string | null;
   const showLogo = formData.get('showLogo') === 'on';
+  const invoiceNumberFormat = (formData.get('invoiceNumberFormat') as string) || 'inv-year-seq';
+  const customInvoiceFormat = (formData.get('customInvoiceFormat') as string) || 'INV-{YEAR}-{SEQ}';
 
   if (!companyName || !companyEmail || !companyPhone || !upiId || !upiName || !reminderDays || !notificationEmail) {
     return { error: 'All configurations are required.' };
@@ -71,6 +75,8 @@ export async function updateSettingsAction(formData: FormData) {
           notificationEmail,
           companyLogo: logoToSave,
           showLogo,
+          invoiceNumberFormat,
+          customInvoiceFormat,
         },
       });
     } else {
@@ -86,6 +92,8 @@ export async function updateSettingsAction(formData: FormData) {
           notificationEmail,
           companyLogo: logoToSave,
           showLogo,
+          invoiceNumberFormat,
+          customInvoiceFormat,
         },
       });
     }
