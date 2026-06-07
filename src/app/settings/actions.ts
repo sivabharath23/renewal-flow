@@ -3,6 +3,7 @@
 import db from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { getSessionUser } from '@/lib/auth-helpers';
+import { serializeCustomConfig, DEFAULT_CUSTOM_CONFIG } from '@/lib/invoice-templates';
 
 export async function getSettings() {
   try {
@@ -24,8 +25,8 @@ export async function getSettings() {
           upiName: user.name || 'Sivabharath',
           reminderDays: '30,15,7,3,1',
           notificationEmail: 'alerts@renewalflow.com',
-          invoiceNumberFormat: 'inv-year-seq',
-          customInvoiceFormat: 'INV-{YEAR}-{SEQ}',
+          invoiceTemplate: 'classic',
+          invoiceTemplateCustom: serializeCustomConfig(DEFAULT_CUSTOM_CONFIG),
         },
       });
     }
@@ -46,8 +47,10 @@ export async function updateSettingsAction(formData: FormData) {
   const notificationEmail = formData.get('notificationEmail') as string;
   const companyLogo = formData.get('companyLogo') as string | null;
   const showLogo = formData.get('showLogo') === 'on';
-  const invoiceNumberFormat = (formData.get('invoiceNumberFormat') as string) || 'inv-year-seq';
-  const customInvoiceFormat = (formData.get('customInvoiceFormat') as string) || 'INV-{YEAR}-{SEQ}';
+  const invoiceTemplate = (formData.get('invoiceTemplate') as string) || 'classic';
+  const invoiceTemplateCustom =
+    (formData.get('invoiceTemplateCustom') as string) ||
+    serializeCustomConfig(DEFAULT_CUSTOM_CONFIG);
 
   if (!companyName || !companyEmail || !companyPhone || !upiId || !upiName || !reminderDays || !notificationEmail) {
     return { error: 'All configurations are required.' };
@@ -75,8 +78,8 @@ export async function updateSettingsAction(formData: FormData) {
           notificationEmail,
           companyLogo: logoToSave,
           showLogo,
-          invoiceNumberFormat,
-          customInvoiceFormat,
+          invoiceTemplate,
+          invoiceTemplateCustom,
         },
       });
     } else {
@@ -92,8 +95,8 @@ export async function updateSettingsAction(formData: FormData) {
           notificationEmail,
           companyLogo: logoToSave,
           showLogo,
-          invoiceNumberFormat,
-          customInvoiceFormat,
+          invoiceTemplate,
+          invoiceTemplateCustom,
         },
       });
     }

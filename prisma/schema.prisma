@@ -177,8 +177,8 @@ model Setting {
   upiName           String   @default("Sivabharath")
   reminderDays         String   @default("30,15,7,3,1")
   notificationEmail    String   @default("alerts@renewalflow.com")
-  invoiceNumberFormat  String   @default("inv-year-seq")
-  customInvoiceFormat  String   @default("INV-{YEAR}-{SEQ}")
+  invoiceTemplate        String   @default("classic")
+  invoiceTemplateCustom  String   @default("{}")
   createdAt            DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }

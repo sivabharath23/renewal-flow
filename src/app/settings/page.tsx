@@ -14,14 +14,15 @@ import {
   Save,
   Upload,
   Trash2,
-  Hash
+  FileText
 } from 'lucide-react';
 import {
-  INVOICE_FORMAT_PRESETS,
-  INVOICE_FORMAT_TOKEN_HELP,
-  getTemplateForFormat,
-  renderInvoiceFormat,
-} from '@/lib/invoice-format';
+  INVOICE_TEMPLATE_PRESETS,
+  DEFAULT_CUSTOM_CONFIG,
+  parseCustomConfig,
+  serializeCustomConfig,
+  InvoiceTemplateCustomConfig,
+} from '@/lib/invoice-templates';
 import ImageCropper from '@/components/ImageCropper';
 
 interface SettingsType {
@@ -34,16 +35,16 @@ interface SettingsType {
   notificationEmail: string;
   companyLogo: string | null;
   showLogo: boolean;
-  invoiceNumberFormat: string;
-  customInvoiceFormat: string;
+  invoiceTemplate: string;
+  invoiceTemplateCustom: string;
 }
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<SettingsType | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState<'COMPANY' | 'PAYMENT' | 'REMINDER' | 'INVOICE'>('COMPANY');
-  const [selectedFormat, setSelectedFormat] = useState('inv-year-seq');
-  const [customFormat, setCustomFormat] = useState('INV-{YEAR}-{SEQ}');
+  const [selectedTemplate, setSelectedTemplate] = useState('classic');
+  const [customTemplate, setCustomTemplate] = useState<InvoiceTemplateCustomConfig>(DEFAULT_CUSTOM_CONFIG);
 
   // Form states
   const [formError, setFormError] = useState<string | null>(null);
@@ -62,8 +63,8 @@ export default function SettingsPage() {
       setLogo(data.companyLogo);
     }
     if (data) {
-      setSelectedFormat(data.invoiceNumberFormat || 'inv-year-seq');
-      setCustomFormat(data.customInvoiceFormat || 'INV-{YEAR}-{SEQ}');
+      setSelectedTemplate(data.invoiceTemplate || 'classic');
+      setCustomTemplate(parseCustomConfig(data.invoiceTemplateCustom));
     }
     setLoading(false);
   };
@@ -154,8 +155,8 @@ export default function SettingsPage() {
                   : 'hover:bg-slate-50 hover:text-slate-800'
               }`}
             >
-              <Hash className="w-4 h-4" />
-              <span>Invoice Numbering</span>
+              <FileText className="w-4 h-4" />
+              <span>Invoice Templates</span>
             </button>
           </div>
 
@@ -199,8 +200,8 @@ export default function SettingsPage() {
               )}
               {activeSection !== 'INVOICE' && (
                 <>
-                  <input type="hidden" name="invoiceNumberFormat" value={settings.invoiceNumberFormat || 'inv-year-seq'} />
-                  <input type="hidden" name="customInvoiceFormat" value={settings.customInvoiceFormat || 'INV-{YEAR}-{SEQ}'} />
+                  <input type="hidden" name="invoiceTemplate" value={settings.invoiceTemplate || 'classic'} />
+                  <input type="hidden" name="invoiceTemplateCustom" value={settings.invoiceTemplateCustom || serializeCustomConfig(DEFAULT_CUSTOM_CONFIG)} />
                 </>
               )}
               
@@ -391,62 +392,118 @@ export default function SettingsPage() {
               {activeSection === 'INVOICE' && (
                 <div className="space-y-4">
                   <div className="mb-4">
-                    <h3 className="text-base font-bold text-slate-800">Invoice Numbering</h3>
-                    <p className="text-xs text-slate-400 mt-0.5">Choose a preset format or define your own template for auto-generated invoice numbers.</p>
+                    <h3 className="text-base font-bold text-slate-800">Invoice Templates</h3>
+                    <p className="text-xs text-slate-400 mt-0.5">Pick a printable invoice layout or build your own with custom colors and sections.</p>
                   </div>
 
+                  <input type="hidden" name="invoiceTemplateCustom" value={serializeCustomConfig(customTemplate)} />
+
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-600 block">Default Invoice Format</label>
+                    <label className="text-xs font-bold text-slate-600 block">Default Template</label>
                     <select
-                      name="invoiceNumberFormat"
-                      value={selectedFormat}
-                      onChange={(e) => setSelectedFormat(e.target.value)}
+                      name="invoiceTemplate"
+                      value={selectedTemplate}
+                      onChange={(e) => setSelectedTemplate(e.target.value)}
                       className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
                     >
-                      {INVOICE_FORMAT_PRESETS.map((preset) => (
+                      {INVOICE_TEMPLATE_PRESETS.map((preset) => (
                         <option key={preset.id} value={preset.id}>
-                          {preset.label}
+                          {preset.label} — {preset.description}
                         </option>
                       ))}
                     </select>
                   </div>
 
-                  {selectedFormat === 'custom' && (
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-600 block">Custom Format Template</label>
-                      <input
-                        type="text"
-                        name="customInvoiceFormat"
-                        value={customFormat}
-                        onChange={(e) => setCustomFormat(e.target.value)}
-                        placeholder="INV-{YEAR}-{SEQ}"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium font-mono"
-                      />
-                      <div className="mt-2 p-3 bg-slate-50 border border-slate-100 rounded-xl">
-                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Available tokens</p>
-                        <ul className="text-[10px] text-slate-500 space-y-0.5">
-                          {INVOICE_FORMAT_TOKEN_HELP.map((token) => (
-                            <li key={token}>{token}</li>
-                          ))}
-                        </ul>
+                  {selectedTemplate === 'custom' && (
+                    <div className="space-y-4 p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold text-slate-600 block">Primary Color</label>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="color"
+                              value={customTemplate.primaryColor}
+                              onChange={(e) => setCustomTemplate({ ...customTemplate, primaryColor: e.target.value })}
+                              className="w-10 h-10 rounded-lg border border-slate-200 cursor-pointer"
+                            />
+                            <input
+                              type="text"
+                              value={customTemplate.primaryColor}
+                              onChange={(e) => setCustomTemplate({ ...customTemplate, primaryColor: e.target.value })}
+                              className="flex-1 px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm font-mono"
+                            />
+                          </div>
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold text-slate-600 block">Header Title</label>
+                          <input
+                            type="text"
+                            value={customTemplate.headerTitle}
+                            onChange={(e) => setCustomTemplate({ ...customTemplate, headerTitle: e.target.value })}
+                            placeholder="INVOICE"
+                            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-600 block">Thank You Message</label>
+                        <input
+                          type="text"
+                          value={customTemplate.thankYouMessage}
+                          onChange={(e) => setCustomTemplate({ ...customTemplate, thankYouMessage: e.target.value })}
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm"
+                        />
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-600 block">Footer Note</label>
+                        <textarea
+                          rows={2}
+                          value={customTemplate.footerNote}
+                          onChange={(e) => setCustomTemplate({ ...customTemplate, footerNote: e.target.value })}
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm resize-none"
+                        />
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-600 block">Layout Style</label>
+                        <select
+                          value={customTemplate.layout}
+                          onChange={(e) => setCustomTemplate({ ...customTemplate, layout: e.target.value as InvoiceTemplateCustomConfig['layout'] })}
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm"
+                        >
+                          <option value="standard">Standard</option>
+                          <option value="compact">Compact</option>
+                          <option value="sidebar">Sidebar Accent</option>
+                        </select>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3 text-xs">
+                        {([
+                          ['showQrCode', 'Show UPI QR Code'],
+                          ['showPaymentInstructions', 'Show Payment Instructions'],
+                          ['showStatus', 'Show Status Badge'],
+                          ['showProjectDetails', 'Show Project Details'],
+                        ] as const).map(([key, label]) => (
+                          <label key={key} className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={customTemplate[key]}
+                              onChange={(e) => setCustomTemplate({ ...customTemplate, [key]: e.target.checked })}
+                              className="rounded border-slate-300 text-blue-600"
+                            />
+                            <span className="font-semibold text-slate-600">{label}</span>
+                          </label>
+                        ))}
                       </div>
                     </div>
                   )}
 
-                  {selectedFormat !== 'custom' && (
-                    <input type="hidden" name="customInvoiceFormat" value={settings.customInvoiceFormat || 'INV-{YEAR}-{SEQ}'} />
-                  )}
-
                   <div className="p-3 bg-blue-50/50 border border-blue-100 rounded-xl">
-                    <p className="text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Preview</p>
-                    <p className="text-sm font-bold text-slate-800 font-mono">
-                      {renderInvoiceFormat(
-                        getTemplateForFormat(
-                          selectedFormat,
-                          selectedFormat === 'custom' ? customFormat : settings.customInvoiceFormat
-                        ),
-                        { sequence: 1 }
-                      )}
+                    <p className="text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Tip</p>
+                    <p className="text-xs text-slate-600">
+                      You can also switch templates when viewing an invoice before printing or saving as PDF.
                     </p>
                   </div>
                 </div>
