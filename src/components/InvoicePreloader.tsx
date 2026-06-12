@@ -8,23 +8,23 @@ interface InvoicePreloaderProps {
 }
 
 export default function InvoicePreloader({
-  text = 'Loading details...',
+  text = '',
   fullscreen = false,
 }: InvoicePreloaderProps) {
   const content = (
-    <div className="flex flex-col items-center justify-center p-8 text-center select-none">
+    <div className="flex flex-col items-center justify-center p-2 text-center select-none">
       {/* Container for the SVG animations */}
-      <div className="relative w-40 h-40 flex items-center justify-center">
+      <div className="relative w-24 h-24 flex items-center justify-center">
         {/* SVG Wrapper */}
         <svg
-          width="100"
-          height="100"
+          width="96"
+          height="96"
           viewBox="0 0 160 160"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           className="w-full h-full"
         >
-          {/* Definitions for Gradients and Filters */}
+          {/* Definitions for Gradients */}
           <defs>
             <linearGradient id="blue-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="#3b82f6" />
@@ -156,12 +156,9 @@ export default function InvoicePreloader({
 
       {/* Caption Text */}
       {text && (
-        <div className="mt-4 flex flex-col items-center gap-1">
-          <span className="text-sm font-bold text-slate-700 tracking-wide animate-pulse">
+        <div className="mt-2 flex flex-col items-center gap-1">
+          <span className="text-xs font-bold text-slate-600 tracking-wide animate-pulse">
             {text}
-          </span>
-          <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-widest animate-pulse">
-            Please wait
           </span>
         </div>
       )}
@@ -170,10 +167,8 @@ export default function InvoicePreloader({
 
   if (fullscreen) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-50/80 backdrop-blur-xs">
-        <div className="bg-white/90 p-6 rounded-3xl border border-slate-100/50 shadow-2xl glass-card">
-          {content}
-        </div>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-50/50 backdrop-blur-[1px]">
+        {content}
       </div>
     );
   }
