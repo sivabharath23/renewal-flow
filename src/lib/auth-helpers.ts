@@ -1,12 +1,13 @@
 import { cookies } from 'next/headers';
 import crypto from 'crypto';
 import db from './db';
+import { cache } from 'react';
 
 export function hashPassword(password: string): string {
   return crypto.createHash('sha256').update(password).digest('hex');
 }
 
-export async function getSessionUser() {
+export const getSessionUser = cache(async () => {
   try {
     const cookieStore = await cookies();
     const userId = cookieStore.get('auth_session')?.value;
@@ -22,7 +23,7 @@ export async function getSessionUser() {
     console.error('Failed to get session user:', error);
     return null;
   }
-}
+});
 
 export async function getUserFilter() {
   const user = await getSessionUser();

@@ -42,7 +42,7 @@ function VerifyOtpForm() {
 
   return (
     <div className="bg-white rounded-2xl border border-slate-100 p-8 shadow-xl shadow-slate-100/50">
-      <div className="mb-6">
+      <div className="mb-6 text-center">
         <h2 className="text-xl font-bold text-slate-800">Verify OTP</h2>
         <p className="text-xs text-slate-400 mt-1">
           We sent a 6-digit verification code to <strong className="text-slate-700">{email}</strong>. Enter the OTP code and set your new password below.

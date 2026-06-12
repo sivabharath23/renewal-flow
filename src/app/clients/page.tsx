@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, startTransition } from 'react';
+import { useState, useEffect } from 'react';
 import { getClients, createClientAction, updateClientAction, deleteClientAction, checkIsAdmin } from './actions';
 import { useToast } from '@/context/ToastContext';
 import ConfirmModal from '@/components/ConfirmModal';
@@ -72,8 +72,10 @@ export default function ClientsPage() {
   // Load clients
   const loadClients = async (query = '', page = 1) => {
     setLoading(true);
-    const result = await getClients(query, page, LIMIT);
-    const adminCheck = await checkIsAdmin();
+    const [result, adminCheck] = await Promise.all([
+      getClients(query, page, LIMIT),
+      checkIsAdmin()
+    ]);
     setIsAdmin(adminCheck);
     
     if (result && 'data' in result) {

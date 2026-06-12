@@ -100,13 +100,25 @@ export default function Sidebar({ user }: SidebarProps) {
             </span>
           </div>
         </div>
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-50 rounded-xl transition-all cursor-pointer border border-slate-100"
-          aria-label="Toggle Navigation Menu"
-        >
-          {isOpen ? <X className="w-5.5 h-5.5" /> : <Menu className="w-5.5 h-5.5" />}
-        </button>
+        <div className="flex items-center gap-2">
+          {user && (
+            <button
+              onClick={() => setIsLogoutConfirmOpen(true)}
+              className="p-2 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer border border-red-100/30"
+              title="Sign Out"
+              aria-label="Sign Out"
+            >
+              <LogOut className="w-5 h-5" />
+            </button>
+          )}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-50 rounded-xl transition-all cursor-pointer border border-slate-100"
+            aria-label="Toggle Navigation Menu"
+          >
+            {isOpen ? <X className="w-5.5 h-5.5" /> : <Menu className="w-5.5 h-5.5" />}
+          </button>
+        </div>
       </div>
 
       {/* Backdrop overlay for mobile */}
@@ -119,7 +131,7 @@ export default function Sidebar({ user }: SidebarProps) {
 
       {/* Sidebar Navigation Sheet */}
       <aside
-        className={`fixed md:sticky top-0 bottom-0 left-0 z-40 md:z-25 h-screen glass-sidebar p-4 flex flex-col justify-between transition-all duration-300 ease-in-out no-print ${
+        className={`fixed md:sticky top-0 bottom-0 left-0 z-40 md:z-25 h-[100dvh] overflow-y-auto glass-sidebar p-4 flex flex-col justify-between transition-all duration-300 ease-in-out no-print ${
           isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         } ${currentCollapseState ? 'w-64 md:w-20' : 'w-64'}`}
       >

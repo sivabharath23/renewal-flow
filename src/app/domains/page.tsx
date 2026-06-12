@@ -73,8 +73,10 @@ export default function DomainsPage() {
 
   const loadData = async (query = '') => {
     setLoading(true);
-    const domainData = await getDomains(query);
-    const projectData = await getProjects();
+    const [domainData, projectData] = await Promise.all([
+      getDomains(query),
+      getProjects()
+    ]);
     setDomains(domainData as unknown as DomainType[]);
     setProjects(projectData as unknown as ProjectOptionType[]);
     setLoading(false);

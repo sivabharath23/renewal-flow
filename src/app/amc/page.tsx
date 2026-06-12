@@ -73,8 +73,10 @@ export default function AMCsPage() {
 
   const loadData = async (query = '') => {
     setLoading(true);
-    const amcData = await getAMCs(query);
-    const projectData = await getProjects();
+    const [amcData, projectData] = await Promise.all([
+      getAMCs(query),
+      getProjects()
+    ]);
     setAMCs(amcData as unknown as AMCType[]);
     setProjects(projectData as unknown as ProjectOptionType[]);
     setLoading(false);

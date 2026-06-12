@@ -79,8 +79,10 @@ export default function ProjectsPage() {
 
   const loadData = async (query = '', page = 1) => {
     setLoading(true);
-    const projData = await getProjects(query, page, LIMIT);
-    const clientData = await getClients();
+    const [projData, clientData] = await Promise.all([
+      getProjects(query, page, LIMIT),
+      getClients()
+    ]);
     
     if (projData && 'data' in projData) {
       setProjects(projData.data as unknown as ProjectType[]);

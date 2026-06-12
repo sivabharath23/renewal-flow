@@ -74,8 +74,10 @@ export default function ServersPage() {
 
   const loadData = async (query = '') => {
     setLoading(true);
-    const serverData = await getServers(query);
-    const projectData = await getProjects();
+    const [serverData, projectData] = await Promise.all([
+      getServers(query),
+      getProjects()
+    ]);
     setServers(serverData as unknown as ServerType[]);
     setProjects(projectData as unknown as ProjectOptionType[]);
     setLoading(false);

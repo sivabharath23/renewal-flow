@@ -118,10 +118,12 @@ export default function InvoicesPage() {
 
   const loadData = async (query = '') => {
     setLoading(true);
-    const invData = await getInvoices(query);
-    const clientData = await getClients();
-    const projData = await getProjects();
-    const settingsData = await getCompanySettings();
+    const [invData, clientData, projData, settingsData] = await Promise.all([
+      getInvoices(query),
+      getClients(),
+      getProjects(),
+      getCompanySettings()
+    ]);
     
     setInvoices(invData as unknown as InvoiceType[]);
     setClients(clientData as ClientOptionType[]);

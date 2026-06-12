@@ -84,8 +84,10 @@ export default function PaymentsPage() {
 
   const loadData = useCallback(async () => {
     setLoading(true);
-    const payData = await getPayments(statusFilter);
-    const invData = await getInvoices();
+    const [payData, invData] = await Promise.all([
+      getPayments(statusFilter),
+      getInvoices()
+    ]);
     
     setPayments(payData as unknown as PaymentType[]);
     

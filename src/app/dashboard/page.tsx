@@ -35,128 +35,139 @@ export default async function DashboardPage() {
   const thirtyDaysFromNow = new Date();
   thirtyDaysFromNow.setDate(now.getDate() + 30);
 
-  // Fetch Stats
-  const totalClients = await db.client.count({ where: filter });
-  const totalProjects = await db.project.count({ where: filter });
-  const activeDomains = await db.domain.count({ where: { status: 'ACTIVE', ...filter } });
-  
-  const expiringDomains = await db.domain.findMany({
-    where: {
-      ...filter,
-      expiryDate: {
-        gte: now,
-        lte: thirtyDaysFromNow,
+  // Fetch Stats and Data in Parallel
+  const [
+    totalClients,
+    totalProjects,
+    activeDomains,
+    expiringDomains,
+    expiringDomainsCount,
+    totalServers,
+    expiringServers,
+    expiringServersCount,
+    expiringAmcContracts,
+    expiringAmcCount,
+    pendingInvoices,
+    pendingInvoicesCount,
+    paidInvoicesThisMonth,
+    chartData
+  ] = await Promise.all([
+    db.client.count({ where: filter }),
+    db.project.count({ where: filter }),
+    db.domain.count({ where: { status: 'ACTIVE', ...filter } }),
+    db.domain.findMany({
+      where: {
+        ...filter,
+        expiryDate: {
+          gte: now,
+          lte: thirtyDaysFromNow,
+        },
       },
-    },
-    include: { project: { include: { client: true } } },
-    take: 5,
-    orderBy: { expiryDate: 'asc' },
-  });
- 
-  const expiringDomainsCount = await db.domain.count({
-    where: {
-      ...filter,
-      expiryDate: {
-        gte: now,
-        lte: thirtyDaysFromNow,
+      include: { project: { include: { client: true } } },
+      take: 5,
+      orderBy: { expiryDate: 'asc' },
+    }),
+    db.domain.count({
+      where: {
+        ...filter,
+        expiryDate: {
+          gte: now,
+          lte: thirtyDaysFromNow,
+        },
       },
-    },
-  });
- 
-  const totalServers = await db.server.count({ where: filter });
-  const expiringServers = await db.server.findMany({
-    where: {
-      ...filter,
-      expiryDate: {
-        gte: now,
-        lte: thirtyDaysFromNow,
+    }),
+    db.server.count({ where: filter }),
+    db.server.findMany({
+      where: {
+        ...filter,
+        expiryDate: {
+          gte: now,
+          lte: thirtyDaysFromNow,
+        },
       },
-    },
-    include: { project: { include: { client: true } } },
-    take: 5,
-    orderBy: { expiryDate: 'asc' },
-  });
- 
-  const expiringServersCount = await db.server.count({
-    where: {
-      ...filter,
-      expiryDate: {
-        gte: now,
-        lte: thirtyDaysFromNow,
+      include: { project: { include: { client: true } } },
+      take: 5,
+      orderBy: { expiryDate: 'asc' },
+    }),
+    db.server.count({
+      where: {
+        ...filter,
+        expiryDate: {
+          gte: now,
+          lte: thirtyDaysFromNow,
+        },
       },
-    },
-  });
- 
-  const expiringAmcContracts = await db.aMCContract.findMany({
-    where: {
-      ...filter,
-      endDate: {
-        gte: now,
-        lte: thirtyDaysFromNow,
+    }),
+    db.aMCContract.findMany({
+      where: {
+        ...filter,
+        endDate: {
+          gte: now,
+          lte: thirtyDaysFromNow,
+        },
       },
-    },
-    include: { project: { include: { client: true } } },
-    take: 5,
-    orderBy: { endDate: 'asc' },
-  });
- 
-  const expiringAmcCount = await db.aMCContract.count({
-    where: {
-      ...filter,
-      endDate: {
-        gte: now,
-        lte: thirtyDaysFromNow,
+      include: { project: { include: { client: true } } },
+      take: 5,
+      orderBy: { endDate: 'asc' },
+    }),
+    db.aMCContract.count({
+      where: {
+        ...filter,
+        endDate: {
+          gte: now,
+          lte: thirtyDaysFromNow,
+        },
       },
-    },
-  });
- 
-  const pendingInvoices = await db.invoice.findMany({
-    where: { status: 'PENDING', ...filter },
-    include: { client: true },
-    take: 5,
-    orderBy: { dueDate: 'asc' },
-  });
- 
-  const pendingInvoicesCount = await db.invoice.count({
-    where: { status: 'PENDING', ...filter },
-  });
- 
-  // Calculate Revenue
-  const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  const paidInvoicesThisMonth = await db.invoice.findMany({
-    where: {
-      ...filter,
-      status: 'PAID',
-      updatedAt: {
-        gte: firstDayOfMonth,
-      },
-    },
-    select: { amount: true },
-  });
-  const revenueThisMonth = paidInvoicesThisMonth.reduce((acc, inv) => acc + inv.amount, 0);
- 
-  // Fetch monthly revenue data for the chart (last 6 months)
-  const chartData = [];
-  for (let i = 5; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const label = d.toLocaleString('default', { month: 'short' });
-    const start = new Date(d.getFullYear(), d.getMonth(), 1);
-    const end = new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59);
- 
-    const paidInMonth = await db.invoice.findMany({
+    }),
+    db.invoice.findMany({
+      where: { status: 'PENDING', ...filter },
+      include: { client: true },
+      take: 5,
+      orderBy: { dueDate: 'asc' },
+    }),
+    db.invoice.count({
+      where: { status: 'PENDING', ...filter },
+    }),
+    db.invoice.findMany({
       where: {
         ...filter,
         status: 'PAID',
         updatedAt: {
-          gte: start,
-          lte: end,
+          gte: new Date(now.getFullYear(), now.getMonth(), 1),
         },
       },
       select: { amount: true },
-    });
-    const amount = paidInMonth.reduce((acc, inv) => acc + inv.amount, 0);
-    chartData.push({ label, amount });
-  }
+    }),
+    // Fetch monthly revenue data for the chart (last 6 months in parallel)
+    Promise.all(
+      Array.from({ length: 6 }, (_, index) => {
+        const i = 5 - index;
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const label = d.toLocaleString('default', { month: 'short' });
+        const start = new Date(d.getFullYear(), d.getMonth(), 1);
+        const end = new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59);
+
+        return db.invoice
+          .findMany({
+            where: {
+              ...filter,
+              status: 'PAID',
+              updatedAt: {
+                gte: start,
+                lte: end,
+              },
+            },
+            select: { amount: true },
+          })
+          .then((paidInMonth) => {
+            const amount = paidInMonth.reduce((acc, inv) => acc + inv.amount, 0);
+            return { label, amount };
+          });
+      })
+    ),
+  ]);
+
+  const revenueThisMonth = paidInvoicesThisMonth.reduce((acc, inv) => acc + inv.amount, 0);
 
   const maxAmount = Math.max(...chartData.map((d) => d.amount), 5000);
 

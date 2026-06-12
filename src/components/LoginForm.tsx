@@ -21,7 +21,7 @@ function LoginFormContent() {
 
   return (
     <div className="bg-white rounded-2xl border border-slate-100 p-8 shadow-xl shadow-slate-100/50">
-      <div className="mb-6">
+      <div className="mb-6 text-center">
         <h2 className="text-xl font-bold text-slate-800">Welcome Back</h2>
         <p className="text-xs text-slate-400 mt-1">
           Sign in with your administrative credentials to continue.
