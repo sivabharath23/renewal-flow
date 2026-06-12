@@ -31,30 +31,20 @@ export const metadata: Metadata = {
     template: '%s | RenewalFlow',
   },
   description: 'Manage clients, projects, domains, servers, AMC contracts, invoices, and payments in one dashboard.',
-  keywords: ['client manager', 'renewal tracking', 'domain renewal alert', 'hosting server tracker', 'amc contracts', 'upi invoices', 'payment proofs'],
-  authors: [{ name: 'Sivabharath' }],
-  creator: 'Sivabharath',
-  metadataBase: new URL('https://renewal-flow-saas.vercel.app'),
-  manifest: "/manifest.json",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "Renewal Flow",
-  },
-  openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    url: 'https://renewal-flow-saas.vercel.app',
-    title: 'RenewalFlow - Client & Renewal Manager',
-    description: 'Manage clients, projects, domains, servers, AMC contracts, invoices, and payments in one dashboard.',
-    siteName: 'RenewalFlow',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'RenewalFlow - Client & Renewal Manager',
-    description: 'Manage clients, projects, domains, servers, AMC contracts, invoices, and payments in one dashboard.',
+
+  manifest: '/manifest.json',
+
+  icons: {
+    icon: '/icon-192.png',
+    apple: '/icon-192.png',
+    shortcut: '/icon-192.png',
   },
 
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Renewal Flow',
+  },
 };
 
 export default async function RootLayout({
