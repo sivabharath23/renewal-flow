@@ -143,3 +143,114 @@ body {
     font-size: 16px !important;
   }
 }
+
+/* Invoice Preloader Animations */
+@keyframes spin-cw {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spin-ccw {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes dash-flow {
+  to {
+    stroke-dashoffset: -40;
+  }
+}
+
+@keyframes invoice-float {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    filter: drop-shadow(0 4px 6px rgba(37, 99, 235, 0.1));
+  }
+  50% {
+    transform: translateY(-6px) scale(1.03);
+    filter: drop-shadow(0 12px 16px rgba(37, 99, 235, 0.2));
+  }
+}
+
+@keyframes draw-path {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-spin-cw {
+  animation: spin-cw 8s linear infinite;
+}
+
+.animate-spin-ccw {
+  animation: spin-ccw 12s linear infinite;
+}
+
+.animate-dash-flow {
+  animation: dash-flow 2s linear infinite;
+}
+
+.animate-invoice-float {
+  animation: invoice-float 3s ease-in-out infinite;
+}
+
+/* Sequential Invoice Line Drawing & Badge Animations */
+@keyframes draw-line-1 {
+  0%, 10% { stroke-dashoffset: 20; }
+  30%, 80% { stroke-dashoffset: 0; }
+  90%, 100% { stroke-dashoffset: 20; }
+}
+@keyframes draw-line-2 {
+  0%, 20% { stroke-dashoffset: 36; }
+  40%, 80% { stroke-dashoffset: 0; }
+  90%, 100% { stroke-dashoffset: 36; }
+}
+@keyframes draw-line-3 {
+  0%, 30% { stroke-dashoffset: 26; }
+  50%, 80% { stroke-dashoffset: 0; }
+  90%, 100% { stroke-dashoffset: 26; }
+}
+@keyframes draw-line-4 {
+  0%, 40% { stroke-dashoffset: 36; }
+  60%, 80% { stroke-dashoffset: 0; }
+  90%, 100% { stroke-dashoffset: 36; }
+}
+@keyframes scale-badge {
+  0%, 55% { transform: scale(0); opacity: 0; }
+  70%, 80% { transform: scale(1); opacity: 1; }
+  90%, 100% { transform: scale(0); opacity: 0; }
+}
+
+.animate-draw-line-1 {
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+  animation: draw-line-1 3s ease-in-out infinite;
+}
+.animate-draw-line-2 {
+  stroke-dasharray: 36;
+  stroke-dashoffset: 36;
+  animation: draw-line-2 3s ease-in-out infinite;
+}
+.animate-draw-line-3 {
+  stroke-dasharray: 26;
+  stroke-dashoffset: 26;
+  animation: draw-line-3 3s ease-in-out infinite;
+}
+.animate-draw-line-4 {
+  stroke-dasharray: 36;
+  stroke-dashoffset: 36;
+  animation: draw-line-4 3s ease-in-out infinite;
+}
+.animate-scale-badge {
+  animation: scale-badge 3s ease-in-out infinite;
+}
+
+

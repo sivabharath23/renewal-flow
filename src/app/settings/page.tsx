@@ -25,6 +25,7 @@ import {
 import ImageCropper from '@/components/ImageCropper';
 import InvoiceTemplatePicker from '@/components/InvoiceTemplatePicker';
 import { InvoiceTemplateId } from '@/lib/invoice-templates';
+import InvoicePreloader from '@/components/InvoicePreloader';
 
 interface SettingsType {
   companyName: string;
@@ -107,9 +108,8 @@ export default function SettingsPage() {
       </div>
 
       {loading ? (
-        <div className="bg-white rounded-2xl border border-slate-100 p-24 text-center shadow-sm">
-          <div className="w-8 h-8 border-3 border-blue-600/30 border-t-blue-600 rounded-full animate-spin mx-auto mb-4" />
-          <span className="text-xs font-semibold text-slate-400">Loading configurations...</span>
+        <div className="bg-white rounded-2xl border border-slate-100 p-12 text-center shadow-sm">
+          <InvoicePreloader text="Loading configurations..." />
         </div>
       ) : settings ? (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-start">

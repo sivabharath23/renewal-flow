@@ -5,6 +5,7 @@ import { getPayments, submitPaymentProofAction, approvePaymentAction, rejectPaym
 import { getInvoices } from '@/app/invoices/actions';
 import { useToast } from '@/context/ToastContext';
 import ConfirmModal from '@/components/ConfirmModal';
+import InvoicePreloader from '@/components/InvoicePreloader';
 import {
   CreditCard,
   Plus,
@@ -240,9 +241,8 @@ export default function PaymentsPage() {
           {/* List of Payments */}
           <div className="grid grid-cols-1 gap-5">
             {loading ? (
-              <div className="bg-white rounded-2xl border border-slate-100 p-20 text-center shadow-sm">
-                <div className="w-8 h-8 border-3 border-blue-600/30 border-t-blue-600 rounded-full animate-spin mx-auto mb-4" />
-                <span className="text-xs font-semibold text-slate-400">Fetching logs...</span>
+              <div className="bg-white rounded-2xl border border-slate-100 p-12 text-center shadow-sm">
+                <InvoicePreloader text="Fetching logs..." />
               </div>
             ) : payments.length > 0 ? (
               payments.map((payment) => (

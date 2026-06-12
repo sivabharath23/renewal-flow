@@ -5,6 +5,7 @@ import { getServers, createServerAction, updateServerAction, deleteServerAction 
 import { getProjects } from '@/app/projects/actions';
 import { useToast } from '@/context/ToastContext';
 import ConfirmModal from '@/components/ConfirmModal';
+import InvoicePreloader from '@/components/InvoicePreloader';
 import {
   Server,
   Search,
@@ -252,9 +253,8 @@ export default function ServersPage() {
       {/* Servers List Table */}
       <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
         {loading ? (
-          <div className="py-24 text-center">
-            <div className="w-8 h-8 border-3 border-blue-600/30 border-t-blue-600 rounded-full animate-spin mx-auto mb-4" />
-            <span className="text-xs font-semibold text-slate-400">Loading servers...</span>
+          <div className="py-12">
+            <InvoicePreloader text="Loading servers..." />
           </div>
         ) : servers.length > 0 ? (
           <>

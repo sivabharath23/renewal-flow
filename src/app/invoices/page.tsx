@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { getInvoices, getCompanySettings, generateUPIQRCode, createInvoiceAction, updateInvoiceAction, deleteInvoiceAction } from './actions';
 import InvoiceTemplateRenderer from '@/components/InvoiceTemplateRenderer';
 import InvoiceTemplatePicker from '@/components/InvoiceTemplatePicker';
+import InvoicePreloader from '@/components/InvoicePreloader';
 import {
   InvoiceTemplateId,
   parseCustomConfig,
@@ -308,9 +309,8 @@ export default function InvoicesPage() {
       {/* Invoices List Table */}
       <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden no-print">
         {loading ? (
-          <div className="py-24 text-center">
-            <div className="w-8 h-8 border-3 border-blue-600/30 border-t-blue-600 rounded-full animate-spin mx-auto mb-4" />
-            <span className="text-xs font-semibold text-slate-400">Loading invoices...</span>
+          <div className="py-12">
+            <InvoicePreloader text="Loading invoices..." />
           </div>
         ) : invoices.length > 0 ? (
           <>

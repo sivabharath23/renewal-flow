@@ -23,6 +23,7 @@ import {
   AlertCircle,
   Clock
 } from 'lucide-react';
+import InvoicePreloader from '@/components/InvoicePreloader';
 
 type ReportType = 'REVENUE' | 'CLIENT' | 'DOMAIN' | 'SERVER' | 'AMC' | 'PENDING';
 
@@ -337,9 +338,8 @@ export default function ReportsPage() {
       {/* Report Data Preview Table */}
       <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden print-shadow-none">
         {loading ? (
-          <div className="py-24 text-center">
-            <div className="w-8 h-8 border-3 border-blue-600/30 border-t-blue-600 rounded-full animate-spin mx-auto mb-4" />
-            <span className="text-xs font-semibold text-slate-400">Compiling dataset...</span>
+          <div className="py-12">
+            <InvoicePreloader text="Compiling dataset..." />
           </div>
         ) : reportData.length > 0 ? (
           <>
