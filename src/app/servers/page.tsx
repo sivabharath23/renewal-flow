@@ -70,7 +70,7 @@ export default function ServersPage() {
   const [formError, setFormError] = useState<string | null>(null);
   const [actionPending, setActionPending] = useState(false);
 
-  const providerOptions = ['Hostinger', 'AWS', 'DigitalOcean', 'Contabo', 'Vultr', 'Custom'];
+  const providerOptions = ['Hostinger', 'AWS', 'DigitalOcean', 'Contabo', 'Vultr', 'Custom', 'Vercel'];
 
   const loadData = async (query = '') => {
     setLoading(true);
@@ -292,7 +292,7 @@ export default function ServersPage() {
                         <Network className="w-3.5 h-3.5 text-slate-300 shrink-0" />
                         <span>IP: {server.ipAddress}</span>
                       </div>
-                      
+
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1.5">
                           <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />

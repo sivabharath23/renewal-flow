@@ -35,10 +35,11 @@ export const metadata: Metadata = {
   authors: [{ name: 'Sivabharath' }],
   creator: 'Sivabharath',
   metadataBase: new URL('https://renewal-flow-saas.vercel.app'),
+  manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    title: 'RenewalFlow',
-    statusBarStyle: 'default',
+    statusBarStyle: "default",
+    title: "Renewal Flow",
   },
   openGraph: {
     type: 'website',
@@ -53,9 +54,7 @@ export const metadata: Metadata = {
     title: 'RenewalFlow - Client & Renewal Manager',
     description: 'Manage clients, projects, domains, servers, AMC contracts, invoices, and payments in one dashboard.',
   },
-  icons: {
-    icon: '/favicon.ico',
-  },
+
 };
 
 export default async function RootLayout({
@@ -74,7 +73,7 @@ export default async function RootLayout({
             <div className="flex min-h-screen">
               {/* Sidebar Navigation */}
               <Sidebar user={user} />
-              
+
               {/* Page content wrapper */}
               <div className="flex-1 flex flex-col min-w-0">
                 {user.role === 'ADMIN' && (
