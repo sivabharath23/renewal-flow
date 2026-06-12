@@ -17,8 +17,8 @@ export default function InvoicePreloader({
       <div className="relative w-40 h-40 flex items-center justify-center">
         {/* SVG Wrapper */}
         <svg
-          width="160"
-          height="160"
+          width="100"
+          height="100"
           viewBox="0 0 160 160"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
