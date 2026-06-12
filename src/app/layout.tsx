@@ -32,19 +32,7 @@ export const metadata: Metadata = {
   },
   description: 'Manage clients, projects, domains, servers, AMC contracts, invoices, and payments in one dashboard.',
 
-  manifest: '/manifest.json',
-
-  icons: {
-    icon: '/icon-192.png',
-    apple: '/icon-192.png',
-    shortcut: '/icon-192.png',
-  },
-
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: 'default',
-    title: 'Renewal Flow',
-  },
+  manifest: '/manifest.json'
 };
 
 export default async function RootLayout({
