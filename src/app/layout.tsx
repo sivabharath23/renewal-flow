@@ -62,7 +62,7 @@ export default async function RootLayout({
                     <TenantSwitcher />
                   </header>
                 )}
-                <main className="flex-1 p-6 pt-22 md:p-8 bg-slate-50/50 overflow-y-auto">
+                <main className="flex-1 p-4 pt-20 pb-[calc(5rem+env(safe-area-inset-bottom,0px))] md:p-8 md:pt-22 md:pb-8 bg-slate-50/50 overflow-y-auto">
                   {children}
                 </main>
               </div>

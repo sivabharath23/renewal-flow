@@ -80,6 +80,15 @@ export default function Sidebar({ user }: SidebarProps) {
     }
   };
 
+  const bottomNavItems = [
+    { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+    { name: 'Clients', path: '/clients', icon: Users },
+    { name: 'Invoices', path: '/invoices', icon: Receipt },
+    { name: 'Payments', path: '/payments', icon: CreditCard },
+  ];
+
+  const isMoreActive = !bottomNavItems.some(item => pathname.startsWith(item.path)) && pathname !== '/login';
+
   // Prevent flash of expanded sidebar on mount if previously collapsed
   const currentCollapseState = mounted ? isCollapsed : false;
 
@@ -102,24 +111,75 @@ export default function Sidebar({ user }: SidebarProps) {
         </div>
         <div className="flex items-center gap-2">
           {user && (
-            <button
-              onClick={() => setIsLogoutConfirmOpen(true)}
-              className="p-2 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer border border-red-100/30"
-              title="Sign Out"
-              aria-label="Sign Out"
-            >
-              <LogOut className="w-5 h-5" />
-            </button>
+            <>
+              <Link
+                href="/notifications"
+                className={`p-2 text-slate-500 hover:text-blue-600 hover:bg-slate-50 rounded-xl transition-all cursor-pointer border border-slate-100 ${
+                  pathname.startsWith('/notifications') ? 'text-blue-600 bg-blue-50/50' : ''
+                }`}
+                title="Notifications"
+                aria-label="Notifications"
+              >
+                <Bell className="w-5 h-5" />
+              </Link>
+              <button
+                onClick={() => setIsLogoutConfirmOpen(true)}
+                className="p-2 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer border border-red-100/30"
+                title="Sign Out"
+                aria-label="Sign Out"
+              >
+                <LogOut className="w-5 h-5" />
+              </button>
+            </>
           )}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-50 rounded-xl transition-all cursor-pointer border border-slate-100"
-            aria-label="Toggle Navigation Menu"
-          >
-            {isOpen ? <X className="w-5.5 h-5.5" /> : <Menu className="w-5.5 h-5.5" />}
-          </button>
         </div>
       </div>
+
+      {/* Mobile Bottom Navigation Bar */}
+      {user && (
+        <nav className="flex md:hidden items-center justify-around fixed bottom-0 left-0 right-0 h-[calc(4rem+env(safe-area-inset-bottom,0px))] pb-[env(safe-area-inset-bottom,0px)] bg-white/95 backdrop-blur-md border-t border-slate-200/85 z-30 shadow-[0_-4px_24px_rgba(0,0,0,0.04)] no-print">
+          {bottomNavItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = pathname.startsWith(item.path);
+            return (
+              <Link
+                key={item.path}
+                href={item.path}
+                onClick={() => setIsOpen(false)}
+                className={`flex flex-col items-center justify-center flex-1 h-full py-1 transition-colors select-none ${
+                  isActive ? 'text-blue-600' : 'text-slate-400 hover:text-slate-600'
+                }`}
+              >
+                <div className="relative flex items-center justify-center">
+                  <Icon className={`w-5.5 h-5.5 transition-transform duration-200 ${isActive ? 'scale-110 text-blue-600' : 'text-slate-400'}`} />
+                </div>
+                <span className={`text-[10px] mt-1 font-semibold tracking-tight transition-all duration-200 ${isActive ? 'text-blue-600' : 'text-slate-400'}`}>
+                  {item.name}
+                </span>
+              </Link>
+            );
+          })}
+          
+          {/* More Tab */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className={`flex flex-col items-center justify-center flex-1 h-full py-1 transition-colors cursor-pointer select-none ${
+              isMoreActive || isOpen ? 'text-blue-600' : 'text-slate-400 hover:text-slate-600'
+            }`}
+          >
+            <div className="relative flex items-center justify-center">
+              {isOpen ? (
+                <X className="w-5.5 h-5.5 transition-transform duration-200 scale-110 text-blue-600" />
+              ) : (
+                <Menu className={`w-5.5 h-5.5 transition-transform duration-200 ${isMoreActive ? 'scale-110 text-blue-600' : 'text-slate-400'}`} />
+              )}
+            </div>
+            <span className={`text-[10px] mt-1 font-semibold tracking-tight transition-all duration-200 ${isMoreActive || isOpen ? 'text-blue-600' : 'text-slate-400'}`}>
+              More
+            </span>
+          </button>
+        </nav>
+      )}
 
       {/* Backdrop overlay for mobile */}
       {isOpen && (
