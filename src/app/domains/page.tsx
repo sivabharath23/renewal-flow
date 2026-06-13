@@ -19,7 +19,8 @@ import {
   Clock,
   Sparkles,
   Zap,
-  ZapOff
+  ZapOff,
+  ChevronDown
 } from 'lucide-react';
 
 interface DomainType {
@@ -230,7 +231,7 @@ export default function DomainsPage() {
           placeholder="Search by domain, registrar, or project..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+          className="w-full appearance-none pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
         />
       </div>
 
@@ -304,8 +305,9 @@ export default function DomainsPage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between gap-4 pt-2 border-t border-slate-150">
-                      <div>
+                    <div className="flex flex-col gap-3 pt-2.5 border-t border-slate-150 w-full">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Auto-Renewal</span>
                         {domain.autoRenew ? (
                           <span className="inline-flex items-center gap-1 text-[10px] text-emerald-600 font-bold bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-lg">
                             <Zap className="w-2.5 h-2.5" />
@@ -319,13 +321,13 @@ export default function DomainsPage() {
                         )}
                       </div>
                       
-                      <div className="flex items-center gap-2">
+                      <div className="grid grid-cols-3 gap-1.5 w-full">
                         <button
                           onClick={() => {
                             setSelectedDomain(domain);
                             setIsViewOpen(true);
                           }}
-                          className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-blue-600 hover:bg-blue-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                          className="w-full px-1 py-1.5 text-xs font-bold text-slate-600 hover:text-blue-600 hover:bg-blue-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
                         >
                           <Eye className="w-3.5 h-3.5" />
                           <span>View</span>
@@ -336,14 +338,14 @@ export default function DomainsPage() {
                             setFormError(null);
                             setIsEditOpen(true);
                           }}
-                          className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-amber-600 hover:bg-amber-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                          className="w-full px-1 py-1.5 text-xs font-bold text-slate-600 hover:text-amber-600 hover:bg-amber-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
                           <span>Edit</span>
                         </button>
                         <button
                           onClick={() => handleDeleteClick(domain.id)}
-                          className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-red-600 hover:bg-red-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                          className="w-full px-1 py-1.5 text-xs font-bold text-slate-600 hover:text-red-600 hover:bg-red-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                           <span>Delete</span>
@@ -497,7 +499,7 @@ export default function DomainsPage() {
                   name="domainName"
                   required
                   placeholder="example.com"
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+                  className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
                 />
               </div>
 
@@ -505,18 +507,23 @@ export default function DomainsPage() {
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Project Link</label>
                   {projects.length > 0 ? (
-                    <select
-                      name="projectId"
-                      required
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
-                    >
-                      <option value="" disabled selected>Select project...</option>
-                      {projects.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.projectName} ({p.client.companyName})
-                        </option>
-                      ))}
-                    </select>
+                    <div className="relative w-full">
+                      <select
+                        name="projectId"
+                        required
+                        className="w-full appearance-none pr-10 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                      >
+                        <option value="" disabled selected>Select project...</option>
+                        {projects.map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {p.projectName} ({p.client.companyName})
+                          </option>
+                        ))}
+                      </select>
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
+                        <ChevronDown className="w-4 h-4" />
+                      </div>
+                    </div>
                   ) : (
                     <div className="p-2.5 rounded-xl bg-amber-50 text-[10px] text-amber-600 font-semibold border border-amber-100">
                       Add a project first.
@@ -530,7 +537,7 @@ export default function DomainsPage() {
                     name="registrar"
                     required
                     placeholder="GoDaddy / Namecheap"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
                   />
                 </div>
               </div>
@@ -542,7 +549,7 @@ export default function DomainsPage() {
                     type="date"
                     name="purchaseDate"
                     required
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
                   />
                 </div>
                 <div className="space-y-1">
@@ -551,7 +558,7 @@ export default function DomainsPage() {
                     type="date"
                     name="expiryDate"
                     required
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
                   />
                 </div>
               </div>
@@ -565,21 +572,26 @@ export default function DomainsPage() {
                     name="renewalAmount"
                     required
                     placeholder="1200"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
                   />
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Status</label>
-                  <select
-                    name="status"
-                    required
-                    defaultValue="ACTIVE"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
-                  >
-                    <option value="ACTIVE">ACTIVE</option>
-                    <option value="EXPIRED">EXPIRED</option>
-                    <option value="RENEWED">RENEWED</option>
-                  </select>
+                  <div className="relative w-full">
+                    <select
+                      name="status"
+                      required
+                      defaultValue="ACTIVE"
+                      className="w-full appearance-none pr-10 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                    >
+                      <option value="ACTIVE">ACTIVE</option>
+                      <option value="EXPIRED">EXPIRED</option>
+                      <option value="RENEWED">RENEWED</option>
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
+                      <ChevronDown className="w-4 h-4" />
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -602,7 +614,7 @@ export default function DomainsPage() {
                   type="text"
                   name="notes"
                   placeholder="Purchased on promo discount"
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+                  className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
                 />
               </div>
 
@@ -610,16 +622,18 @@ export default function DomainsPage() {
                 <button
                   type="button"
                   onClick={() => setIsAddOpen(false)}
-                  className="px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 cursor-pointer"
+                  className="px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  Cancel
+                  <X className="w-3.5 h-3.5" />
+                  <span>Cancel</span>
                 </button>
                 <button
                   type="submit"
                   disabled={actionPending || projects.length === 0}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-200 hover:bg-blue-700 disabled:opacity-75 cursor-pointer"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-200 hover:bg-blue-700 disabled:opacity-75 cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  {actionPending ? 'Saving...' : 'Save Tracker'}
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>{actionPending ? 'Saving...' : 'Save Tracker'}</span>
                 </button>
               </div>
             </form>
@@ -658,25 +672,30 @@ export default function DomainsPage() {
                   name="domainName"
                   required
                   defaultValue={selectedDomain.domainName}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+                  className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Project Link</label>
-                  <select
-                    name="projectId"
-                    required
-                    defaultValue={selectedDomain.projectId}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
-                  >
-                    {projects.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.projectName} ({p.client.companyName})
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative w-full">
+                    <select
+                      name="projectId"
+                      required
+                      defaultValue={selectedDomain.projectId}
+                      className="w-full appearance-none pr-10 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                    >
+                      {projects.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.projectName} ({p.client.companyName})
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
+                      <ChevronDown className="w-4 h-4" />
+                    </div>
+                  </div>
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Registrar</label>
@@ -685,7 +704,7 @@ export default function DomainsPage() {
                     name="registrar"
                     required
                     defaultValue={selectedDomain.registrar}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
                   />
                 </div>
               </div>
@@ -698,7 +717,7 @@ export default function DomainsPage() {
                     name="purchaseDate"
                     required
                     defaultValue={formatDateStringForInput(selectedDomain.purchaseDate)}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
                   />
                 </div>
                 <div className="space-y-1">
@@ -708,7 +727,7 @@ export default function DomainsPage() {
                     name="expiryDate"
                     required
                     defaultValue={formatDateStringForInput(selectedDomain.expiryDate)}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
                   />
                 </div>
               </div>
@@ -722,21 +741,26 @@ export default function DomainsPage() {
                     name="renewalAmount"
                     required
                     defaultValue={selectedDomain.renewalAmount}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
                   />
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Status</label>
-                  <select
-                    name="status"
-                    required
-                    defaultValue={selectedDomain.status}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
-                  >
-                    <option value="ACTIVE">ACTIVE</option>
-                    <option value="EXPIRED">EXPIRED</option>
-                    <option value="RENEWED">RENEWED</option>
-                  </select>
+                  <div className="relative w-full">
+                    <select
+                      name="status"
+                      required
+                      defaultValue={selectedDomain.status}
+                      className="w-full appearance-none pr-10 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                    >
+                      <option value="ACTIVE">ACTIVE</option>
+                      <option value="EXPIRED">EXPIRED</option>
+                      <option value="RENEWED">RENEWED</option>
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
+                      <ChevronDown className="w-4 h-4" />
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -771,16 +795,18 @@ export default function DomainsPage() {
                     setIsEditOpen(false);
                     setSelectedDomain(null);
                   }}
-                  className="px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 cursor-pointer"
+                  className="px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  Cancel
+                  <X className="w-3.5 h-3.5" />
+                  <span>Cancel</span>
                 </button>
                 <button
                   type="submit"
                   disabled={actionPending}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-200 hover:bg-blue-700 disabled:opacity-75 cursor-pointer"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-200 hover:bg-blue-700 disabled:opacity-75 cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  {actionPending ? 'Saving...' : 'Update Tracker'}
+                  <Edit2 className="w-3.5 h-3.5" />
+                  <span>{actionPending ? 'Saving...' : 'Update Tracker'}</span>
                 </button>
               </div>
             </form>
@@ -875,9 +901,10 @@ export default function DomainsPage() {
                   setIsViewOpen(false);
                   setSelectedDomain(null);
                 }}
-                className="px-4 py-2 bg-slate-50 border border-slate-100 hover:bg-slate-100 rounded-xl text-xs font-bold text-slate-600 transition-all cursor-pointer"
+                className="px-4 py-2 bg-slate-50 border border-slate-100 hover:bg-slate-100 rounded-xl text-xs font-bold text-slate-600 transition-all cursor-pointer flex items-center justify-center gap-1.5"
               >
-                Close Details
+                <X className="w-3.5 h-3.5" />
+                <span>Close Details</span>
               </button>
             </div>
           </div>

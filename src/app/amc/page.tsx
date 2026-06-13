@@ -18,7 +18,8 @@ import {
   AlertCircle,
   Clock,
   RefreshCw,
-  Building
+  Building,
+  ChevronDown
 } from 'lucide-react';
 
 interface AMCType {
@@ -251,7 +252,7 @@ export default function AMCsPage() {
           placeholder="Search by client, project, or contract notes..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+          className="w-full appearance-none pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
         />
       </div>
 
@@ -305,15 +306,13 @@ export default function AMCsPage() {
                         <p>Start: {new Date(amc.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                         <p>End: {new Date(amc.endDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                       </div>
-                    </div>
-
-                    <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-150">
+                    </div>                     <div className="grid grid-cols-3 gap-1.5 pt-2 border-t border-slate-150 w-full">
                       <button
                         onClick={() => {
                           setSelectedAMC(amc);
                           setIsViewOpen(true);
                         }}
-                        className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-blue-600 hover:bg-blue-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                        className="w-full px-1 py-1.5 text-xs font-bold text-slate-600 hover:text-blue-600 hover:bg-blue-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
                       >
                         <Eye className="w-3.5 h-3.5" />
                         <span>View</span>
@@ -324,14 +323,14 @@ export default function AMCsPage() {
                           setFormError(null);
                           setIsEditOpen(true);
                         }}
-                        className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-amber-600 hover:bg-amber-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                        className="w-full px-1 py-1.5 text-xs font-bold text-slate-600 hover:text-amber-600 hover:bg-amber-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
                         <span>Edit</span>
                       </button>
                       <button
                         onClick={() => handleDeleteClick(amc.id)}
-                        className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-red-600 hover:bg-red-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                        className="w-full px-1 py-1.5 text-xs font-bold text-slate-600 hover:text-red-600 hover:bg-red-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                         <span>Delete</span>
@@ -471,18 +470,23 @@ export default function AMCsPage() {
               <div className="space-y-1">
                 <label className="text-xs font-bold text-slate-600 block">Project Workspace</label>
                 {projects.length > 0 ? (
-                  <select
-                    name="projectId"
-                    required
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
-                  >
-                    <option value="" disabled selected>Select project...</option>
-                    {projects.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.projectName} ({p.client.companyName})
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative w-full">
+                    <select
+                      name="projectId"
+                      required
+                      className="w-full appearance-none pr-10 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                    >
+                      <option value="" disabled selected>Select project...</option>
+                      {projects.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.projectName} ({p.client.companyName})
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
+                      <ChevronDown className="w-4 h-4" />
+                    </div>
+                  </div>
                 ) : (
                   <div className="p-2.5 rounded-xl bg-amber-50 text-[10px] text-amber-600 font-semibold border border-amber-100">
                     Add a project first.
@@ -497,7 +501,7 @@ export default function AMCsPage() {
                     type="date"
                     name="startDate"
                     required
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
                   />
                 </div>
                 <div className="space-y-1">
@@ -506,7 +510,7 @@ export default function AMCsPage() {
                     type="date"
                     name="endDate"
                     required
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
                   />
                 </div>
               </div>
@@ -520,35 +524,45 @@ export default function AMCsPage() {
                     name="amount"
                     required
                     placeholder="15000"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
                   />
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Status</label>
-                  <select
-                    name="status"
-                    required
-                    defaultValue="ACTIVE"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
-                  >
-                    <option value="ACTIVE">ACTIVE</option>
-                    <option value="INACTIVE">INACTIVE</option>
-                  </select>
+                  <div className="relative w-full">
+                    <select
+                      name="status"
+                      required
+                      defaultValue="ACTIVE"
+                      className="w-full appearance-none pr-10 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                    >
+                      <option value="ACTIVE">ACTIVE</option>
+                      <option value="INACTIVE">INACTIVE</option>
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
+                      <ChevronDown className="w-4 h-4" />
+                    </div>
+                  </div>
                 </div>
               </div>
 
               <div className="space-y-1">
                 <label className="text-xs font-bold text-slate-600 block">Billing Cycle</label>
-                <select
-                  name="renewalCycle"
-                  required
-                  defaultValue="YEARLY"
-                  className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
-                >
-                  {cycleOptions.map((opt) => (
-                    <option key={opt} value={opt}>{opt}</option>
-                  ))}
-                </select>
+                <div className="relative w-full">
+                  <select
+                    name="renewalCycle"
+                    required
+                    defaultValue="YEARLY"
+                    className="w-full appearance-none pr-10 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                  >
+                    {cycleOptions.map((opt) => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
+                    <ChevronDown className="w-4 h-4" />
+                  </div>
+                </div>
               </div>
 
               <div className="space-y-1">
@@ -557,7 +571,7 @@ export default function AMCsPage() {
                   type="text"
                   name="notes"
                   placeholder="Includes 4 hours of monthly updates"
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+                  className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
                 />
               </div>
 
@@ -565,16 +579,18 @@ export default function AMCsPage() {
                 <button
                   type="button"
                   onClick={() => setIsAddOpen(false)}
-                  className="px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 cursor-pointer"
+                  className="px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  Cancel
+                  <X className="w-3.5 h-3.5" />
+                  <span>Cancel</span>
                 </button>
                 <button
                   type="submit"
                   disabled={actionPending || projects.length === 0}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-200 hover:bg-blue-700 disabled:opacity-75 cursor-pointer"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-200 hover:bg-blue-700 disabled:opacity-75 cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  {actionPending ? 'Creating...' : 'Create AMC'}
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>{actionPending ? 'Creating...' : 'Create AMC'}</span>
                 </button>
               </div>
             </form>
@@ -608,18 +624,23 @@ export default function AMCsPage() {
 
               <div className="space-y-1">
                 <label className="text-xs font-bold text-slate-600 block">Project Workspace</label>
-                <select
-                  name="projectId"
-                  required
-                  defaultValue={selectedAMC.projectId}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
-                >
-                  {projects.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.projectName} ({p.client.companyName})
-                    </option>
-                  ))}
-                </select>
+                <div className="relative w-full">
+                  <select
+                    name="projectId"
+                    required
+                    defaultValue={selectedAMC.projectId}
+                    className="w-full appearance-none pr-10 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                  >
+                    {projects.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.projectName} ({p.client.companyName})
+                      </option>
+                    ))}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
+                    <ChevronDown className="w-4 h-4" />
+                  </div>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -630,7 +651,7 @@ export default function AMCsPage() {
                     name="startDate"
                     required
                     defaultValue={formatDateStringForInput(selectedAMC.startDate)}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
                   />
                 </div>
                 <div className="space-y-1">
@@ -640,7 +661,7 @@ export default function AMCsPage() {
                     name="endDate"
                     required
                     defaultValue={formatDateStringForInput(selectedAMC.endDate)}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
                   />
                 </div>
               </div>
@@ -654,35 +675,45 @@ export default function AMCsPage() {
                     name="amount"
                     required
                     defaultValue={selectedAMC.amount}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
                   />
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Status</label>
-                  <select
-                    name="status"
-                    required
-                    defaultValue={selectedAMC.status}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
-                  >
-                    <option value="ACTIVE">ACTIVE</option>
-                    <option value="INACTIVE">INACTIVE</option>
-                  </select>
+                  <div className="relative w-full">
+                    <select
+                      name="status"
+                      required
+                      defaultValue={selectedAMC.status}
+                      className="w-full appearance-none pr-10 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                    >
+                      <option value="ACTIVE">ACTIVE</option>
+                      <option value="INACTIVE">INACTIVE</option>
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
+                      <ChevronDown className="w-4 h-4" />
+                    </div>
+                  </div>
                 </div>
               </div>
 
               <div className="space-y-1">
                 <label className="text-xs font-bold text-slate-600 block">Billing Cycle</label>
-                <select
-                  name="renewalCycle"
-                  required
-                  defaultValue={selectedAMC.renewalCycle}
-                  className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
-                >
-                  {cycleOptions.map((opt) => (
-                    <option key={opt} value={opt}>{opt}</option>
-                  ))}
-                </select>
+                <div className="relative w-full">
+                  <select
+                    name="renewalCycle"
+                    required
+                    defaultValue={selectedAMC.renewalCycle}
+                    className="w-full appearance-none pr-10 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                  >
+                    {cycleOptions.map((opt) => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
+                    <ChevronDown className="w-4 h-4" />
+                  </div>
+                </div>
               </div>
 
               <div className="space-y-1">
@@ -691,7 +722,7 @@ export default function AMCsPage() {
                   type="text"
                   name="notes"
                   defaultValue={selectedAMC.notes || ''}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+                  className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
                 />
               </div>
 
@@ -702,16 +733,18 @@ export default function AMCsPage() {
                     setIsEditOpen(false);
                     setSelectedAMC(null);
                   }}
-                  className="px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 cursor-pointer"
+                  className="px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  Cancel
+                  <X className="w-3.5 h-3.5" />
+                  <span>Cancel</span>
                 </button>
                 <button
                   type="submit"
                   disabled={actionPending}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-200 hover:bg-blue-700 disabled:opacity-75 cursor-pointer"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-200 hover:bg-blue-700 disabled:opacity-75 cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  {actionPending ? 'Saving...' : 'Update AMC'}
+                  <Edit2 className="w-3.5 h-3.5" />
+                  <span>{actionPending ? 'Saving...' : 'Update AMC'}</span>
                 </button>
               </div>
             </form>
@@ -810,9 +843,10 @@ export default function AMCsPage() {
                   setIsViewOpen(false);
                   setSelectedAMC(null);
                 }}
-                className="px-4 py-2 bg-slate-50 border border-slate-100 hover:bg-slate-100 rounded-xl text-xs font-bold text-slate-600 transition-all cursor-pointer"
+                className="px-4 py-2 bg-slate-50 border border-slate-100 hover:bg-slate-100 rounded-xl text-xs font-bold text-slate-600 transition-all cursor-pointer flex items-center justify-center gap-1.5"
               >
-                Close Details
+                <X className="w-3.5 h-3.5" />
+                <span>Close Details</span>
               </button>
             </div>
           </div>

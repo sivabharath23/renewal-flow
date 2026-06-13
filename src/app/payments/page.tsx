@@ -21,7 +21,8 @@ import {
   FileText,
   UploadCloud,
   FileImage,
-  ArrowRightLeft
+  ArrowRightLeft,
+  ChevronDown
 } from 'lucide-react';
 
 interface PaymentType {
@@ -201,22 +202,24 @@ export default function PaymentsPage() {
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
+        <div className="flex w-full sm:w-auto bg-slate-100 p-1 rounded-xl border border-slate-200">
           <button
             onClick={() => setActiveTab('VERIFY')}
-            className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+            className={`flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
               activeTab === 'VERIFY' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-800'
             }`}
           >
-            Verify Proofs
+            <CheckCircle2 className="w-3.5 h-3.5" />
+            <span>Verify Proofs</span>
           </button>
           <button
             onClick={() => setActiveTab('SUBMIT')}
-            className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+            className={`flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
               activeTab === 'SUBMIT' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-800'
             }`}
           >
-            Upload Proof
+            <UploadCloud className="w-3.5 h-3.5" />
+            <span>Upload Proof</span>
           </button>
         </div>
       </div>
@@ -224,20 +227,36 @@ export default function PaymentsPage() {
       {activeTab === 'VERIFY' ? (
         <div className="space-y-6">
           {/* Filters */}
-          <div className="flex gap-2 border-b border-slate-100 pb-3">
-            {['ALL', 'PENDING', 'VERIFIED', 'REJECTED'].map((filter) => (
-              <button
-                key={filter}
-                onClick={() => setStatusFilter(filter)}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
-                  statusFilter === filter
-                    ? 'bg-blue-600 border-blue-600 text-white shadow-xs'
-                    : 'bg-white border-slate-200 text-slate-500 hover:text-slate-700'
-                }`}
-              >
-                {filter}
-              </button>
-            ))}
+          <div className="flex gap-2 border-b border-slate-100 pb-3 flex-wrap">
+            {['ALL', 'PENDING', 'VERIFIED', 'REJECTED'].map((filter) => {
+              const getFilterIcon = (f: string) => {
+                switch (f) {
+                  case 'PENDING':
+                    return <Clock className="w-3.5 h-3.5" />;
+                  case 'VERIFIED':
+                    return <CheckCircle2 className="w-3.5 h-3.5" />;
+                  case 'REJECTED':
+                    return <XCircle className="w-3.5 h-3.5" />;
+                  case 'ALL':
+                  default:
+                    return <CreditCard className="w-3.5 h-3.5" />;
+                }
+              };
+              return (
+                <button
+                  key={filter}
+                  onClick={() => setStatusFilter(filter)}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center gap-1.5 ${
+                    statusFilter === filter
+                      ? 'bg-blue-600 border-blue-600 text-white shadow-xs'
+                      : 'bg-white border-slate-200 text-slate-500 hover:text-slate-700'
+                  }`}
+                >
+                  {getFilterIcon(filter)}
+                  <span>{filter}</span>
+                </button>
+              );
+            })}
           </div>
 
           {/* List of Payments */}
@@ -319,21 +338,23 @@ export default function PaymentsPage() {
                     )}
 
                     {payment.status === 'PENDING' && (
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
                         <button
                           onClick={() => handleApproveClick(payment.id)}
-                          className="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs hover:shadow-md transition-all cursor-pointer"
+                          className="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs hover:shadow-md transition-all cursor-pointer flex items-center gap-1.5"
                         >
-                          Approve
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>Approve</span>
                         </button>
                         <button
                           onClick={() => {
                             setRejectPaymentId(payment.id);
                             setIsRejectOpen(true);
                           }}
-                          className="px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-xs hover:shadow-md transition-all cursor-pointer"
+                          className="px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-xs hover:shadow-md transition-all cursor-pointer flex items-center gap-1.5"
                         >
-                          Reject
+                          <XCircle className="w-3.5 h-3.5" />
+                          <span>Reject</span>
                         </button>
                       </div>
                     )}
@@ -382,18 +403,23 @@ export default function PaymentsPage() {
             <div className="space-y-1">
               <label className="text-xs font-bold text-slate-600 block">Select Invoice</label>
               {pendingInvoices.length > 0 ? (
-                <select
-                  name="invoiceId"
-                  required
-                  className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
-                >
-                  <option value="" disabled selected>Select outstanding invoice...</option>
-                  {pendingInvoices.map((inv) => (
-                    <option key={inv.id} value={inv.id}>
-                      {inv.invoiceNumber} - ₹{inv.amount.toLocaleString('en-IN')} ({inv.client.companyName})
-                    </option>
-                  ))}
-                </select>
+                <div className="relative w-full">
+                  <select
+                    name="invoiceId"
+                    required
+                    className="w-full appearance-none pr-10 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                  >
+                    <option value="" disabled selected>Select outstanding invoice...</option>
+                    {pendingInvoices.map((inv) => (
+                      <option key={inv.id} value={inv.id}>
+                        {inv.invoiceNumber} - ₹{inv.amount.toLocaleString('en-IN')} ({inv.client.companyName})
+                      </option>
+                    ))}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
+                    <ChevronDown className="w-4 h-4" />
+                  </div>
+                </div>
               ) : (
                 <div className="p-3 rounded-xl bg-amber-50 border border-amber-100 text-xs font-semibold text-amber-600">
                   No pending invoices found.
@@ -410,7 +436,7 @@ export default function PaymentsPage() {
                   name="amount"
                   required
                   placeholder="1500"
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+                  className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
                 />
               </div>
               <div className="space-y-1">
@@ -420,7 +446,7 @@ export default function PaymentsPage() {
                   name="paidDate"
                   required
                   defaultValue={formatDateStringForInput(new Date())}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                  className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
                 />
               </div>
             </div>
@@ -432,7 +458,7 @@ export default function PaymentsPage() {
                 name="transactionRef"
                 required
                 placeholder="TXN9876543210 / 12-digit UTR"
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+                className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
               />
             </div>
 
@@ -452,14 +478,14 @@ export default function PaymentsPage() {
                 type="text"
                 name="remarks"
                 placeholder="Transferred via IMPS / GPay"
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+                className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
               />
             </div>
 
             <button
               type="submit"
               disabled={actionPending || pendingInvoices.length === 0}
-              className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer mt-2"
+              className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 mt-2 cursor-pointer"
             >
               {actionPending ? (
                 <>
@@ -467,7 +493,10 @@ export default function PaymentsPage() {
                   <span>Uploading Proof...</span>
                 </>
               ) : (
-                <span>Submit Verification Proof</span>
+                <>
+                  <UploadCloud className="w-4 h-4" />
+                  <span>Submit Verification Proof</span>
+                </>
               )}
             </button>
           </form>
@@ -532,15 +561,17 @@ export default function PaymentsPage() {
                     setIsRejectOpen(false);
                     setRejectPaymentId(null);
                   }}
-                  className="px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 cursor-pointer"
+                  className="px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  Cancel
+                  <X className="w-3.5 h-3.5" />
+                  <span>Cancel</span>
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-rose-600 text-white rounded-xl text-xs font-bold hover:bg-rose-700 shadow-xs cursor-pointer"
+                  className="px-4 py-2 bg-rose-600 text-white rounded-xl text-xs font-bold hover:bg-rose-700 shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  Reject Proof
+                  <XCircle className="w-3.5 h-3.5" />
+                  <span>Reject Proof</span>
                 </button>
               </div>
             </form>

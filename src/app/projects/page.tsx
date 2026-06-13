@@ -21,7 +21,8 @@ import {
   FileText,
   Globe,
   Server as ServerIcon,
-  FileCheck
+  FileCheck,
+  ChevronDown
 } from 'lucide-react';
 
 interface ProjectType {
@@ -218,7 +219,7 @@ export default function ProjectsPage() {
             setSearchQuery(e.target.value);
             setCurrentPage(1);
           }}
-          className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+          className="w-full appearance-none pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
         />
       </div>
 
@@ -262,13 +263,13 @@ export default function ProjectsPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-150">
+                  <div className="grid grid-cols-3 gap-1.5 pt-2 border-t border-slate-150 w-full">
                     <button
                       onClick={() => {
                         setSelectedProject(project);
                         setIsViewOpen(true);
                       }}
-                      className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-blue-600 hover:bg-blue-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                      className="w-full px-1 py-1.5 text-xs font-bold text-slate-600 hover:text-blue-600 hover:bg-blue-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
                     >
                       <Eye className="w-3.5 h-3.5" />
                       <span>View</span>
@@ -279,14 +280,14 @@ export default function ProjectsPage() {
                         setFormError(null);
                         setIsEditOpen(true);
                       }}
-                      className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-amber-600 hover:bg-amber-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                      className="w-full px-1 py-1.5 text-xs font-bold text-slate-600 hover:text-amber-600 hover:bg-amber-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
                     >
                       <Edit2 className="w-3.5 h-3.5" />
                       <span>Edit</span>
                     </button>
                     <button
                       onClick={() => handleDeleteClick(project.id)}
-                      className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-red-600 hover:bg-red-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                      className="w-full px-1 py-1.5 text-xs font-bold text-slate-600 hover:text-red-600 hover:bg-red-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                       <span>Delete</span>
@@ -421,25 +422,30 @@ export default function ProjectsPage() {
                   name="projectName"
                   required
                   placeholder="E-Commerce Redesign"
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+                  className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
                 />
               </div>
 
               <div className="space-y-1">
                 <label className="text-xs font-bold text-slate-600 block">Assign Client</label>
                 {clients.length > 0 ? (
-                  <select
-                    name="clientId"
-                    required
-                    className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
-                  >
-                    <option value="" disabled selected>Select a client...</option>
-                    {clients.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.companyName} ({c.name})
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative w-full">
+                    <select
+                      name="clientId"
+                      required
+                      className="w-full appearance-none pr-10 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                    >
+                      <option value="" disabled selected>Select a client...</option>
+                      {clients.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.companyName} ({c.name})
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
+                      <ChevronDown className="w-4 h-4" />
+                    </div>
+                  </div>
                 ) : (
                   <div className="p-3 rounded-xl bg-amber-50 border border-amber-100 text-xs font-semibold text-amber-600">
                     No clients found. Please add a client first.
@@ -449,16 +455,21 @@ export default function ProjectsPage() {
 
               <div className="space-y-1">
                 <label className="text-xs font-bold text-slate-600 block">Project Status</label>
-                <select
-                  name="status"
-                  required
-                  defaultValue="ACTIVE"
-                  className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
-                >
-                  <option value="ACTIVE">ACTIVE</option>
-                  <option value="INACTIVE">INACTIVE</option>
-                  <option value="COMPLETED">COMPLETED</option>
-                </select>
+                <div className="relative w-full">
+                  <select
+                    name="status"
+                    required
+                    defaultValue="ACTIVE"
+                    className="w-full appearance-none pr-10 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                  >
+                    <option value="ACTIVE">ACTIVE</option>
+                    <option value="INACTIVE">INACTIVE</option>
+                    <option value="COMPLETED">COMPLETED</option>
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
+                    <ChevronDown className="w-4 h-4" />
+                  </div>
+                </div>
               </div>
 
               <div className="space-y-1">
@@ -467,7 +478,7 @@ export default function ProjectsPage() {
                   name="description"
                   rows={3}
                   placeholder="Scope, hosting requirements, and custom notes..."
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all resize-none font-medium"
+                  className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all resize-none font-medium"
                 />
               </div>
 
@@ -475,16 +486,18 @@ export default function ProjectsPage() {
                 <button
                   type="button"
                   onClick={() => setIsAddOpen(false)}
-                  className="px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 cursor-pointer"
+                  className="px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  Cancel
+                  <X className="w-3.5 h-3.5" />
+                  <span>Cancel</span>
                 </button>
                 <button
                   type="submit"
                   disabled={actionPending || clients.length === 0}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-200 hover:bg-blue-700 disabled:opacity-75 cursor-pointer"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-200 hover:bg-blue-700 disabled:opacity-75 cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  {actionPending ? 'Creating...' : 'Create Project'}
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>{actionPending ? 'Creating...' : 'Create Project'}</span>
                 </button>
               </div>
             </form>
@@ -523,38 +536,48 @@ export default function ProjectsPage() {
                   name="projectName"
                   required
                   defaultValue={selectedProject.projectName}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+                  className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
                 />
               </div>
 
               <div className="space-y-1">
                 <label className="text-xs font-bold text-slate-600 block">Assign Client</label>
-                <select
-                  name="clientId"
-                  required
-                  defaultValue={selectedProject.clientId}
-                  className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
-                >
-                  {clients.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.companyName} ({c.name})
-                    </option>
-                  ))}
-                </select>
+                <div className="relative w-full">
+                  <select
+                    name="clientId"
+                    required
+                    defaultValue={selectedProject.clientId}
+                    className="w-full appearance-none pr-10 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                  >
+                    {clients.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.companyName} ({c.name})
+                      </option>
+                    ))}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
+                    <ChevronDown className="w-4 h-4" />
+                  </div>
+                </div>
               </div>
 
               <div className="space-y-1">
                 <label className="text-xs font-bold text-slate-600 block">Project Status</label>
-                <select
-                  name="status"
-                  required
-                  defaultValue={selectedProject.status}
-                  className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
-                >
-                  <option value="ACTIVE">ACTIVE</option>
-                  <option value="INACTIVE">INACTIVE</option>
-                  <option value="COMPLETED">COMPLETED</option>
-                </select>
+                <div className="relative w-full">
+                  <select
+                    name="status"
+                    required
+                    defaultValue={selectedProject.status}
+                    className="w-full appearance-none pr-10 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                  >
+                    <option value="ACTIVE">ACTIVE</option>
+                    <option value="INACTIVE">INACTIVE</option>
+                    <option value="COMPLETED">COMPLETED</option>
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
+                    <ChevronDown className="w-4 h-4" />
+                  </div>
+                </div>
               </div>
 
               <div className="space-y-1">
@@ -563,7 +586,7 @@ export default function ProjectsPage() {
                   name="description"
                   rows={3}
                   defaultValue={selectedProject.description || ''}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all resize-none font-medium"
+                  className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all resize-none font-medium"
                 />
               </div>
 
@@ -574,16 +597,18 @@ export default function ProjectsPage() {
                     setIsEditOpen(false);
                     setSelectedProject(null);
                   }}
-                  className="px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 cursor-pointer"
+                  className="px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  Cancel
+                  <X className="w-3.5 h-3.5" />
+                  <span>Cancel</span>
                 </button>
                 <button
                   type="submit"
                   disabled={actionPending}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-200 hover:bg-blue-700 disabled:opacity-75 cursor-pointer"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-200 hover:bg-blue-700 disabled:opacity-75 cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  {actionPending ? 'Saving...' : 'Update Project'}
+                  <Edit2 className="w-3.5 h-3.5" />
+                  <span>{actionPending ? 'Saving...' : 'Update Project'}</span>
                 </button>
               </div>
             </form>
@@ -680,9 +705,10 @@ export default function ProjectsPage() {
                   setIsViewOpen(false);
                   setSelectedProject(null);
                 }}
-                className="px-4 py-2 bg-slate-50 border border-slate-100 hover:bg-slate-100 rounded-xl text-xs font-bold text-slate-600 transition-all cursor-pointer"
+                className="px-4 py-2 bg-slate-50 border border-slate-100 hover:bg-slate-100 rounded-xl text-xs font-bold text-slate-600 transition-all cursor-pointer flex items-center justify-center gap-1.5"
               >
-                Close details
+                <X className="w-3.5 h-3.5" />
+                <span>Close details</span>
               </button>
             </div>
           </div>

@@ -15,13 +15,15 @@ import {
   Download,
   Printer,
   ChevronRight,
+  ChevronDown,
   TrendingUp,
   Users,
   Globe,
   Server,
   FileSpreadsheet,
   AlertCircle,
-  Clock
+  Clock,
+  RefreshCw
 } from 'lucide-react';
 import InvoicePreloader from '@/components/InvoicePreloader';
 
@@ -262,18 +264,23 @@ export default function ReportsPage() {
       <div className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-4 items-end no-print">
         <div className="space-y-1">
           <label className="text-xs font-bold text-slate-600 block">Report Type</label>
-          <select
-            value={reportType}
-            onChange={(e) => setReportType(e.target.value as ReportType)}
-            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-          >
-            <option value="REVENUE">Revenue Settlements</option>
-            <option value="CLIENT">Client Spending Metrics</option>
-            <option value="DOMAIN">Upcoming Domain Renewals</option>
-            <option value="SERVER">Hosting Server Expirations</option>
-            <option value="AMC">AMC Support Renewals</option>
-            <option value="PENDING">Outstanding Invoices</option>
-          </select>
+          <div className="relative w-full">
+            <select
+              value={reportType}
+              onChange={(e) => setReportType(e.target.value as ReportType)}
+              className="w-full appearance-none pr-10 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            >
+              <option value="REVENUE">Revenue Settlements</option>
+              <option value="CLIENT">Client Spending Metrics</option>
+              <option value="DOMAIN">Upcoming Domain Renewals</option>
+              <option value="SERVER">Hosting Server Expirations</option>
+              <option value="AMC">AMC Support Renewals</option>
+              <option value="PENDING">Outstanding Invoices</option>
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
+              <ChevronDown className="w-4 h-4" />
+            </div>
+          </div>
         </div>
 
         {reportType !== 'CLIENT' && reportType !== 'PENDING' ? (
@@ -284,7 +291,7 @@ export default function ReportsPage() {
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                className="w-full appearance-none px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
               />
             </div>
             <div className="space-y-1">
@@ -293,14 +300,15 @@ export default function ReportsPage() {
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                className="w-full appearance-none px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
               />
             </div>
             <button
               onClick={handleGenerateReport}
-              className="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold shadow-xs cursor-pointer"
+              className="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
             >
-              Update Scope
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span>Update Scope</span>
             </button>
           </>
         ) : (

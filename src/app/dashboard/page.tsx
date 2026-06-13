@@ -239,7 +239,7 @@ export default async function DashboardPage() {
             <Link
               key={stat.name}
               href={stat.link}
-              className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm hover:shadow-md hover:border-slate-200 transition-all flex flex-col gap-3 group cursor-pointer"
+              className="bg-white rounded-2xl border border-slate-100 p-3.5 md:p-5 shadow-sm hover:shadow-md hover:border-slate-200 transition-all flex flex-col gap-3 group cursor-pointer"
             >
               <div className="flex items-center justify-between">
                 <div className={`w-10 h-10 rounded-xl ${stat.color} flex items-center justify-center transition-transform group-hover:scale-105`}>
@@ -248,7 +248,7 @@ export default async function DashboardPage() {
                 <ArrowUpRight className="w-4 h-4 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
               <div>
-                <span className="text-xs font-bold text-slate-400 tracking-tight block">
+                <span className="text-[10px] md:text-xs font-bold text-slate-400 tracking-tight block">
                   {stat.name}
                 </span>
                 <span className="text-2xl font-black text-slate-800 mt-0.5 block leading-none">

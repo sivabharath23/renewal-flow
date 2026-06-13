@@ -14,7 +14,8 @@ import {
   Save,
   Upload,
   Trash2,
-  FileText
+  FileText,
+  ChevronDown
 } from 'lucide-react';
 import {
   DEFAULT_CUSTOM_CONFIG,
@@ -309,7 +310,7 @@ export default function SettingsPage() {
                       required
                       key={`companyName-${settings.companyName}`} // force input reset on settings refresh
                       defaultValue={settings.companyName}
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+                      className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
                     />
                   </div>
 
@@ -326,7 +327,7 @@ export default function SettingsPage() {
                           required
                           key={`companyEmail-${settings.companyEmail}`}
                           defaultValue={settings.companyEmail}
-                          className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+                          className="w-full appearance-none pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
                         />
                       </div>
                     </div>
@@ -342,7 +343,7 @@ export default function SettingsPage() {
                           required
                           key={`companyPhone-${settings.companyPhone}`}
                           defaultValue={settings.companyPhone}
-                          className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+                          className="w-full appearance-none pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
                         />
                       </div>
                     </div>
@@ -370,7 +371,7 @@ export default function SettingsPage() {
                         key={`upiId-${settings.upiId}`}
                         defaultValue={settings.upiId}
                         placeholder="sivabharath@upi"
-                        className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+                        className="w-full appearance-none pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
                       />
                     </div>
                   </div>
@@ -384,7 +385,7 @@ export default function SettingsPage() {
                       key={`upiName-${settings.upiName}`}
                       defaultValue={settings.upiName}
                       placeholder="Sivabharath"
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+                      className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
                     />
                   </div>
                 </div>
@@ -432,7 +433,7 @@ export default function SettingsPage() {
                               type="text"
                               value={customTemplate.primaryColor}
                               onChange={(e) => setCustomTemplate({ ...customTemplate, primaryColor: e.target.value })}
-                              className="flex-1 px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm font-mono"
+                              className="flex-1 appearance-none px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm font-mono"
                             />
                           </div>
                         </div>
@@ -443,7 +444,7 @@ export default function SettingsPage() {
                             value={customTemplate.headerTitle}
                             onChange={(e) => setCustomTemplate({ ...customTemplate, headerTitle: e.target.value })}
                             placeholder="INVOICE"
-                            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm"
+                            className="w-full appearance-none px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm"
                           />
                         </div>
                       </div>
@@ -454,7 +455,7 @@ export default function SettingsPage() {
                           type="text"
                           value={customTemplate.thankYouMessage}
                           onChange={(e) => setCustomTemplate({ ...customTemplate, thankYouMessage: e.target.value })}
-                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm"
+                          className="w-full appearance-none px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm"
                         />
                       </div>
 
@@ -464,21 +465,26 @@ export default function SettingsPage() {
                           rows={2}
                           value={customTemplate.footerNote}
                           onChange={(e) => setCustomTemplate({ ...customTemplate, footerNote: e.target.value })}
-                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm resize-none"
+                          className="w-full appearance-none px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm resize-none"
                         />
                       </div>
 
                       <div className="space-y-1">
                         <label className="text-xs font-bold text-slate-600 block">Layout Style</label>
-                        <select
-                          value={customTemplate.layout}
-                          onChange={(e) => setCustomTemplate({ ...customTemplate, layout: e.target.value as InvoiceTemplateCustomConfig['layout'] })}
-                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm"
-                        >
-                          <option value="standard">Standard</option>
-                          <option value="compact">Compact</option>
-                          <option value="sidebar">Sidebar Accent</option>
-                        </select>
+                        <div className="relative w-full">
+                          <select
+                            value={customTemplate.layout}
+                            onChange={(e) => setCustomTemplate({ ...customTemplate, layout: e.target.value as InvoiceTemplateCustomConfig['layout'] })}
+                            className="w-full appearance-none pr-10 px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm"
+                          >
+                            <option value="standard">Standard</option>
+                            <option value="compact">Compact</option>
+                            <option value="sidebar">Sidebar Accent</option>
+                          </select>
+                          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
+                            <ChevronDown className="w-4 h-4" />
+                          </div>
+                        </div>
                       </div>
 
                       <div className="grid grid-cols-2 gap-3 text-xs">
@@ -521,7 +527,7 @@ export default function SettingsPage() {
                       key={`reminderDays-${settings.reminderDays}`}
                       defaultValue={settings.reminderDays}
                       placeholder="30,15,7,3,1"
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700 font-mono"
+                      className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700 font-mono"
                     />
                     <span className="text-[10px] text-slate-400 block mt-1">
                       Reminders are generated this many days before contract expiry.
@@ -540,7 +546,7 @@ export default function SettingsPage() {
                         required
                         key={`notificationEmail-${settings.notificationEmail}`}
                         defaultValue={settings.notificationEmail}
-                        className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                        className="w-full appearance-none pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
                       />
                     </div>
                   </div>

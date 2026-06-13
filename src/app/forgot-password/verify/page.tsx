@@ -3,7 +3,7 @@
 import { useActionState, startTransition, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { verifyOtpAndResetPasswordAction } from '../actions';
-import { KeyRound, ShieldCheck, Hash } from 'lucide-react';
+import { KeyRound, ShieldCheck, Hash, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
 function VerifyOtpForm() {
@@ -32,9 +32,10 @@ function VerifyOtpForm() {
         </p>
         <Link
           href="/forgot-password"
-          className="mt-6 inline-block w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-3 px-4 rounded-xl transition-colors cursor-pointer"
+          className="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-3 px-4 rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
         >
-          Go Back
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>Go Back</span>
         </Link>
       </div>
     );
@@ -75,7 +76,7 @@ function VerifyOtpForm() {
               required
               maxLength={6}
               placeholder="123456"
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-mono font-bold tracking-widest text-center"
+              className="w-full appearance-none pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-mono font-bold tracking-widest text-center"
             />
           </div>
         </div>
@@ -95,7 +96,7 @@ function VerifyOtpForm() {
               name="password"
               required
               placeholder="••••••••"
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+              className="w-full appearance-none pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
             />
           </div>
         </div>
@@ -115,7 +116,7 @@ function VerifyOtpForm() {
               name="confirmPassword"
               required
               placeholder="••••••••"
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+              className="w-full appearance-none pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
             />
           </div>
         </div>
@@ -131,7 +132,10 @@ function VerifyOtpForm() {
               <span>Verifying & Resetting...</span>
             </>
           ) : (
-            <span>Reset Password</span>
+            <>
+              <KeyRound className="w-4 h-4" />
+              <span>Reset Password</span>
+            </>
           )}
         </button>
       </form>

@@ -251,9 +251,10 @@ export default function ImageCropper({
             <button
               type="button"
               onClick={onCancel}
-              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl transition-colors cursor-pointer border border-slate-700/50"
+              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl transition-colors cursor-pointer border border-slate-700/50 flex items-center justify-center gap-1.5"
             >
-              Cancel
+              <X className="w-3.5 h-3.5" />
+              <span>Cancel</span>
             </button>
             <button
               type="button"

@@ -203,7 +203,7 @@ export default function ClientsPage() {
             setSearchQuery(e.target.value);
             setCurrentPage(1);
           }}
-          className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+          className="w-full appearance-none pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
         />
       </div>
 
@@ -253,13 +253,13 @@ export default function ClientsPage() {
                     </span>
                   </div>
 
-                  <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-150">
+                  <div className="grid grid-cols-3 gap-1.5 pt-2 border-t border-slate-150 w-full">
                     <button
                       onClick={() => {
                         setSelectedClient(client);
                         setIsViewOpen(true);
                       }}
-                      className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-blue-600 hover:bg-blue-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                      className="w-full px-1 py-1.5 text-xs font-bold text-slate-600 hover:text-blue-600 hover:bg-blue-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
                     >
                       <Eye className="w-3.5 h-3.5" />
                       <span>View</span>
@@ -270,14 +270,14 @@ export default function ClientsPage() {
                         setFormError(null);
                         setIsEditOpen(true);
                       }}
-                      className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-amber-600 hover:bg-amber-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                      className="w-full px-1 py-1.5 text-xs font-bold text-slate-600 hover:text-amber-600 hover:bg-amber-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
                     >
                       <Edit2 className="w-3.5 h-3.5" />
                       <span>Edit</span>
                     </button>
                     <button
                       onClick={() => handleDeleteClick(client.id)}
-                      className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-red-600 hover:bg-red-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                      className="w-full px-1 py-1.5 text-xs font-bold text-slate-600 hover:text-red-600 hover:bg-red-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                       <span>Delete</span>
@@ -425,7 +425,7 @@ export default function ClientsPage() {
                     name="name"
                     required
                     placeholder="John Doe"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all"
                   />
                 </div>
                 <div className="space-y-1">
@@ -435,7 +435,7 @@ export default function ClientsPage() {
                     name="companyName"
                     required
                     placeholder="Acme Corp"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all"
                   />
                 </div>
               </div>
@@ -448,7 +448,7 @@ export default function ClientsPage() {
                     name="email"
                     required
                     placeholder="billing@acme.com"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all"
                   />
                 </div>
                 <div className="space-y-1">
@@ -458,7 +458,7 @@ export default function ClientsPage() {
                     name="phone"
                     required
                     placeholder="+91 98765 43210"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all"
                   />
                 </div>
               </div>
@@ -470,7 +470,7 @@ export default function ClientsPage() {
                   required
                   rows={2}
                   placeholder="123 Corporate Ave, Mumbai, India"
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all resize-none"
+                  className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all resize-none"
                 />
               </div>
 
@@ -481,7 +481,7 @@ export default function ClientsPage() {
                     type="text"
                     name="gstNo"
                     placeholder="27AAAAA1111A1Z1"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all"
                   />
                 </div>
                 <div className="space-y-1">
@@ -490,7 +490,7 @@ export default function ClientsPage() {
                     type="text"
                     name="notes"
                     placeholder="Client preferred UPI payment"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all"
                   />
                 </div>
               </div>
@@ -499,16 +499,18 @@ export default function ClientsPage() {
                 <button
                   type="button"
                   onClick={() => setIsAddOpen(false)}
-                  className="px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 cursor-pointer"
+                  className="px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  Cancel
+                  <X className="w-3.5 h-3.5" />
+                  <span>Cancel</span>
                 </button>
                 <button
                   type="submit"
                   disabled={actionPending}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-200 hover:bg-blue-700 disabled:opacity-75 cursor-pointer"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-200 hover:bg-blue-700 disabled:opacity-75 cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  {actionPending ? 'Saving...' : 'Save Client'}
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>{actionPending ? 'Saving...' : 'Save Client'}</span>
                 </button>
               </div>
             </form>
@@ -548,7 +550,7 @@ export default function ClientsPage() {
                     name="name"
                     required
                     defaultValue={selectedClient.name}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all"
                   />
                 </div>
                 <div className="space-y-1">
@@ -558,7 +560,7 @@ export default function ClientsPage() {
                     name="companyName"
                     required
                     defaultValue={selectedClient.companyName}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all"
                   />
                 </div>
               </div>
@@ -571,7 +573,7 @@ export default function ClientsPage() {
                     name="email"
                     required
                     defaultValue={selectedClient.email}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all"
                   />
                 </div>
                 <div className="space-y-1">
@@ -581,7 +583,7 @@ export default function ClientsPage() {
                     name="phone"
                     required
                     defaultValue={selectedClient.phone}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all"
                   />
                 </div>
               </div>
@@ -593,7 +595,7 @@ export default function ClientsPage() {
                   required
                   rows={2}
                   defaultValue={selectedClient.address}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all resize-none"
+                  className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all resize-none"
                 />
               </div>
 
@@ -605,7 +607,7 @@ export default function ClientsPage() {
                     name="gstNo"
                     defaultValue={selectedClient.gstNo || ''}
                     placeholder="27AAAAA1111A1Z1"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all"
                   />
                 </div>
                 <div className="space-y-1">
@@ -615,7 +617,7 @@ export default function ClientsPage() {
                     name="notes"
                     defaultValue={selectedClient.notes || ''}
                     placeholder="Client preferred UPI payment"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all"
                   />
                 </div>
               </div>
@@ -627,16 +629,18 @@ export default function ClientsPage() {
                     setIsEditOpen(false);
                     setSelectedClient(null);
                   }}
-                  className="px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 cursor-pointer"
+                  className="px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  Cancel
+                  <X className="w-3.5 h-3.5" />
+                  <span>Cancel</span>
                 </button>
                 <button
                   type="submit"
                   disabled={actionPending}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-200 hover:bg-blue-700 disabled:opacity-75 cursor-pointer"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-200 hover:bg-blue-700 disabled:opacity-75 cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  {actionPending ? 'Saving...' : 'Update Client'}
+                  <Edit2 className="w-3.5 h-3.5" />
+                  <span>{actionPending ? 'Saving...' : 'Update Client'}</span>
                 </button>
               </div>
             </form>
@@ -734,9 +738,10 @@ export default function ClientsPage() {
                   setIsViewOpen(false);
                   setSelectedClient(null);
                 }}
-                className="px-4 py-2 bg-slate-50 border border-slate-100 hover:bg-slate-100 rounded-xl text-xs font-bold text-slate-600 transition-all cursor-pointer"
+                className="px-4 py-2 bg-slate-50 border border-slate-100 hover:bg-slate-100 rounded-xl text-xs font-bold text-slate-600 transition-all cursor-pointer flex items-center justify-center gap-1.5"
               >
-                Close Details
+                <X className="w-3.5 h-3.5" />
+                <span>Close Details</span>
               </button>
             </div>
           </div>

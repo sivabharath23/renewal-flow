@@ -26,7 +26,8 @@ import {
   Clock,
   Printer,
   Building,
-  MessageSquare
+  MessageSquare,
+  ChevronDown
 } from 'lucide-react';
 
 function formatDateStringForInput(dateVal: string | Date) {
@@ -304,7 +305,7 @@ export default function InvoicesPage() {
           placeholder="Search by invoice #, client, or project..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+          className="w-full appearance-none pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
         />
       </div>
 
@@ -355,13 +356,13 @@ export default function InvoicesPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-150">
+                  <div className="grid grid-cols-3 gap-1.5 pt-2 border-t border-slate-150 w-full">
                     <button
                       onClick={() => {
                         setSelectedInvoice(invoice);
                         setIsViewOpen(true);
                       }}
-                      className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-blue-600 hover:bg-blue-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                      className="w-full px-1 py-1.5 text-xs font-bold text-slate-600 hover:text-blue-600 hover:bg-blue-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
                     >
                       <Eye className="w-3.5 h-3.5" />
                       <span>View</span>
@@ -372,14 +373,14 @@ export default function InvoicesPage() {
                         setFormError(null);
                         setIsEditOpen(true);
                       }}
-                      className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-amber-600 hover:bg-amber-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                      className="w-full px-1 py-1.5 text-xs font-bold text-slate-600 hover:text-amber-600 hover:bg-amber-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
                     >
                       <Edit2 className="w-3.5 h-3.5" />
                       <span>Edit</span>
                     </button>
                     <button
                       onClick={() => handleDeleteClick(invoice.id)}
-                      className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-red-600 hover:bg-red-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                      className="w-full px-1 py-1.5 text-xs font-bold text-slate-600 hover:text-red-600 hover:bg-red-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                       <span>Delete</span>
@@ -519,7 +520,7 @@ export default function InvoicesPage() {
                   required
                   placeholder="INV-2026-001"
                   defaultValue={`INV-${new Date().getFullYear()}-${String(invoices.length + 1).padStart(3, '0')}`}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+                  className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
                 />
               </div>
 
@@ -527,18 +528,23 @@ export default function InvoicesPage() {
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Select Client</label>
                   {clients.length > 0 ? (
-                    <select
-                      name="clientId"
-                      required
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
-                    >
-                      <option value="" disabled selected>Select client...</option>
-                      {clients.map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.companyName}
-                        </option>
-                      ))}
-                    </select>
+                    <div className="relative w-full">
+                      <select
+                        name="clientId"
+                        required
+                        className="w-full appearance-none pr-10 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                      >
+                        <option value="" disabled selected>Select client...</option>
+                        {clients.map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {c.companyName}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
+                        <ChevronDown className="w-4 h-4" />
+                      </div>
+                    </div>
                   ) : (
                     <div className="p-2 bg-amber-50 text-[10px] text-amber-600 border border-amber-100 rounded-lg">
                       Add a client first.
@@ -548,18 +554,23 @@ export default function InvoicesPage() {
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Select Project</label>
                   {projects.length > 0 ? (
-                    <select
-                      name="projectId"
-                      required
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
-                    >
-                      <option value="" disabled selected>Select project...</option>
-                      {projects.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.projectName}
-                        </option>
-                      ))}
-                    </select>
+                    <div className="relative w-full">
+                      <select
+                        name="projectId"
+                        required
+                        className="w-full appearance-none pr-10 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                      >
+                        <option value="" disabled selected>Select project...</option>
+                        {projects.map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {p.projectName}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
+                        <ChevronDown className="w-4 h-4" />
+                      </div>
+                    </div>
                   ) : (
                     <div className="p-2 bg-amber-50 text-[10px] text-amber-600 border border-amber-100 rounded-lg">
                       Add a project first.
@@ -576,7 +587,7 @@ export default function InvoicesPage() {
                     name="invoiceDate"
                     required
                     defaultValue={formatDateStringForInput(new Date())}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
                   />
                 </div>
                 <div className="space-y-1">
@@ -585,7 +596,7 @@ export default function InvoicesPage() {
                     type="date"
                     name="dueDate"
                     required
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
                   />
                 </div>
               </div>
@@ -599,21 +610,26 @@ export default function InvoicesPage() {
                     name="amount"
                     required
                     placeholder="1500"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
                   />
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Status</label>
-                  <select
-                    name="status"
-                    required
-                    defaultValue="PENDING"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
-                  >
-                    {statusOptions.map((opt) => (
-                      <option key={opt} value={opt}>{opt}</option>
-                    ))}
-                  </select>
+                  <div className="relative w-full">
+                    <select
+                      name="status"
+                      required
+                      defaultValue="PENDING"
+                      className="w-full appearance-none pr-10 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                    >
+                      {statusOptions.map((opt) => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
+                      <ChevronDown className="w-4 h-4" />
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -631,16 +647,18 @@ export default function InvoicesPage() {
                 <button
                   type="button"
                   onClick={() => setIsAddOpen(false)}
-                  className="px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 cursor-pointer"
+                  className="px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  Cancel
+                  <X className="w-3.5 h-3.5" />
+                  <span>Cancel</span>
                 </button>
                 <button
                   type="submit"
                   disabled={actionPending || clients.length === 0 || projects.length === 0}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-200 hover:bg-blue-700 disabled:opacity-75 cursor-pointer"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-200 hover:bg-blue-700 disabled:opacity-75 cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  {actionPending ? 'Creating...' : 'Create Invoice'}
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>{actionPending ? 'Creating...' : 'Create Invoice'}</span>
                 </button>
               </div>
             </form>
@@ -679,40 +697,50 @@ export default function InvoicesPage() {
                   name="invoiceNumber"
                   required
                   defaultValue={selectedInvoice.invoiceNumber}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+                  className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Select Client</label>
-                  <select
-                    name="clientId"
-                    required
-                    defaultValue={selectedInvoice.clientId}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
-                  >
-                    {clients.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.companyName}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative w-full">
+                    <select
+                      name="clientId"
+                      required
+                      defaultValue={selectedInvoice.clientId}
+                      className="w-full appearance-none pr-10 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                    >
+                      {clients.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.companyName}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
+                      <ChevronDown className="w-4 h-4" />
+                    </div>
+                  </div>
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Select Project</label>
-                  <select
-                    name="projectId"
-                    required
-                    defaultValue={selectedInvoice.projectId}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
-                  >
-                    {projects.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.projectName}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative w-full">
+                    <select
+                      name="projectId"
+                      required
+                      defaultValue={selectedInvoice.projectId}
+                      className="w-full appearance-none pr-10 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                    >
+                      {projects.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.projectName}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
+                      <ChevronDown className="w-4 h-4" />
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -724,7 +752,7 @@ export default function InvoicesPage() {
                     name="invoiceDate"
                     required
                     defaultValue={formatDateStringForInput(selectedInvoice.invoiceDate)}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
                   />
                 </div>
                 <div className="space-y-1">
@@ -734,7 +762,7 @@ export default function InvoicesPage() {
                     name="dueDate"
                     required
                     defaultValue={formatDateStringForInput(selectedInvoice.dueDate)}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
                   />
                 </div>
               </div>
@@ -748,21 +776,26 @@ export default function InvoicesPage() {
                     name="amount"
                     required
                     defaultValue={selectedInvoice.amount}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
+                    className="w-full appearance-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium"
                   />
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-600 block">Status</label>
-                  <select
-                    name="status"
-                    required
-                    defaultValue={selectedInvoice.status}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
-                  >
-                    {statusOptions.map((opt) => (
-                      <option key={opt} value={opt}>{opt}</option>
-                    ))}
-                  </select>
+                  <div className="relative w-full">
+                    <select
+                      name="status"
+                      required
+                      defaultValue={selectedInvoice.status}
+                      className="w-full appearance-none pr-10 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all font-medium text-slate-700"
+                    >
+                      {statusOptions.map((opt) => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
+                      <ChevronDown className="w-4 h-4" />
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -783,16 +816,18 @@ export default function InvoicesPage() {
                     setIsEditOpen(false);
                     setSelectedInvoice(null);
                   }}
-                  className="px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 cursor-pointer"
+                  className="px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  Cancel
+                  <X className="w-3.5 h-3.5" />
+                  <span>Cancel</span>
                 </button>
                 <button
                   type="submit"
                   disabled={actionPending}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-200 hover:bg-blue-700 disabled:opacity-75 cursor-pointer"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-200 hover:bg-blue-700 disabled:opacity-75 cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  {actionPending ? 'Saving...' : 'Update Invoice'}
+                  <Edit2 className="w-3.5 h-3.5" />
+                  <span>{actionPending ? 'Saving...' : 'Update Invoice'}</span>
                 </button>
               </div>
             </form>

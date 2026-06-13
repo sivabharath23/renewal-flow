@@ -1,7 +1,8 @@
 const CACHE_NAME = 'renewalflow-v1';
 const ASSETS_TO_CACHE = [
   '/',
-  '/manifest.webmanifest',
+  '/manifest.json',
+  '/offline',
   '/favicon.ico',
 ];
 
@@ -62,6 +63,10 @@ self.addEventListener('fetch', (event) => {
         return caches.match(event.request).then((cachedResponse) => {
           if (cachedResponse) {
             return cachedResponse;
+          }
+          // If a navigation request fails, return the offline fallback page
+          if (event.request.mode === 'navigate') {
+            return caches.match('/offline');
           }
           // Fallback if cache has nothing
           return Response.error();
