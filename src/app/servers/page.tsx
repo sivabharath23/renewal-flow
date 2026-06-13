@@ -253,19 +253,19 @@ export default function ServersPage() {
       </div>
 
       {/* Servers List Table */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+      <div className="bg-transparent lg:bg-white lg:rounded-2xl lg:border lg:border-slate-100 lg:shadow-sm overflow-hidden">
         {loading ? (
           <div className="py-12">
             <InvoicePreloader text="Loading servers..." />
           </div>
         ) : servers.length > 0 ? (
           <>
-            {/* Mobile View Card List */}
-            <div className="block md:hidden divide-y divide-slate-100">
+            {/* Mobile/Tablet View Card Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:hidden">
               {servers.map((server) => {
                 const expiry = getExpiryDetails(server.expiryDate);
                 return (
-                  <div key={server.id} className={`p-5 space-y-4 hover:bg-slate-50/50 transition-colors ${expiry.rowHighlight}`}>
+                  <div key={server.id} className={`bg-white rounded-xl border border-slate-200/60 p-4 shadow-xs space-y-4 hover:bg-slate-50/20 hover:shadow-md transition-all ${expiry.rowHighlight}`}>
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0">
                         <span className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-lg border mb-1.5 ${getProviderBadgeClass(server.provider)}`}>
@@ -306,7 +306,7 @@ export default function ServersPage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-50">
+                    <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-150">
                       <button
                         onClick={() => {
                           setSelectedServer(server);
@@ -342,7 +342,7 @@ export default function ServersPage() {
             </div>
 
             {/* Desktop Table View */}
-            <div className="hidden md:block overflow-x-auto">
+            <div className="hidden lg:block overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-slate-50/75 border-b border-slate-100 text-xs font-bold text-slate-500 uppercase tracking-wider">

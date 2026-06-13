@@ -336,17 +336,17 @@ export default function ReportsPage() {
       )}
 
       {/* Report Data Preview Table */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden print-shadow-none">
+      <div className="bg-transparent lg:bg-white lg:rounded-2xl lg:border lg:border-slate-100 lg:shadow-sm overflow-hidden print-shadow-none">
         {loading ? (
           <div className="py-12">
             <InvoicePreloader text="Compiling dataset..." />
           </div>
         ) : reportData.length > 0 ? (
           <>
-            {/* Mobile View Card List */}
-            <div className="block md:hidden divide-y divide-slate-100">
+            {/* Mobile/Tablet View Card Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:hidden">
               {reportData.map((d, index) => (
-                <div key={index} className="p-5 space-y-3.5 hover:bg-slate-50/20 transition-colors text-xs font-semibold text-slate-700">
+                <div key={index} className="bg-white rounded-xl border border-slate-200/60 p-4 shadow-xs space-y-3.5 hover:bg-slate-50/20 transition-all text-xs font-semibold text-slate-700">
                   {reportType === 'REVENUE' && (
                     <>
                       <div className="flex justify-between items-start">
@@ -356,7 +356,7 @@ export default function ReportsPage() {
                         </div>
                         <span className="font-black text-slate-800 text-sm">₹{d.amount.toLocaleString('en-IN')}</span>
                       </div>
-                      <div className="flex justify-between items-center text-slate-500">
+                      <div className="flex justify-between items-center text-slate-500 pt-1 border-t border-slate-100">
                         <span>Project: {d.projectName}</span>
                         <span className="text-[10px] font-medium text-slate-400">Paid: {new Date(d.paidDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                       </div>
@@ -371,8 +371,8 @@ export default function ReportsPage() {
                         </div>
                         <span className="font-black text-emerald-600 text-sm">₹{d.totalSpent.toLocaleString('en-IN')}</span>
                       </div>
-                      <div className="flex justify-between items-center text-slate-500">
-                        <span className="font-mono text-[10px] text-slate-400 truncate max-w-[180px]">{d.email}</span>
+                      <div className="flex justify-between items-center text-slate-500 pt-1 border-t border-slate-100">
+                        <span className="font-mono text-[10px] text-slate-400 truncate max-w-[140px]">{d.email}</span>
                         <span className="px-2 py-0.5 rounded-lg bg-slate-50 border border-slate-150 text-[10px] font-bold text-slate-600 shrink-0">{d.totalProjects} Projects</span>
                       </div>
                     </>
@@ -386,7 +386,7 @@ export default function ReportsPage() {
                         </div>
                         <span className="font-black text-slate-800 text-sm">₹{d.renewalAmount.toLocaleString('en-IN')}</span>
                       </div>
-                      <div className="flex justify-between items-center text-slate-500">
+                      <div className="flex justify-between items-center text-slate-500 pt-1 border-t border-slate-100">
                         <span>Registrar: {d.registrar}</span>
                         <span className="text-[10px] font-medium text-slate-400">Expires: {new Date(d.expiryDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                       </div>
@@ -401,7 +401,7 @@ export default function ReportsPage() {
                         </div>
                         <span className="font-black text-slate-800 text-sm">₹{d.amount.toLocaleString('en-IN')}</span>
                       </div>
-                      <div className="text-slate-500 truncate max-w-full">
+                      <div className="text-slate-500 truncate max-w-full pt-1 border-t border-slate-100">
                         <span>Project: {d.projectName}</span>
                       </div>
                     </>
@@ -415,7 +415,7 @@ export default function ReportsPage() {
                         </div>
                         <span className="font-black text-slate-800 text-sm">₹{d.amount.toLocaleString('en-IN')}</span>
                       </div>
-                      <div className="flex justify-between items-center text-slate-500">
+                      <div className="flex justify-between items-center text-slate-500 pt-1 border-t border-slate-100">
                         <span className="px-2 py-0.5 rounded-lg bg-slate-50 border border-slate-150 text-[10px] font-bold text-slate-600">{d.renewalCycle}</span>
                         <span className="text-[10px] font-medium text-slate-400">{new Date(d.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} - {new Date(d.endDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                       </div>
@@ -430,7 +430,7 @@ export default function ReportsPage() {
                         </div>
                         <span className="font-black text-rose-600 text-sm">₹{d.amount.toLocaleString('en-IN')}</span>
                       </div>
-                      <div className="flex justify-between items-center text-slate-500">
+                      <div className="flex justify-between items-center text-slate-500 pt-1 border-t border-slate-100">
                         <span>Project: {d.projectName}</span>
                         <span className="text-[10px] font-bold text-rose-500 flex items-center gap-1">Due {new Date(d.dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                       </div>
@@ -441,7 +441,7 @@ export default function ReportsPage() {
             </div>
 
             {/* Desktop Table View */}
-            <div className="hidden md:block overflow-x-auto">
+            <div className="hidden lg:block overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-100 text-xs font-bold text-slate-500 uppercase tracking-wider">

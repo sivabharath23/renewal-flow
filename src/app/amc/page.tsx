@@ -256,7 +256,7 @@ export default function AMCsPage() {
       </div>
 
       {/* AMC List Table */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+      <div className="bg-transparent lg:bg-white lg:rounded-2xl lg:border lg:border-slate-100 lg:shadow-sm overflow-hidden">
         {loading ? (
           <div className="py-24 text-center">
             <div className="w-8 h-8 border-3 border-blue-600/30 border-t-blue-600 rounded-full animate-spin mx-auto mb-4" />
@@ -264,12 +264,12 @@ export default function AMCsPage() {
           </div>
         ) : amcs.length > 0 ? (
           <>
-            {/* Mobile View Card List */}
-            <div className="block md:hidden divide-y divide-slate-100">
+            {/* Mobile/Tablet View Card Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:hidden">
               {amcs.map((amc) => {
                 const expiry = getExpiryDetails(amc.endDate, amc.status);
                 return (
-                  <div key={amc.id} className={`p-5 space-y-4 hover:bg-slate-50/50 transition-colors ${expiry.rowHighlight}`}>
+                  <div key={amc.id} className={`bg-white rounded-xl border border-slate-200/60 p-4 shadow-xs space-y-4 hover:bg-slate-50/20 hover:shadow-md transition-all ${expiry.rowHighlight}`}>
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5 text-slate-600">
@@ -301,13 +301,13 @@ export default function AMCsPage() {
                         </span>
                       </div>
 
-                      <div className="text-[11px] text-slate-400 font-medium space-y-0.5 border-t border-slate-50/60 pt-2">
+                      <div className="text-[11px] text-slate-400 font-medium space-y-0.5 border-t border-slate-100 pt-2">
                         <p>Start: {new Date(amc.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                         <p>End: {new Date(amc.endDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-50">
+                    <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-150">
                       <button
                         onClick={() => {
                           setSelectedAMC(amc);
@@ -343,7 +343,7 @@ export default function AMCsPage() {
             </div>
 
             {/* Desktop Table View */}
-            <div className="hidden md:block overflow-x-auto">
+            <div className="hidden lg:block overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-slate-50/75 border-b border-slate-100 text-xs font-bold text-slate-500 uppercase tracking-wider">

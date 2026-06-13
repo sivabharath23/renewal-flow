@@ -147,20 +147,20 @@ export default function NotificationsPage() {
       </div>
 
       {/* Notifications Registry */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+      <div className="bg-transparent lg:bg-white lg:rounded-2xl lg:border lg:border-slate-100 lg:shadow-sm overflow-hidden">
         {loading ? (
           <div className="py-12">
             <InvoicePreloader text="Loading notification logs..." />
           </div>
         ) : filteredReminders.length > 0 ? (
           <>
-            {/* Mobile View card list */}
-            <div className="block md:hidden divide-y divide-slate-100">
+            {/* Mobile/Tablet View Card Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:hidden">
               {filteredReminders.map((reminder) => {
                 const config = getReferenceTypeIcon(reminder.referenceType);
                 const Icon = config.icon;
                 return (
-                  <div key={reminder.id} className="p-5 space-y-4 hover:bg-slate-50/50 transition-colors">
+                  <div key={reminder.id} className="bg-white rounded-xl border border-slate-200/60 p-4 shadow-xs space-y-4 hover:bg-slate-50/20 hover:shadow-md transition-all">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex items-center gap-3">
                         <div className={`w-9 h-9 rounded-xl flex items-center justify-center border shrink-0 ${config.color}`}>
@@ -179,7 +179,7 @@ export default function NotificationsPage() {
                       
                       <button
                         onClick={() => handleDeleteClick(reminder.id)}
-                        className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors border border-slate-100 shrink-0 cursor-pointer"
+                        className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors border border-slate-150 shrink-0 cursor-pointer"
                         title="Dismiss notification log"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -207,7 +207,7 @@ export default function NotificationsPage() {
                         <div className="flex items-center gap-1.5 bg-slate-50 px-2 py-1.5 rounded-lg border border-slate-100">
                           <span className="text-[10px] text-slate-400 font-bold block shrink-0">Tenant scope:</span>
                           <span className="text-[10px] text-slate-600 font-bold truncate">
-                            {reminder.user.name} ({reminder.user.email})
+                            {reminder.user.name}
                           </span>
                         </div>
                       )}
@@ -218,7 +218,7 @@ export default function NotificationsPage() {
             </div>
 
             {/* Desktop View table */}
-            <div className="hidden md:block overflow-x-auto">
+            <div className="hidden lg:block overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-slate-50/75 border-b border-slate-100 text-xs font-bold text-slate-500 uppercase tracking-wider">
